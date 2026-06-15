@@ -8,7 +8,9 @@ import {
   MessageSquareCode, 
   LogOut, 
   X,
-  Compass
+  Compass,
+  Target,
+  ShieldAlert
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -26,6 +28,8 @@ const menuItems = [
   { name: 'Architecture', icon: Network },
   { name: 'APIs & Routes', icon: Terminal },
   { name: 'Env Variables', icon: KeyRound },
+  { name: 'Security Audit', icon: ShieldAlert },
+  { name: 'Onboarding Score', icon: Target },
   { name: 'AI Assistant', icon: MessageSquareCode }
 ]
 
@@ -38,10 +42,10 @@ export default function Sidebar({
 }: SidebarProps) {
   
   const content = (
-    <div className="h-full flex flex-col justify-between bg-[#0B1220]/95 border-r border-slate-800/80 p-4 font-mono select-none">
+    <div className="h-full flex flex-col justify-between bg-[#0B1220]/95 border-r border-slate-800/80 p-4 font-mono select-none overflow-y-auto">
       <div className="space-y-6">
         {/* LOGO */}
-        <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
+        <div className="flex items-center justify-between border-b border-slate-800/80 pb-4 shrink-0">
           <div className="flex items-center space-x-2">
             <Compass className="w-6 h-6 text-cyan-400 animate-spin [animation-duration:12s]" />
             <span className="font-sans font-extrabold text-white text-lg tracking-wider">
@@ -59,7 +63,7 @@ export default function Sidebar({
         </div>
 
         {/* HUD System Spec */}
-        <div className="bg-slate-950/80 border border-slate-800/60 p-2.5 rounded text-[10px] text-slate-400 space-y-1">
+        <div className="bg-slate-950/80 border border-slate-800/60 p-2.5 rounded text-[10px] text-slate-400 space-y-1 shrink-0">
           <div className="flex justify-between">
             <span>SECTOR:</span>
             <span className="text-cyan-400">MAIN_HUB</span>
@@ -71,7 +75,7 @@ export default function Sidebar({
         </div>
 
         {/* NAVIGATION LINKS */}
-        <nav className="flex flex-col gap-1.5 pt-2">
+        <nav className="flex flex-col gap-1.5 pt-2 pb-4">
           {menuItems.map((item) => {
             const isActive = activeTab === item.name
             return (
@@ -87,8 +91,8 @@ export default function Sidebar({
                     : 'bg-transparent border border-transparent text-slate-400 hover:text-white hover:bg-slate-900/60 hover:border-slate-800/60'
                 }`}
               >
-                <item.icon className={`w-4 h-4 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
-                <span className="font-sans tracking-wide">{item.name}</span>
+                <item.icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
+                <span className="font-sans tracking-wide truncate">{item.name}</span>
               </button>
             )
           })}
@@ -96,13 +100,13 @@ export default function Sidebar({
       </div>
 
       {/* FOOTER ACTION */}
-      <div className="border-t border-slate-800/80 pt-4">
+      <div className="border-t border-slate-800/80 pt-4 mt-auto shrink-0">
         <button
           onClick={onBackToLanding}
           className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm text-red-400 hover:text-red-300 bg-red-950/15 border border-transparent hover:border-red-900/30 hover:bg-red-950/30 transition-all cursor-pointer font-sans"
         >
-          <LogOut className="w-4 h-4" />
-          <span>Exit Command Hub</span>
+          <LogOut className="w-4 h-4 shrink-0" />
+          <span className="truncate">Exit Command Hub</span>
         </button>
       </div>
     </div>

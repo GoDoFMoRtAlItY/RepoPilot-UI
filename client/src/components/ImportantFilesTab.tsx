@@ -7,18 +7,45 @@ import {
   ChevronUp, 
   Filter, 
   Info,
-  Files
+  Files,
+  ExternalLink
 } from 'lucide-react'
 import { useRepoStore } from '../store/useRepoStore'
 
 export default function ImportantFilesTab() {
-  const { importantFiles, searchQueryFiles, setSearchQueryFiles } = useRepoStore()
+  const { analysis, searchQueryFiles, setSearchQueryFiles } = useRepoStore()
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
   const [selectedImportance, setSelectedImportance] = useState<string>('All')
   const [expandedFile, setExpandedFile] = useState<string | null>(null)
 
+  const importantFiles = analysis?.fileRoles.map(f => {
+    // Map backend roles to categories
+    const roleCapitalized = f.role.charAt(0).toUpperCase() + f.role.slice(1)
+    
+    // Determine importance heuristics
+    let importance = 'Low'
+    if (['entrypoint', 'config', 'route'].includes(f.role)) {
+      importance = 'High'
+    } else if (['model', 'controller', 'service', 'middleware'].includes(f.role)) {
+      importance = 'Medium'
+    }
+
+    return {
+      path: f.file,
+      category: roleCapitalized,
+      importance,
+      purpose: `Analyzed role: ${roleCapitalized}.`,
+      details: `File size: ${f.size} bytes.`,
+      githubUrl: f.githubUrl,
+      size: f.size
+    }
+  }).sort((a, b) => {
+    const impMap: Record<string, number> = { 'High': 3, 'Medium': 2, 'Low': 1 }
+    return impMap[b.importance] - impMap[a.importance]
+  }) || []
+
   // Categories list
-  const categories = ['All', 'Entrypoint', 'Config', 'Source']
+  const categories = ['All', ...Array.from(new Set(importantFiles.map(f => f.category)))]
   const importances = ['All', 'High', 'Medium', 'Low']
 
   // Filter files
@@ -60,9 +87,9 @@ export default function ImportantFilesTab() {
       </div>
 
       {/* Filter and Search Bar Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <div className="flex flex-col xl:flex-row gap-4 xl:items-center xl:justify-between">
         {/* Search Input */}
-        <div className="lg:col-span-6 relative">
+        <div className="relative flex-1 w-full max-w-xl">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input
             type="text"
@@ -74,18 +101,18 @@ export default function ImportantFilesTab() {
         </div>
 
         {/* Category Filters */}
-        <div className="lg:col-span-6 flex flex-wrap gap-2 items-center lg:justify-end">
+        <div className="flex flex-wrap gap-2 items-center shrink-0">
           <div className="flex items-center space-x-2 text-slate-500 text-[10px] mr-2">
             <Filter className="w-3.5 h-3.5" />
             <span>FILTER:</span>
           </div>
           
-          <div className="flex bg-slate-950/80 border border-slate-800 p-0.5 rounded-lg">
+          <div className="flex bg-slate-950/80 border border-slate-800 p-0.5 rounded-lg overflow-x-auto max-w-[200px] sm:max-w-xs scrollbar-hide">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1.5 rounded-md text-[10px] font-bold tracking-wide transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-md text-[10px] font-bold tracking-wide transition-all cursor-pointer whitespace-nowrap ${
                   selectedCategory === cat
                     ? 'bg-blue-600/25 border border-blue-500/35 text-cyan-400'
                     : 'text-slate-500 hover:text-slate-300'
@@ -118,7 +145,7 @@ export default function ImportantFilesTab() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredFiles.map((file) => {
           const isExpanded = expandedFile === file.path
-          const importanceColors = {
+          const importanceColors: Record<string, string> = {
             High: 'bg-red-500/10 border-red-500/25 text-red-400',
             Medium: 'bg-yellow-500/10 border-yellow-500/25 text-yellow-400',
             Low: 'bg-blue-500/10 border-blue-500/25 text-blue-400'
@@ -138,10 +165,10 @@ export default function ImportantFilesTab() {
               >
                 <div className="space-y-3 flex-1 min-w-0">
                   <div className="flex items-center space-x-2">
-                    <span className={`px-2 py-0.5 border rounded text-[9px] font-bold uppercase ${importanceColors[file.importance]}`}>
+                    <span className={`px-2 py-0.5 border rounded text-[9px] font-bold uppercase ${importanceColors[file.importance] || importanceColors['Low']}`}>
                       {file.importance} Priority
                     </span>
-                    <span className="px-2 py-0.5 border border-slate-800 bg-slate-950 text-slate-400 rounded text-[9px] font-bold uppercase">
+                    <span className="px-2 py-0.5 border border-slate-800 bg-slate-950 text-slate-400 rounded text-[9px] font-bold uppercase truncate max-w-[150px]">
                       {file.category}
                     </span>
                   </div>
@@ -188,11 +215,24 @@ export default function ImportantFilesTab() {
                       </div>
                       
                       {/* Code Hint block */}
-                      <div className="space-y-1.5 font-mono">
-                        <div className="text-[9px] text-slate-500 uppercase tracking-widest">INGESTION_SECTOR</div>
-                        <div className="bg-slate-900 border border-slate-850/60 p-3.5 rounded-lg text-slate-400 text-xs font-mono">
-                          Module Tag: <span className="text-cyan-400">"{file.category.toLowerCase()}"</span> | File Size: <span className="text-purple-400">~{(file.path.length * 123) % 200 + 45} lines</span>
+                      <div className="flex items-center justify-between space-y-1.5 font-mono">
+                        <div className="flex-1">
+                          <div className="text-[9px] text-slate-500 uppercase tracking-widest mb-1.5">INGESTION_SECTOR</div>
+                          <div className="bg-slate-900 border border-slate-850/60 p-3.5 rounded-lg text-slate-400 text-xs font-mono">
+                            Module Tag: <span className="text-cyan-400">"{file.category.toLowerCase()}"</span> | File Size: <span className="text-purple-400">~{file.size} bytes</span>
+                          </div>
                         </div>
+                        {file.githubUrl && (
+                          <a 
+                            href={file.githubUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ml-4 px-4 py-2 border border-slate-700 hover:border-cyan-400 hover:text-cyan-400 bg-slate-900 rounded-lg flex items-center space-x-2 text-xs font-bold transition-colors"
+                          >
+                            <span>View Source</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        )}
                       </div>
                     </div>
                   </motion.div>

@@ -9,16 +9,27 @@ import {
   ChevronUp, 
   Code2, 
   Compass,
-  Layers
+  Layers,
+  ExternalLink
 } from 'lucide-react'
 import { useRepoStore } from '../store/useRepoStore'
 
 export default function ApiRoutesTab() {
-  const { apiRoutes, searchQueryApis, setSearchQueryApis } = useRepoStore()
+  const { analysis, searchQueryApis, setSearchQueryApis } = useRepoStore()
   const [selectedMethod, setSelectedMethod] = useState<string>('All')
   const [expandedRoute, setExpandedRoute] = useState<string | null>(null)
 
-  const methods = ['All', 'GET', 'POST', 'PUT', 'DELETE']
+  const apiRoutes = analysis?.routes.map(r => ({
+    path: r.path,
+    method: r.method,
+    description: `Endpoint handler defined in ${r.file}. ${r.usesApis.length > 0 ? 'Uses APIs: ' + r.usesApis.join(', ') : ''}`,
+    auth: r.usesApis.some(a => a.toLowerCase().includes('auth') || a.toLowerCase().includes('jwt') || a.toLowerCase().includes('passport')),
+    parameters: r.usesEnvVars,
+    githubUrl: r.githubUrl,
+    file: r.file
+  })) || []
+
+  const methods = ['All', 'GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'ALL']
 
   const filteredRoutes = apiRoutes.filter((route) => {
     const matchesSearch = route.path.toLowerCase().includes(searchQueryApis.toLowerCase()) || 
@@ -28,11 +39,13 @@ export default function ApiRoutesTab() {
     return matchesSearch && matchesMethod
   })
 
-  const methodColors = {
+  const methodColors: Record<string, string> = {
     GET: 'bg-green-500/10 border-green-500/30 text-green-400',
     POST: 'bg-blue-500/10 border-blue-500/30 text-blue-400',
     PUT: 'bg-orange-500/10 border-orange-500/30 text-orange-400',
-    DELETE: 'bg-red-500/10 border-red-500/30 text-red-400'
+    PATCH: 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400',
+    DELETE: 'bg-red-500/10 border-red-500/30 text-red-400',
+    ALL: 'bg-purple-500/10 border-purple-500/30 text-purple-400'
   }
 
   const toggleExpand = (path: string) => {
@@ -64,9 +77,9 @@ export default function ApiRoutesTab() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <div className="flex flex-col xl:flex-row gap-4 xl:items-center xl:justify-between">
         {/* Search */}
-        <div className="lg:col-span-6 relative">
+        <div className="relative flex-1 w-full max-w-xl">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input
             type="text"
@@ -78,18 +91,18 @@ export default function ApiRoutesTab() {
         </div>
 
         {/* Method filter buttons */}
-        <div className="lg:col-span-6 flex flex-wrap gap-2 items-center lg:justify-end">
+        <div className="flex flex-wrap gap-2 items-center shrink-0">
           <div className="flex items-center space-x-2 text-slate-500 text-[10px] mr-1">
             <Compass className="w-3.5 h-3.5" />
             <span>METHODS:</span>
           </div>
           
-          <div className="flex bg-slate-950/80 border border-slate-800 p-0.5 rounded-lg">
+          <div className="flex bg-slate-950/80 border border-slate-800 p-0.5 rounded-lg overflow-x-auto max-w-[200px] sm:max-w-xs scrollbar-hide">
             {methods.map((m) => (
               <button
                 key={m}
                 onClick={() => setSelectedMethod(m)}
-                className={`px-3 py-1.5 rounded-md text-[10px] font-bold tracking-wide transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-md text-[10px] font-bold tracking-wide transition-all cursor-pointer whitespace-nowrap ${
                   selectedMethod === m
                     ? 'bg-blue-600/25 border border-blue-500/35 text-cyan-400'
                     : 'text-slate-500 hover:text-slate-300'
@@ -104,20 +117,20 @@ export default function ApiRoutesTab() {
 
       {/* Discovered endpoints lists */}
       <div className="space-y-3">
-        {filteredRoutes.map((route) => {
-          const isExpanded = expandedRoute === route.path
+        {filteredRoutes.map((route, i) => {
+          const isExpanded = expandedRoute === (route.path + i)
           const mColor = methodColors[route.method] || 'bg-slate-500/10 text-slate-400 border-slate-700'
 
           return (
             <div 
-              key={route.path} 
+              key={route.path + i} 
               className={`glass-panel rounded-xl overflow-hidden transition-all duration-300 ${
                 isExpanded ? 'border-cyan-500/40 shadow-[0_0_15px_rgba(34,211,238,0.05)]' : 'hover:border-slate-800'
               }`}
             >
               {/* Endpoint card trigger header */}
               <div 
-                onClick={() => toggleExpand(route.path)}
+                onClick={() => toggleExpand(route.path + i)}
                 className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-900/20 gap-4"
               >
                 <div className="flex items-center space-x-3.5 flex-1 min-w-0">
@@ -169,11 +182,24 @@ export default function ApiRoutesTab() {
                   >
                     <div className="p-4 md:p-5 space-y-4">
                       {/* Description */}
-                      <div className="space-y-1">
-                        <div className="text-[9px] text-slate-500 uppercase tracking-widest">ENDPOINT SCOPE</div>
-                        <p className="text-slate-300 font-sans text-xs md:text-sm">
-                          {route.description}
-                        </p>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1 flex-1">
+                          <div className="text-[9px] text-slate-500 uppercase tracking-widest">ENDPOINT SCOPE</div>
+                          <p className="text-slate-300 font-sans text-xs md:text-sm">
+                            {route.description}
+                          </p>
+                        </div>
+                        {route.githubUrl && (
+                          <a 
+                            href={route.githubUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ml-4 px-4 py-2 border border-slate-700 hover:border-cyan-400 hover:text-cyan-400 bg-slate-900 rounded-lg flex items-center space-x-2 text-xs font-bold transition-colors shrink-0"
+                          >
+                            <span>View Source</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        )}
                       </div>
 
                       {/* Middleware validation */}
@@ -183,30 +209,28 @@ export default function ApiRoutesTab() {
                           <span>MIDDLEWARE PIPELINE stack</span>
                         </div>
                         <div className="flex flex-wrap gap-2 text-[10px]">
-                          <span className="bg-slate-900 border border-slate-800 text-slate-400 px-2.5 py-1 rounded">corsCheck()</span>
-                          <span className="bg-slate-900 border border-slate-800 text-slate-400 px-2.5 py-1 rounded">bodyLimit(50mb)</span>
+                          <span className="bg-slate-900 border border-slate-800 text-slate-400 px-2.5 py-1 rounded">Defined in {route.file}</span>
                           {route.auth && (
-                            <span className="bg-red-950/10 border border-red-900/30 text-red-400 px-2.5 py-1 rounded font-bold">sessionGuard()</span>
+                            <span className="bg-red-950/10 border border-red-900/30 text-red-400 px-2.5 py-1 rounded font-bold">authentication_detected</span>
                           )}
-                          <span className="bg-blue-950/10 border border-blue-900/30 text-cyan-400 px-2.5 py-1 rounded">rateLimiter(100/min)</span>
                         </div>
                       </div>
 
                       {/* Parameters breakdown */}
                       <div className="space-y-2">
-                        <div className="text-[9px] text-slate-500 uppercase tracking-widest">REQUEST PARAMETERS</div>
+                        <div className="text-[9px] text-slate-500 uppercase tracking-widest">DETECTED ENV VARIABLES</div>
                         <div className="bg-slate-900 border border-slate-850/60 p-3 rounded-lg">
                           {route.parameters.length > 0 ? (
                             <div className="divide-y divide-slate-850/50">
                               {route.parameters.map((param) => (
                                 <div key={param} className="flex items-center justify-between py-1.5 first:pt-0 last:pb-0">
                                   <code className="text-cyan-400 text-[11px] font-bold">{param}</code>
-                                  <span className="text-[9px] text-slate-500">Query / Body Parameter</span>
+                                  <span className="text-[9px] text-slate-500">Env Reference</span>
                                 </div>
                               ))}
                             </div>
                           ) : (
-                            <span className="text-slate-500 text-[10px]">None required for this endpoint.</span>
+                            <span className="text-slate-500 text-[10px]">No environment variables referenced.</span>
                           )}
                         </div>
                       </div>
@@ -223,10 +247,7 @@ export default function ApiRoutesTab() {
   headers: {
     'Content-Type': 'application/json'${route.auth ? `,
     'Authorization': 'Bearer <YOUR_SESSION_TOKEN>'` : ''}
-  }${route.parameters.length > 0 ? `,
-  body: JSON.stringify({
-    ${route.parameters.map(p => `${p}: ''`).join(',\n    ')}
-  })` : ''}
+  }
 }` : ''});`}
                         </pre>
                       </div>

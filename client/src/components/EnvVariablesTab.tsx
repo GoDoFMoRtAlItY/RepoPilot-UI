@@ -9,11 +9,19 @@ import {
   CheckCircle2,
   Lock
 } from 'lucide-react'
-import { useRepoStore, type EnvVariable } from '../store/useRepoStore'
+import { useRepoStore } from '../store/useRepoStore'
 
 export default function EnvVariablesTab() {
-  const { envVariables } = useRepoStore()
+  const { analysis } = useRepoStore()
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
+
+  const envVariables = analysis?.envVars.map(v => ({
+    name: v.name,
+    required: v.required,
+    defaultValue: v.defaultValue || '',
+    description: `Extracted from AST node in ${v.file}`,
+    status: (v.required ? 'missing' : 'optional-missing') as 'configured' | 'missing' | 'optional-missing'
+  })) || []
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
@@ -21,7 +29,7 @@ export default function EnvVariablesTab() {
     setTimeout(() => setCopiedKey(null), 1500)
   }
 
-  const getStatusBadge = (status: EnvVariable['status']) => {
+  const getStatusBadge = (status: 'configured' | 'missing' | 'optional-missing') => {
     switch (status) {
       case 'configured':
         return (
@@ -47,7 +55,7 @@ export default function EnvVariablesTab() {
     }
   }
 
-  const getBorderColor = (status: EnvVariable['status']) => {
+  const getBorderColor = (status: 'configured' | 'missing' | 'optional-missing') => {
     switch (status) {
       case 'configured': return 'border-green-500/20 hover:border-green-500/40'
       case 'missing': return 'border-red-500/35 hover:border-red-500/50 shadow-[inset_0_0_10px_rgba(239,68,68,0.02)]'
@@ -137,25 +145,33 @@ export default function EnvVariablesTab() {
         })}
       </div>
 
-      {/* Quick .env.example projection block */}
-      <div className="glass-panel p-5 rounded-xl space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-          <span className="font-semibold text-sm text-white font-sans">Generated .env.example</span>
-          <button
-            onClick={() => {
-              const text = envVariables.map(v => `${v.name}=${v.defaultValue || ''}`).join('\n')
-              copyToClipboard(text)
-            }}
-            className="flex items-center space-x-1 px-3 py-1 bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-cyan-400 text-[10px] text-slate-400 hover:text-white rounded transition-colors cursor-pointer"
-          >
-            {copiedKey === 'env_full' ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
-            <span>{copiedKey === 'env_full' ? 'COPIED' : 'COPY ALL'}</span>
-          </button>
+      {envVariables.length === 0 && (
+        <div className="glass-panel p-12 text-center rounded-xl text-slate-500 font-sans">
+          No environment variables detected in the repository AST.
         </div>
-        <pre className="bg-slate-950 border border-slate-900 p-4 rounded-lg text-cyan-400/80 text-[10px] md:text-[11px] overflow-x-auto whitespace-pre leading-relaxed select-text">
+      )}
+
+      {/* Quick .env.example projection block */}
+      {envVariables.length > 0 && (
+        <div className="glass-panel p-5 rounded-xl space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <span className="font-semibold text-sm text-white font-sans">Generated .env.example</span>
+            <button
+              onClick={() => {
+                const text = envVariables.map(v => `${v.name}=${v.defaultValue || ''}`).join('\n')
+                copyToClipboard(text)
+              }}
+              className="flex items-center space-x-1 px-3 py-1 bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-cyan-400 text-[10px] text-slate-400 hover:text-white rounded transition-colors cursor-pointer"
+            >
+              {copiedKey === 'env_full' ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
+              <span>{copiedKey === 'env_full' ? 'COPIED' : 'COPY ALL'}</span>
+            </button>
+          </div>
+          <pre className="bg-slate-950 border border-slate-900 p-4 rounded-lg text-cyan-400/80 text-[10px] md:text-[11px] overflow-x-auto whitespace-pre leading-relaxed select-text">
 {envVariables.map(v => `# ${v.description}\n${v.name}=${v.defaultValue || ''}`).join('\n\n')}
-        </pre>
-      </div>
+          </pre>
+        </div>
+      )}
     </motion.div>
   )
 }

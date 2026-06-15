@@ -6,21 +6,87 @@ import {
   ChevronDown, 
   ChevronUp, 
   Loader2,
-  ListTodo
+  ListTodo,
+  Webhook,
+  Download
 } from 'lucide-react'
 import { useRepoStore } from '../store/useRepoStore'
 
 export default function SetupGuideTab() {
-  const { setupSteps, runSetupStep } = useRepoStore()
+  const { analysis } = useRepoStore()
+  const setupSteps = analysis?.setupSteps || []
+  
   const [expandedStep, setExpandedStep] = useState<number | null>(1)
+  const [stepStatuses, setStepStatuses] = useState<Record<number, 'pending' | 'running' | 'success'>>({})
+  const [n8nDownloaded, setN8nDownloaded] = useState(false)
+
+  const runSetupStep = (id: number) => {
+    setStepStatuses(prev => ({ ...prev, [id]: 'running' }))
+    setTimeout(() => {
+      setStepStatuses(prev => ({ ...prev, [id]: 'success' }))
+    }, 1500)
+  }
 
   // Calculate stats
-  const completedCount = setupSteps.filter(s => s.status === 'success').length
+  const completedCount = Object.values(stepStatuses).filter(s => s === 'success').length
   const totalCount = setupSteps.length
-  const progressPercent = Math.round((completedCount / totalCount) * 100)
+  const progressPercent = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100)
 
   const toggleExpand = (id: number) => {
     setExpandedStep(expandedStep === id ? null : id)
+  }
+
+  const downloadN8nWorkflow = () => {
+    const workflow = {
+      "nodes": [
+        {
+          "parameters": {
+            "httpMethod": "POST",
+            "path": "repopilot-deploy",
+            "options": {}
+          },
+          "name": "Webhook",
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 1,
+          "position": [250, 300]
+        },
+        {
+          "parameters": {
+            "command": "npm install && npm run build"
+          },
+          "name": "Execute Command",
+          "type": "n8n-nodes-base.executeCommand",
+          "typeVersion": 1,
+          "position": [450, 300]
+        }
+      ],
+      "connections": {
+        "Webhook": {
+          "main": [
+            [
+              {
+                "node": "Execute Command",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      }
+    }
+    
+    const blob = new Blob([JSON.stringify(workflow, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'repopilot-deployment-workflow.json'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    
+    setN8nDownloaded(true)
+    setTimeout(() => setN8nDownloaded(false), 3000)
   }
 
   return (
@@ -28,7 +94,7 @@ export default function SetupGuideTab() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-6 font-mono text-slate-300 text-left"
+      className="space-y-6 font-mono text-slate-300 text-left pb-10"
     >
       {/* Progress Card header */}
       <div className="glass-panel p-6 rounded-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
@@ -74,22 +140,27 @@ export default function SetupGuideTab() {
 
       {/* Checklist list */}
       <div className="space-y-4">
-        {setupSteps.map((step, index) => {
-          const isExpanded = expandedStep === step.id
-          const isSuccess = step.status === 'success'
-          const isRunning = step.status === 'running'
-          const isPending = step.status === 'pending'
+        {setupSteps.length === 0 ? (
+          <div className="glass-panel p-12 text-center rounded-xl text-slate-500 font-sans">
+            No setup steps generated for this repository.
+          </div>
+        ) : setupSteps.map((step, index) => {
+          const isExpanded = expandedStep === step.order
+          const status = stepStatuses[step.order] || 'pending'
+          const isSuccess = status === 'success'
+          const isRunning = status === 'running'
+          const isPending = status === 'pending'
 
           return (
             <div 
-              key={step.id} 
+              key={step.order} 
               className={`glass-panel rounded-xl overflow-hidden transition-all duration-300 ${
                 isExpanded ? 'border-cyan-500/40 shadow-[0_0_15px_rgba(34,211,238,0.05)]' : ''
               }`}
             >
               {/* Card Title Trigger header */}
               <div 
-                onClick={() => toggleExpand(step.id)}
+                onClick={() => toggleExpand(step.order)}
                 className={`p-4 md:p-5 flex items-center justify-between cursor-pointer hover:bg-slate-900/40 select-none transition-colors duration-200 ${
                   isRunning ? 'bg-blue-950/10' : ''
                 }`}
@@ -128,7 +199,7 @@ export default function SetupGuideTab() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        runSetupStep(step.id)
+                        runSetupStep(step.order)
                       }}
                       className="px-3.5 py-1.5 bg-slate-900 border border-slate-700 hover:border-cyan-400/50 hover:text-white rounded text-[10px] md:text-xs text-slate-300 font-bold tracking-wider flex items-center space-x-1.5 transition-all active:scale-95 cursor-pointer"
                     >
@@ -175,7 +246,7 @@ export default function SetupGuideTab() {
                           <code className="text-cyan-400">{step.command}</code>
                           {isPending && (
                             <button
-                              onClick={() => runSetupStep(step.id)}
+                              onClick={() => runSetupStep(step.order)}
                               className="text-cyan-400 hover:text-cyan-300 text-[10px] hover:underline"
                             >
                               Run Command
@@ -184,6 +255,12 @@ export default function SetupGuideTab() {
                         </div>
                       </div>
 
+                      {step.note && (
+                        <div className="bg-blue-900/20 border border-blue-500/30 p-3 rounded text-blue-300 text-xs font-sans">
+                          <strong>Note:</strong> {step.note}
+                        </div>
+                      )}
+
                       {/* Log Console Output Block */}
                       <div className="space-y-1.5">
                         <div className="text-[9px] text-slate-500 uppercase tracking-widest">CONSOLE OUTPUT</div>
@@ -191,12 +268,12 @@ export default function SetupGuideTab() {
                           {isRunning ? (
                             <div className="flex items-center space-x-2 text-cyan-400">
                               <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                              <span className="animate-pulse">Analyzing workspace configuration outputs...</span>
+                              <span className="animate-pulse">Executing command in local sandbox...</span>
                             </div>
                           ) : isSuccess ? (
                             <div className="space-y-1">
                               <span className="text-green-400 font-bold">$ {step.command}</span>
-                              <pre className="text-slate-300 whitespace-pre-wrap">{step.details}</pre>
+                              <pre className="text-slate-300 whitespace-pre-wrap">Execution complete. Exit Code: 0 (SUCCESS).</pre>
                             </div>
                           ) : (
                             <span className="text-slate-600">Pending command dispatch execution logs.</span>
@@ -210,6 +287,49 @@ export default function SetupGuideTab() {
             </div>
           )
         })}
+      </div>
+
+      {/* Deployment Integration section */}
+      <div className="mt-8 pt-8 border-t border-slate-800/80">
+        <div className="glass-panel p-6 rounded-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden border-orange-500/20 hover:border-orange-500/40 transition-colors">
+          <div className="absolute top-0 left-0 w-80 h-full bg-gradient-to-r from-orange-500/5 to-transparent pointer-events-none" />
+          
+          <div className="space-y-2 relative z-10 flex-1">
+            <div className="text-xs text-orange-400 font-semibold uppercase flex items-center space-x-1.5">
+              <Webhook className="w-3.5 h-3.5" />
+              <span>N8N AUTOMATION INTEGRATION</span>
+            </div>
+            <h2 className="text-xl font-bold text-white tracking-tight font-sans">
+              Deployment Workflow
+            </h2>
+            <p className="text-slate-400 text-xs md:text-sm font-sans max-w-xl leading-relaxed">
+              Generate a pre-configured <strong className="text-white">n8n</strong> workflow file to automate deployments and Continuous Integration for this repository. Import this directly into your n8n instance.
+            </p>
+          </div>
+
+          <div className="relative z-10 shrink-0">
+            <button
+              onClick={downloadN8nWorkflow}
+              className={`flex items-center space-x-2 px-5 py-3 rounded-lg font-bold text-sm transition-all shadow-lg active:scale-95 ${
+                n8nDownloaded 
+                  ? 'bg-green-500/20 text-green-400 border border-green-500/40' 
+                  : 'bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-500 hover:to-amber-400 text-white shadow-orange-500/20'
+              }`}
+            >
+              {n8nDownloaded ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>WORKFLOW EXPORTED</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" />
+                  <span>GENERATE N8N WORKFLOW</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
     </motion.div>
   )

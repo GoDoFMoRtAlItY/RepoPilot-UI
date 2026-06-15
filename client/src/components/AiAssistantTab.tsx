@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
   MessageSquareCode, 
   Send, 
@@ -9,22 +9,27 @@ import {
   Copy, 
   Check, 
   Compass,
-  ArrowRight
+  ArrowRight,
+  Key,
+  Lock,
+  ExternalLink
 } from 'lucide-react'
 import { useRepoStore } from '../store/useRepoStore'
 
 export default function AiAssistantTab() {
-  const { chatMessages, sendChatMessage } = useRepoStore()
+  const { chatMessages, sendChatMessage, aiKey, setAiKey, isAnalyzing } = useRepoStore()
   const [inputText, setInputText] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null)
+  
+  const [tempKey, setTempKey] = useState('')
   
   const chatEndRef = useRef<HTMLDivElement>(null)
 
   const suggestedQuestions = [
     'How does authentication work?',
-    'Explain project architecture.',
-    'How do I run db migrations?'
+    'Explain the database schema.',
+    'Where are the API routes defined?'
   ]
 
   // Scroll to bottom whenever messages update
@@ -32,33 +37,78 @@ export default function AiAssistantTab() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [chatMessages, isTyping])
 
-  const handleSend = (e?: React.FormEvent) => {
+  const handleSend = async (e?: React.FormEvent) => {
     if (e) e.preventDefault()
     if (!inputText.trim()) return
 
     const userText = inputText
     setInputText('')
-    sendChatMessage(userText)
     setIsTyping(true)
-
-    // Simulate analysis response delay
-    setTimeout(() => {
-      setIsTyping(false)
-    }, 1200)
+    await sendChatMessage(userText)
+    setIsTyping(false)
   }
 
-  const handleSelectSuggestion = (q: string) => {
-    sendChatMessage(q)
+  const handleSelectSuggestion = async (q: string) => {
     setIsTyping(true)
-    setTimeout(() => {
-      setIsTyping(false)
-    }, 1200)
+    await sendChatMessage(q)
+    setIsTyping(false)
   }
 
-  const handleCopyCode = (code: string, id: string) => {
-    navigator.clipboard.writeText(code)
-    setCopiedCodeId(id)
-    setTimeout(() => setCopiedCodeId(null), 1500)
+  const handleSaveKey = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (tempKey.trim()) {
+      setAiKey(tempKey.trim())
+    }
+  }
+
+  if (!aiKey) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="h-full flex items-center justify-center font-mono p-4"
+      >
+        <div className="glass-panel p-8 rounded-2xl max-w-md w-full relative overflow-hidden text-center space-y-6">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-cyan-400 to-purple-500" />
+          
+          <div className="mx-auto w-16 h-16 bg-slate-900 border border-slate-800 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.15)]">
+            <Key className="w-8 h-8 text-cyan-400" />
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-xl font-bold text-white font-sans">AI Mentor Authorization</h2>
+            <p className="text-xs text-slate-400 leading-relaxed font-sans">
+              To unlock the intelligent codebase assistant, please provide your Google Gemini API key. Keys are stored locally in your browser session.
+            </p>
+          </div>
+
+          <form onSubmit={handleSaveKey} className="space-y-4">
+            <div className="relative text-left">
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+              <input
+                type="password"
+                value={tempKey}
+                onChange={(e) => setTempKey(e.target.value)}
+                placeholder="Paste your Gemini API key..."
+                className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-400 rounded-lg pl-10 pr-4 py-3 text-sm text-white placeholder-slate-600 outline-none transition-colors"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white text-sm font-bold rounded-lg transition-all active:scale-[0.98] shadow-lg shadow-cyan-500/20"
+            >
+              INITIALIZE AI CONNECTION
+            </button>
+          </form>
+          
+          <div className="text-[10px] text-slate-500 pt-4 border-t border-slate-800/80">
+            Don't have an API key? Get one from <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" className="text-cyan-400 hover:underline">Google AI Studio</a>.
+          </div>
+        </div>
+      </motion.div>
+    )
   }
 
   return (
@@ -74,12 +124,20 @@ export default function AiAssistantTab() {
           <MessageSquareCode className="w-5 h-5 text-cyan-400" />
           <div>
             <h2 className="text-white font-sans font-bold text-sm tracking-wide">RepoPilot Technical Mentor</h2>
-            <p className="text-[10px] text-slate-500 font-mono">MODEL: CONTEXT-INGEST-V4 | ACTIVE_NODES: ALL</p>
+            <p className="text-[10px] text-slate-500 font-mono">MODEL: GEMINI-PRO | STATUS: AUTHENTICATED</p>
           </div>
         </div>
-        <span className="inline-flex items-center space-x-1.5 text-[8px] bg-green-500/10 border border-green-500/20 text-green-400 px-2 py-0.5 rounded font-bold font-mono">
-          <span>AI_AGENT_ONLINE</span>
-        </span>
+        <div className="flex items-center space-x-3">
+          <button 
+            onClick={() => setAiKey('')} 
+            className="text-[9px] text-slate-500 hover:text-red-400 transition-colors uppercase border-b border-slate-700 hover:border-red-400/50 pb-0.5"
+          >
+            Clear Key
+          </button>
+          <span className="inline-flex items-center space-x-1.5 text-[8px] bg-green-500/10 border border-green-500/20 text-green-400 px-2 py-0.5 rounded font-bold font-mono">
+            <span>AI_AGENT_ONLINE</span>
+          </span>
+        </div>
       </div>
 
       {/* Main Chat Log scrollbox */}
@@ -106,6 +164,16 @@ export default function AiAssistantTab() {
                   <span className="font-semibold text-slate-400">{isAi ? 'REPOPILOT MENTOR' : 'DEVELOPER'}</span>
                   <span>•</span>
                   <span>{msg.timestamp}</span>
+                  {msg.mode && (
+                    <>
+                      <span>•</span>
+                      <span className={`px-1.5 py-0.5 rounded uppercase font-bold tracking-widest border ${
+                        msg.mode === 'advanced' ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-slate-800 border-slate-700 text-slate-400'
+                      }`}>
+                        {msg.mode} MODE
+                      </span>
+                    </>
+                  )}
                 </div>
                 
                 <div className={`p-4 rounded-xl text-xs leading-relaxed border font-sans ${
@@ -115,23 +183,28 @@ export default function AiAssistantTab() {
                 }`}>
                   <p className="whitespace-pre-wrap">{msg.text}</p>
 
-                  {/* Attachment code block rendering */}
-                  {msg.codeBlock && (
-                    <div className="mt-3.5 bg-slate-950 border border-slate-850 rounded-lg overflow-hidden font-mono text-[11px] text-left">
-                      <div className="bg-slate-900 px-3.5 py-1.5 flex items-center justify-between border-b border-slate-900">
-                        <span className="text-[9px] text-slate-500 uppercase tracking-widest">{msg.codeBlock.language}</span>
-                        <button
-                          onClick={() => handleCopyCode(msg.codeBlock!.code, msg.id)}
-                          className="p-1 rounded hover:bg-slate-800 text-slate-500 hover:text-cyan-400 cursor-pointer transition-colors"
-                        >
-                          {copiedCodeId === msg.id ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
-                        </button>
+                  {/* Citations */}
+                  {msg.citations && msg.citations.length > 0 && (
+                    <div className="mt-4 pt-3 border-t border-slate-800/60 space-y-2">
+                      <p className="text-[10px] text-slate-500 font-mono tracking-widest uppercase mb-1">Sources Cited:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {msg.citations.map((cite, i) => (
+                          <a 
+                            key={i}
+                            href={cite.githubUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center space-x-1.5 px-2 py-1 bg-slate-900 border border-slate-800 hover:border-cyan-500/50 rounded text-[10px] font-mono text-slate-400 hover:text-cyan-400 transition-colors group"
+                          >
+                            <span>{cite.file}{cite.line ? `:${cite.line}` : ''}</span>
+                            <ExternalLink className="w-2.5 h-2.5 opacity-50 group-hover:opacity-100" />
+                          </a>
+                        ))}
                       </div>
-                      <pre className="p-3.5 overflow-x-auto whitespace-pre leading-normal max-h-60 text-cyan-400/95 font-medium select-all">
-                        <code>{msg.codeBlock.code}</code>
-                      </pre>
                     </div>
                   )}
+
+                  {/* Attachment code block rendering (if we had it, but we render text) */}
                 </div>
               </div>
             </div>
@@ -146,7 +219,7 @@ export default function AiAssistantTab() {
             </div>
             <div className="p-3.5 rounded-xl bg-[#0B1220]/80 border border-slate-850/80 text-slate-400 text-xs flex items-center space-x-2 font-mono">
               <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-400" />
-              <span className="animate-pulse">Mentoring compiler scanning codebase...</span>
+              <span className="animate-pulse">Consulting codebase knowledge graph...</span>
             </div>
           </div>
         )}
@@ -155,7 +228,7 @@ export default function AiAssistantTab() {
       </div>
 
       {/* Suggested prompts row */}
-      {chatMessages.length === 1 && !isTyping && (
+      {chatMessages.length <= 2 && !isTyping && (
         <div className="shrink-0 mb-3 space-y-2">
           <div className="flex items-center space-x-1.5 text-[10px] text-slate-500">
             <Compass className="w-3.5 h-3.5 text-cyan-500" />
@@ -182,12 +255,14 @@ export default function AiAssistantTab() {
           type="text"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          placeholder="Ask AI technical mentor about files, code architectures, database schemas..."
-          className="w-full bg-slate-950 border border-slate-800 hover:border-slate-750 focus:border-cyan-400 rounded-xl pl-4 pr-14 py-3 text-xs md:text-sm text-slate-200 placeholder-slate-500 transition-all font-mono outline-none shadow-2xl"
+          placeholder={isAnalyzing ? "Waiting for analysis..." : "Ask AI technical mentor about files, code architectures, database schemas..."}
+          disabled={isTyping || isAnalyzing}
+          className="w-full bg-slate-950 border border-slate-800 hover:border-slate-750 focus:border-cyan-400 rounded-xl pl-4 pr-14 py-3 text-xs md:text-sm text-slate-200 placeholder-slate-500 transition-all font-mono outline-none shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <button
           type="submit"
-          className="absolute right-2.5 p-2 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 rounded-lg text-white transition-all cursor-pointer active:scale-95 shadow-[0_0_10px_rgba(34,211,238,0.2)]"
+          disabled={isTyping || isAnalyzing || !inputText.trim()}
+          className="absolute right-2.5 p-2 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 rounded-lg text-white transition-all cursor-pointer active:scale-95 shadow-[0_0_10px_rgba(34,211,238,0.2)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Send className="w-4 h-4" />
         </button>
