@@ -1,0 +1,474 @@
+{
+  "meta": {
+    "owner": "gothinkster",
+    "repo": "node-express-realworld-example-app",
+    "defaultBranch": "master",
+    "description": "Exemplary real world backend API built with Node.js + Express + Mongoose",
+    "language": "JavaScript",
+    "stars": 8500,
+    "analyzedAt": "2026-06-15T12:00:00Z",
+    "commitSha": "abc123def456"
+  },
+  "summary": {
+    "totalFiles": 45,
+    "analyzedFiles": 28,
+    "projectType": "Express.js API",
+    "oneLiner": "A production-ready Express API using MongoDB and JWT authentication, implementing the RealWorld specification."
+  },
+  "entryPoint": {
+    "file": "app.js",
+    "line": 1,
+    "confidence": "high",
+    "reason": "package.json scripts.start points to node app.js",
+    "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/app.js#L1"
+  },
+  "setupSteps": [
+    {
+      "order": 1,
+      "title": "Clone the repository",
+      "command": "git clone https://github.com/gothinkster/node-express-realworld-example-app.git",
+      "description": "Download the code to your local machine.",
+      "note": null
+    },
+    {
+      "order": 2,
+      "title": "Navigate to the project directory",
+      "command": "cd node-express-realworld-example-app",
+      "description": "Move into the cloned directory.",
+      "note": null
+    },
+    {
+      "order": 3,
+      "title": "Install dependencies",
+      "command": "npm install",
+      "description": "Install all required packages from npm.",
+      "note": "Requires Node.js installed."
+    },
+    {
+      "order": 4,
+      "title": "Set up environment variables",
+      "command": "cp .env.example .env",
+      "description": "Create a local environment file. You'll need to set up a MongoDB database.",
+      "note": "Required variables: MONGODB_URI, SECRET"
+    },
+    {
+      "order": 5,
+      "title": "Start the development server",
+      "command": "npm run dev",
+      "description": "Run the application in development mode.",
+      "note": "The API will be available at http://localhost:3000/api"
+    }
+  ],
+  "envVars": [
+    {
+      "name": "MONGODB_URI",
+      "file": "app.js",
+      "line": 15,
+      "defaultValue": "mongodb://localhost/conduit",
+      "required": false,
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/app.js#L15"
+    },
+    {
+      "name": "SECRET",
+      "file": "models/User.js",
+      "line": 32,
+      "defaultValue": null,
+      "required": true,
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/models/User.js#L32"
+    },
+    {
+      "name": "PORT",
+      "file": "app.js",
+      "line": 42,
+      "defaultValue": "3000",
+      "required": false,
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/app.js#L42"
+    },
+    {
+      "name": "NODE_ENV",
+      "file": "app.js",
+      "line": 45,
+      "defaultValue": "development",
+      "required": false,
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/app.js#L45"
+    }
+  ],
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/users/login",
+      "file": "routes/api/users.js",
+      "line": 15,
+      "handlerName": null,
+      "usesEnvVars": [],
+      "usesApis": ["passport", "jsonwebtoken"],
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/users.js#L15"
+    },
+    {
+      "method": "POST",
+      "path": "/users",
+      "file": "routes/api/users.js",
+      "line": 40,
+      "handlerName": null,
+      "usesEnvVars": [],
+      "usesApis": ["mongoose"],
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/users.js#L40"
+    },
+    {
+      "method": "GET",
+      "path": "/user",
+      "file": "routes/api/users.js",
+      "line": 55,
+      "handlerName": null,
+      "usesEnvVars": [],
+      "usesApis": ["passport"],
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/users.js#L55"
+    },
+    {
+      "method": "PUT",
+      "path": "/user",
+      "file": "routes/api/users.js",
+      "line": 64,
+      "handlerName": null,
+      "usesEnvVars": [],
+      "usesApis": ["passport"],
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/users.js#L64"
+    },
+    {
+      "method": "GET",
+      "path": "/profiles/:username",
+      "file": "routes/api/profiles.js",
+      "line": 15,
+      "handlerName": null,
+      "usesEnvVars": [],
+      "usesApis": ["mongoose"],
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/profiles.js#L15"
+    },
+    {
+      "method": "GET",
+      "path": "/articles",
+      "file": "routes/api/articles.js",
+      "line": 20,
+      "handlerName": null,
+      "usesEnvVars": [],
+      "usesApis": ["mongoose"],
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/articles.js#L20"
+    },
+    {
+      "method": "POST",
+      "path": "/articles",
+      "file": "routes/api/articles.js",
+      "line": 85,
+      "handlerName": null,
+      "usesEnvVars": [],
+      "usesApis": ["mongoose"],
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/articles.js#L85"
+    },
+    {
+      "method": "DELETE",
+      "path": "/articles/:article",
+      "file": "routes/api/articles.js",
+      "line": 155,
+      "handlerName": null,
+      "usesEnvVars": [],
+      "usesApis": ["mongoose"],
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/articles.js#L155"
+    }
+  ],
+  "apis": [
+    {
+      "name": "MongoDB (Mongoose)",
+      "package": "mongoose",
+      "importFile": "app.js",
+      "importLine": 12,
+      "category": "database",
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/app.js#L12"
+    },
+    {
+      "name": "Passport.js",
+      "package": "passport",
+      "importFile": "config/passport.js",
+      "importLine": 1,
+      "category": "auth",
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/config/passport.js#L1"
+    },
+    {
+      "name": "JWT",
+      "package": "jsonwebtoken",
+      "importFile": "models/User.js",
+      "importLine": 4,
+      "category": "auth",
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/models/User.js#L4"
+    },
+    {
+      "name": "Helmet",
+      "package": "helmet",
+      "importFile": "app.js",
+      "importLine": 6,
+      "category": "security",
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/app.js#L6"
+    }
+  ],
+  "fileRoles": [
+    {
+      "file": "app.js",
+      "role": "entry",
+      "size": 2500,
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/app.js"
+    },
+    {
+      "file": "routes/api/users.js",
+      "role": "route",
+      "size": 3200,
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/users.js"
+    },
+    {
+      "file": "routes/api/articles.js",
+      "role": "route",
+      "size": 8500,
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/articles.js"
+    },
+    {
+      "file": "routes/api/profiles.js",
+      "role": "route",
+      "size": 2100,
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/profiles.js"
+    },
+    {
+      "file": "models/User.js",
+      "role": "model",
+      "size": 1800,
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/models/User.js"
+    },
+    {
+      "file": "models/Article.js",
+      "role": "model",
+      "size": 2200,
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/models/Article.js"
+    },
+    {
+      "file": "config/passport.js",
+      "role": "config",
+      "size": 1500,
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/config/passport.js"
+    },
+    {
+      "file": "routes/auth.js",
+      "role": "middleware",
+      "size": 800,
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/auth.js"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "entry:app.js",
+        "type": "entry",
+        "label": "app.js (entry)",
+        "file": "app.js",
+        "line": 1,
+        "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/app.js",
+        "metadata": {}
+      },
+      {
+        "id": "route:users",
+        "type": "route",
+        "label": "/api/users",
+        "file": "routes/api/users.js",
+        "line": 1,
+        "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/users.js",
+        "metadata": {}
+      },
+      {
+        "id": "route:articles",
+        "type": "route",
+        "label": "/api/articles",
+        "file": "routes/api/articles.js",
+        "line": 1,
+        "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/articles.js",
+        "metadata": {}
+      },
+      {
+        "id": "route:profiles",
+        "type": "route",
+        "label": "/api/profiles",
+        "file": "routes/api/profiles.js",
+        "line": 1,
+        "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/profiles.js",
+        "metadata": {}
+      },
+      {
+        "id": "model:User",
+        "type": "model",
+        "label": "User Model",
+        "file": "models/User.js",
+        "line": 1,
+        "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/models/User.js",
+        "metadata": {}
+      },
+      {
+        "id": "model:Article",
+        "type": "model",
+        "label": "Article Model",
+        "file": "models/Article.js",
+        "line": 1,
+        "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/models/Article.js",
+        "metadata": {}
+      },
+      {
+        "id": "api:mongoose",
+        "type": "api",
+        "label": "Mongoose",
+        "file": null,
+        "line": null,
+        "githubUrl": null,
+        "metadata": {}
+      },
+      {
+        "id": "api:passport",
+        "type": "api",
+        "label": "Passport.js",
+        "file": null,
+        "line": null,
+        "githubUrl": null,
+        "metadata": {}
+      },
+      {
+        "id": "env:SECRET",
+        "type": "envVar",
+        "label": "SECRET",
+        "file": null,
+        "line": null,
+        "githubUrl": null,
+        "metadata": {}
+      },
+      {
+        "id": "env:MONGODB_URI",
+        "type": "envVar",
+        "label": "MONGODB_URI",
+        "file": null,
+        "line": null,
+        "githubUrl": null,
+        "metadata": {}
+      }
+    ],
+    "edges": [
+      {
+        "source": "entry:app.js",
+        "target": "route:users",
+        "label": "mounts route"
+      },
+      {
+        "source": "entry:app.js",
+        "target": "route:articles",
+        "label": "mounts route"
+      },
+      {
+        "source": "entry:app.js",
+        "target": "route:profiles",
+        "label": "mounts route"
+      },
+      {
+        "source": "route:users",
+        "target": "api:passport",
+        "label": "uses"
+      },
+      {
+        "source": "route:users",
+        "target": "model:User",
+        "label": "queries"
+      },
+      {
+        "source": "route:articles",
+        "target": "model:Article",
+        "label": "queries"
+      },
+      {
+        "source": "model:User",
+        "target": "api:mongoose",
+        "label": "uses"
+      },
+      {
+        "source": "model:User",
+        "target": "env:SECRET",
+        "label": "reads"
+      },
+      {
+        "source": "entry:app.js",
+        "target": "env:MONGODB_URI",
+        "label": "reads"
+      }
+    ]
+  },
+  "onboardingScore": {
+    "score": 75,
+    "breakdown": [
+      {
+        "check": "Has README.md",
+        "passed": true,
+        "points": 10,
+        "detail": "README.md found in root directory."
+      },
+      {
+        "check": "Has package.json scripts",
+        "passed": true,
+        "points": 10,
+        "detail": "npm run start and npm run dev are available."
+      },
+      {
+        "check": "Has .env.example",
+        "passed": false,
+        "points": -10,
+        "detail": "No .env.example file found. Users won't know which variables to set."
+      },
+      {
+        "check": "Has clear entry point",
+        "passed": true,
+        "points": 10,
+        "detail": "Entry point clearly defined in package.json as app.js."
+      },
+      {
+        "check": "Organized structure",
+        "passed": true,
+        "points": 10,
+        "detail": "Has clear separation of routes, models, and config."
+      },
+      {
+        "check": "All env vars documented",
+        "passed": false,
+        "points": -10,
+        "detail": "SECRET is required but not documented in an example file."
+      },
+      {
+        "check": "Security alerts",
+        "passed": true,
+        "points": 10,
+        "detail": "No severe security alerts found."
+      },
+      {
+        "check": "Has tests",
+        "passed": true,
+        "points": 10,
+        "detail": "Found test files in /tests directory."
+      }
+    ]
+  },
+  "securityAlerts": [
+    {
+      "severity": "medium",
+      "type": "vulnerable-dep",
+      "message": "Project uses an outdated version of jsonwebtoken which has known vulnerabilities.",
+      "file": "package.json",
+      "line": 20,
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/package.json#L20"
+    },
+    {
+      "severity": "low",
+      "type": "exposed-key-pattern",
+      "message": "Potential hardcoded JWT secret in test file.",
+      "file": "tests/users.test.js",
+      "line": 15,
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/tests/users.test.js#L15"
+    }
+  ]
+}
