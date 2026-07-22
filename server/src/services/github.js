@@ -2,8 +2,29 @@ const { Octokit } = require('octokit');
 const { isParseableFile } = require('../utils/filterFiles');
 
 // Initialize Octokit with auth if token is provided
+let token = process.env.GITHUB_TOKEN ? process.env.GITHUB_TOKEN.trim() : '';
+if (token === 'your_github_personal_access_token_here' || token.includes('dummytoken')) {
+  token = '';
+}
 const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN || undefined
+  auth: token || undefined,
+  request: {
+    timeout: 30000 // 30 second timeout to prevent hanging
+  },
+  throttle: {
+    onRateLimit: (retryAfter, options, octokit, retryCount) => {
+      console.warn(`[GitHub] Rate limit hit for ${options.method} ${options.url} (retry ${retryCount})`);
+      // Don't retry — let the error propagate immediately
+      return false;
+    },
+    onSecondaryRateLimit: (retryAfter, options, octokit, retryCount) => {
+      console.warn(`[GitHub] Secondary rate limit hit for ${options.method} ${options.url}`);
+      return false;
+    },
+  },
+  retry: {
+    doNotRetry: ['401', '403', '404', '429'],
+  },
 });
 
 /**
@@ -80,14 +101,28 @@ async function fetchAllFiles(owner, repo) {
   meta.commitSha = commitSha;
 
   // Filter for parseable files
-  const parseableFiles = tree.filter(item => 
+  let parseableFiles = tree.filter(item =>
     item.type === 'blob' && isParseableFile(item.path, item.size)
   );
+
+  // Sort by depth (put root files like package.json first)
+  parseableFiles.sort((a, b) => {
+    const aDepth = a.path.split('/').length;
+    const bDepth = b.path.split('/').length;
+    if (aDepth !== bDepth) return aDepth - bDepth;
+    return a.path.localeCompare(b.path);
+  });
+
+  // Limit to prevent rate limits and timeouts on large repositories
+  const MAX_FILES_TO_FETCH = 150;
+  if (parseableFiles.length > MAX_FILES_TO_FETCH) {
+    parseableFiles = parseableFiles.slice(0, MAX_FILES_TO_FETCH);
+  }
 
   // Fetch contents in parallel (batching to avoid rate limits if too many)
   const filesWithContent = [];
   const BATCH_SIZE = 10;
-  
+
   for (let i = 0; i < parseableFiles.length; i += BATCH_SIZE) {
     const batch = parseableFiles.slice(i, i + BATCH_SIZE);
     const promises = batch.map(async (fileNode) => {
@@ -95,10 +130,11 @@ async function fetchAllFiles(owner, repo) {
       return {
         path: fileNode.path,
         content,
-        size: fileNode.size
+        size: fileNode.size,
+        sha: fileNode.sha
       };
     });
-    
+
     const results = await Promise.all(promises);
     filesWithContent.push(...results);
   }

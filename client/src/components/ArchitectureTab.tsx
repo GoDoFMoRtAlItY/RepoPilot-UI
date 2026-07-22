@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { 
   ReactFlow, 
   Background, 
-  Controls, 
+  Controls,
+  MiniMap,
   useNodesState, 
   useEdgesState,
   Handle,
@@ -18,11 +20,63 @@ import {
   BoxSelect,
   X,
   Workflow,
-  ExternalLink
+  ExternalLink,
+  Database,
+  Shield,
+  Layers,
+  Cog,
+  Route,
+  Globe
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import dagre from '@dagrejs/dagre'
 import { useRepoStore } from '../store/useRepoStore'
+
+// Role-based color palette for nodes
+const ROLE_COLORS: Record<string, { bg: string, border: string, accent: string, text: string, glow: string }> = {
+  'route':      { bg: 'bg-[#0a1628]', border: 'border-cyan-500/40',   accent: 'bg-cyan-400',   text: 'text-cyan-400',   glow: 'shadow-[0_0_8px_rgba(34,211,238,0.15)]' },
+  'controller': { bg: 'bg-[#0a1628]', border: 'border-cyan-500/40',   accent: 'bg-cyan-400',   text: 'text-cyan-400',   glow: 'shadow-[0_0_8px_rgba(34,211,238,0.15)]' },
+  'middleware':  { bg: 'bg-[#1a0f28]', border: 'border-orange-500/40', accent: 'bg-orange-400', text: 'text-orange-400', glow: 'shadow-[0_0_8px_rgba(249,115,22,0.15)]' },
+  'model':      { bg: 'bg-[#0f1628]', border: 'border-purple-500/40', accent: 'bg-purple-400', text: 'text-purple-400', glow: 'shadow-[0_0_8px_rgba(168,85,247,0.15)]' },
+  'service':    { bg: 'bg-[#0f1a1a]', border: 'border-green-500/40',  accent: 'bg-green-400',  text: 'text-green-400',  glow: 'shadow-[0_0_8px_rgba(74,222,128,0.15)]' },
+  'config':     { bg: 'bg-[#1a1a0f]', border: 'border-yellow-500/40', accent: 'bg-yellow-400', text: 'text-yellow-400', glow: 'shadow-[0_0_8px_rgba(250,204,21,0.15)]' },
+  'util':       { bg: 'bg-[#0B1220]', border: 'border-slate-500/40',  accent: 'bg-slate-400',  text: 'text-slate-400',  glow: '' },
+  'test':       { bg: 'bg-[#0B1220]', border: 'border-indigo-500/40', accent: 'bg-indigo-400', text: 'text-indigo-400', glow: '' },
+  'entry':      { bg: 'bg-[#0f1a28]', border: 'border-blue-500/50',   accent: 'bg-blue-400',   text: 'text-blue-400',   glow: 'shadow-[0_0_12px_rgba(59,130,246,0.25)]' },
+  'directory':  { bg: 'bg-[#0B1220]', border: 'border-slate-600/40',  accent: 'bg-slate-500',  text: 'text-slate-400',  glow: '' },
+  'system':     { bg: 'bg-[#0a1628]', border: 'border-blue-500/40',   accent: 'bg-blue-400',   text: 'text-blue-400',   glow: 'shadow-[0_0_8px_rgba(59,130,246,0.15)]' },
+  'default':    { bg: 'bg-[#0B1220]', border: 'border-slate-700/40',  accent: 'bg-cyan-400',   text: 'text-slate-300',  glow: '' },
+}
+
+// Get the appropriate icon for each node type
+function getNodeIcon(type: string) {
+  switch (type) {
+    case 'route': case 'controller': return Route
+    case 'middleware': return Shield
+    case 'model': return Database
+    case 'service': return Cog
+    case 'config': return Layers
+    case 'entry': return Globe
+    case 'directory': return Box
+    case 'system': return BoxSelect
+    default: return FileCode
+  }
+}
+
+// Determine the architectural layer for ranking
+function getLayer(type: string): number {
+  switch (type) {
+    case 'entry': return 0
+    case 'route': case 'controller': return 1
+    case 'middleware': return 2
+    case 'service': return 3
+    case 'model': return 4
+    case 'config': return 5
+    case 'util': return 6
+    case 'test': return 7
+    default: return 3
+  }
+}
 
 // Custom node data structure
 interface CustomNodeData extends Record<string, unknown> {
@@ -33,27 +87,30 @@ interface CustomNodeData extends Record<string, unknown> {
   details: string
   specifications: Record<string, string>
   githubUrl?: string
+  roleColors: typeof ROLE_COLORS['default']
+  layer: number
 }
 
 type CustomNodeType = Node<CustomNodeData, 'hudNode'>
 
-// Custom Node Component to fit the HUD aesthetic
+// Custom Node Component — color-coded by role
 function HudNodeComponent({ data }: NodeProps<CustomNodeType>) {
   const Icon = data.icon
+  const colors = data.roleColors
 
   return (
-    <div className="glass-panel p-3.5 rounded-lg border-blue-500/30 w-52 select-none text-left relative overflow-hidden bg-[#0B1220]/90">
-      <div className="absolute top-0 left-0 w-2.5 h-full bg-cyan-400" />
+    <div className={`glass-panel p-3.5 rounded-lg ${colors.border} w-56 select-none text-left relative overflow-hidden ${colors.bg} ${colors.glow}`}>
+      <div className={`absolute top-0 left-0 w-2.5 h-full ${colors.accent}`} />
       <div className="pl-2.5 space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-[8px] text-slate-500 font-mono tracking-widest truncate">{data.type.toUpperCase()}</span>
-          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] bg-green-500/10 border border-green-500/30 text-green-400 font-bold font-mono ml-2">
+          <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] bg-green-500/10 border border-green-500/30 text-green-400 font-bold font-mono ml-2`}>
             {data.status}
           </span>
         </div>
         <div className="flex items-center space-x-2">
           <div className="p-1.5 rounded bg-slate-950 border border-slate-800 shrink-0">
-            <Icon className="w-4 h-4 text-cyan-400" />
+            <Icon className={`w-4 h-4 ${colors.text}`} />
           </div>
           <span className="text-white font-sans font-bold text-xs tracking-wide truncate">{data.label}</span>
         </div>
@@ -71,10 +128,10 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   dagreGraph.setDefaultEdgeLabel(() => ({}))
 
   const isHorizontal = direction === 'LR'
-  dagreGraph.setGraph({ rankdir: direction, ranksep: 80, nodesep: 100 })
+  dagreGraph.setGraph({ rankdir: direction, ranksep: 100, nodesep: 80, edgesep: 30 })
 
   nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: 220, height: 80 })
+    dagreGraph.setNode(node.id, { width: 240, height: 80 })
   })
 
   edges.forEach((edge) => {
@@ -89,7 +146,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
     node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom
 
     node.position = {
-      x: nodeWithPosition.x - 220 / 2,
+      x: nodeWithPosition.x - 240 / 2,
       y: nodeWithPosition.y - 80 / 2,
     }
 
@@ -99,9 +156,39 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   return { nodes, edges }
 }
 
+// Infer edge label based on source and target types
+function inferEdgeLabel(sourceType: string, targetType: string, explicitLabel?: string): string {
+  if (explicitLabel && explicitLabel !== 'depends') return explicitLabel
+  
+  const pair = `${sourceType}->${targetType}`
+  switch (pair) {
+    case 'entry->route': case 'entry->controller': return 'registers'
+    case 'route->middleware': case 'controller->middleware': return 'uses middleware'
+    case 'route->service': case 'controller->service': return 'calls'
+    case 'route->model': case 'controller->model': return 'queries'
+    case 'service->model': return 'reads/writes'
+    case 'middleware->service': return 'validates via'
+    case 'model->config': return 'configured by'
+    case 'service->config': return 'configured by'
+    case 'route->util': case 'service->util': return 'uses'
+    default: return explicitLabel || 'imports'
+  }
+}
+
+// Edge color based on relationship
+function getEdgeColor(label: string): string {
+  if (label.includes('middleware') || label.includes('validates')) return '#f97316'
+  if (label.includes('queries') || label.includes('reads') || label.includes('writes')) return '#a855f7'
+  if (label.includes('calls')) return '#22d3ee'
+  if (label.includes('registers')) return '#3b82f6'
+  if (label.includes('configured')) return '#eab308'
+  return '#3B82F6'
+}
+
 export default function ArchitectureTab() {
   const { analysis } = useRepoStore()
   const [selectedNode, setSelectedNode] = useState<CustomNodeData | null>(null)
+  const [layoutDirection, setLayoutDirection] = useState<'TB' | 'LR'>('TB')
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
@@ -109,9 +196,10 @@ export default function ArchitectureTab() {
   useEffect(() => {
     if (analysis && analysis.graph) {
       const rfNodes: Node[] = analysis.graph.nodes.map(n => {
-        let icon = FileCode
-        if (n.type === 'directory') icon = Box
-        if (n.type === 'system') icon = BoxSelect
+        const nodeType = n.type.toLowerCase()
+        const colors = ROLE_COLORS[nodeType] || ROLE_COLORS['default']
+        const icon = getNodeIcon(nodeType)
+        const layer = getLayer(nodeType)
 
         return {
           id: n.id,
@@ -125,34 +213,49 @@ export default function ArchitectureTab() {
             details: `Located at ${n.file}${n.line ? ` (Line ${n.line})` : ''}`,
             specifications: {
               'File Path': n.file,
-              'Type': n.type
+              'Type': n.type,
+              'Architectural Layer': ['Entry Point', 'Routes/Controllers', 'Middleware', 'Services/Logic', 'Models/Data', 'Config', 'Utilities', 'Tests'][layer] || 'Unknown'
             },
-            githubUrl: n.githubUrl
+            githubUrl: n.githubUrl,
+            roleColors: colors,
+            layer
           }
         }
       })
 
-      const rfEdges: Edge[] = analysis.graph.edges.map(e => ({
-        id: e.id,
-        source: e.source,
-        target: e.target,
-        animated: true,
-        style: { stroke: '#3B82F6', strokeWidth: 1.5 },
-        label: e.label,
-        labelStyle: { fill: '#94A3B8', fontSize: 10, fontWeight: 'bold' },
-        labelBgStyle: { fill: '#0B1220', fillOpacity: 0.8 }
-      }))
+      // Build a type lookup for edge labeling
+      const nodeTypeMap: Record<string, string> = {}
+      analysis.graph.nodes.forEach(n => { nodeTypeMap[n.id] = n.type.toLowerCase() })
+
+      const rfEdges: Edge[] = analysis.graph.edges.map(e => {
+        const sourceType = nodeTypeMap[e.source] || 'unknown'
+        const targetType = nodeTypeMap[e.target] || 'unknown'
+        const label = inferEdgeLabel(sourceType, targetType, e.label)
+        const color = getEdgeColor(label)
+
+        return {
+          id: e.id,
+          source: e.source,
+          target: e.target,
+          animated: true,
+          style: { stroke: color, strokeWidth: 1.5 },
+          label,
+          labelStyle: { fill: '#94A3B8', fontSize: 9, fontWeight: 'bold' },
+          labelBgStyle: { fill: '#0B1220', fillOpacity: 0.9 },
+          labelBgPadding: [6, 4] as [number, number]
+        }
+      })
 
       const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
         rfNodes,
         rfEdges,
-        'TB'
+        layoutDirection
       )
 
       setNodes(layoutedNodes)
       setEdges(layoutedEdges)
     }
-  }, [analysis, setNodes, setEdges])
+  }, [analysis, layoutDirection, setNodes, setEdges])
 
   // Memoize custom nodeType dictionary
   const nodeTypes = useMemo(() => ({
@@ -163,6 +266,17 @@ export default function ArchitectureTab() {
     setSelectedNode(node.data as CustomNodeData)
   }, [])
 
+  // Legend items
+  const legendItems = [
+    { label: 'Entry Point', color: 'bg-blue-400' },
+    { label: 'Routes', color: 'bg-cyan-400' },
+    { label: 'Middleware', color: 'bg-orange-400' },
+    { label: 'Services', color: 'bg-green-400' },
+    { label: 'Models', color: 'bg-purple-400' },
+    { label: 'Config', color: 'bg-yellow-400' },
+    { label: 'Utils', color: 'bg-slate-400' },
+  ]
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -172,14 +286,54 @@ export default function ArchitectureTab() {
     >
       {/* Main flowchart canvas */}
       <div className="flex-1 glass-panel rounded-xl overflow-hidden relative border-slate-800/80">
-        <div className="absolute top-4 left-4 z-10 space-y-1 bg-[#0B1220]/80 border border-slate-800 p-3 rounded-lg pointer-events-none">
-          <div className="text-xs text-cyan-400 font-semibold uppercase flex items-center space-x-1.5 font-mono">
-            <Workflow className="w-3.5 h-3.5" />
-            <span>INTERACTIVE COMPONENT SCHEMATIC</span>
+        {/* Top overlay: title + layout toggle */}
+        <div className="absolute top-4 left-4 z-10 space-y-3">
+          <div className="bg-[#0B1220]/90 border border-slate-800 p-3 rounded-lg pointer-events-none">
+            <div className="text-xs text-cyan-400 font-semibold uppercase flex items-center space-x-1.5 font-mono">
+              <Workflow className="w-3.5 h-3.5" />
+              <span>INTERACTIVE ARCHITECTURE SCHEMATIC</span>
+            </div>
+            <p className="text-[10px] text-slate-400 font-sans max-w-sm mt-1">
+              Color-coded by architectural layer. Click nodes to inspect. Zoom/pan to navigate.
+            </p>
           </div>
-          <p className="text-[10px] text-slate-400 font-sans max-w-sm">
-            Zoom/Pan to inspect node parameters. Select any module node block to project details in the HUD panel.
-          </p>
+          
+          {/* Layout toggle */}
+          <div className="pointer-events-auto flex items-center space-x-2">
+            <button
+              onClick={() => setLayoutDirection('TB')}
+              className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
+                layoutDirection === 'TB' 
+                  ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400' 
+                  : 'bg-slate-950 border-slate-800 text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              ↕ Vertical
+            </button>
+            <button
+              onClick={() => setLayoutDirection('LR')}
+              className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
+                layoutDirection === 'LR' 
+                  ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400' 
+                  : 'bg-slate-950 border-slate-800 text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              ↔ Horizontal
+            </button>
+          </div>
+        </div>
+
+        {/* Legend overlay */}
+        <div className="absolute bottom-4 left-4 z-10 bg-[#0B1220]/90 border border-slate-800 p-3 rounded-lg">
+          <span className="text-[9px] text-slate-500 uppercase tracking-widest block mb-2">LAYER LEGEND</span>
+          <div className="flex flex-wrap gap-2">
+            {legendItems.map(item => (
+              <div key={item.label} className="flex items-center space-x-1.5">
+                <div className={`w-2 h-2 rounded-full ${item.color}`} />
+                <span className="text-[9px] text-slate-400 font-sans">{item.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <ReactFlow
@@ -190,11 +344,32 @@ export default function ArchitectureTab() {
           nodeTypes={nodeTypes}
           onNodeClick={onNodeClick}
           fitView
-          minZoom={0.2}
-          maxZoom={1.5}
+          minZoom={0.1}
+          maxZoom={2}
         >
           <Background color="#1E293B" gap={20} size={1} />
           <Controls showInteractive={false} />
+          <MiniMap
+            nodeColor={(node: any) => {
+              const colors = node.data?.roleColors
+              if (!colors) return '#334155'
+              // Extract color from the accent class
+              if (colors.accent.includes('cyan')) return '#22d3ee'
+              if (colors.accent.includes('orange')) return '#f97316'
+              if (colors.accent.includes('purple')) return '#a855f7'
+              if (colors.accent.includes('green')) return '#4ade80'
+              if (colors.accent.includes('yellow')) return '#eab308'
+              if (colors.accent.includes('blue')) return '#3b82f6'
+              if (colors.accent.includes('indigo')) return '#6366f1'
+              return '#64748b'
+            }}
+            style={{ 
+              backgroundColor: '#0B1220',
+              borderRadius: '8px',
+              border: '1px solid #1e293b'
+            }}
+            maskColor="rgba(5, 7, 10, 0.7)"
+          />
         </ReactFlow>
       </div>
 
@@ -212,7 +387,7 @@ export default function ArchitectureTab() {
               {/* Header */}
               <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                 <div className="flex items-center space-x-2">
-                  <selectedNode.icon className="w-5 h-5 text-cyan-400 shrink-0" />
+                  <selectedNode.icon className={`w-5 h-5 ${(selectedNode.roleColors as any)?.text || 'text-cyan-400'} shrink-0`} />
                   <span className="font-bold text-white tracking-tight text-sm font-sans truncate">{selectedNode.label}</span>
                 </div>
                 <button 
@@ -231,7 +406,7 @@ export default function ArchitectureTab() {
                 </p>
                 {selectedNode.githubUrl && (
                   <a 
-                    href={selectedNode.githubUrl}
+                    href={selectedNode.githubUrl as string}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center space-x-2 mt-2 px-3 py-1.5 border border-slate-700 hover:border-cyan-400 hover:text-cyan-400 bg-slate-900 rounded-lg text-[10px] font-bold transition-colors"
@@ -249,7 +424,7 @@ export default function ArchitectureTab() {
                   {Object.entries(selectedNode.specifications).map(([key, val]) => (
                     <div key={key} className="flex flex-col border-b border-slate-900 pb-1.5 last:border-b-0 last:pb-0">
                       <span className="text-slate-500 mb-0.5">{key}:</span>
-                      <span className="text-cyan-400 font-semibold">{val}</span>
+                      <span className="text-cyan-400 font-semibold">{val as string}</span>
                     </div>
                   ))}
                 </div>

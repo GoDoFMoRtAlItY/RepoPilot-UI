@@ -1,0 +1,132 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useState, useEffect } from 'react'
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { Loader2, ArrowLeft, AlertCircle, FileCode, RefreshCw } from 'lucide-react'
+import { useRepoStore } from '../store/useRepoStore'
+import Navbar from './Navbar'
+import { getDetailedFileAnalysis } from '../lib/api'
+import ReactMarkdown from 'react-markdown'
+
+const loadingTexts = [
+  "Generating AI explanation...",
+  "Analyzing functions...",
+  "Preparing line-by-line walkthrough..."
+]
+
+export default function LineByLineAnalysis() {
+  const { owner, repo } = useParams()
+  const [searchParams] = useSearchParams()
+  const path = searchParams.get('path')
+  const sha = searchParams.get('sha')
+  const navigate = useNavigate()
+
+  const { aiKey } = useRepoStore()
+
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [analysis, setAnalysis] = useState<string | null>(null)
+  const [loadingTextIndex, setLoadingTextIndex] = useState(0)
+
+  useEffect(() => {
+    if (!loading) return;
+    const interval = setInterval(() => {
+      setLoadingTextIndex(prev => (prev + 1) % loadingTexts.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [loading]);
+
+  const fetchAnalysis = async () => {
+    if (!owner || !repo || !path || !sha) {
+      setError('Missing parameters for line-by-line analysis.')
+      setLoading(false)
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+    setAnalysis(null)
+    setLoadingTextIndex(0)
+
+    try {
+      const response = await getDetailedFileAnalysis(owner, repo, path, sha, aiKey || undefined)
+      setAnalysis(response.analysis)
+    } catch (err: any) {
+      console.error(err)
+      setError(err?.response?.data?.error || 'Unable to reach the analysis service. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchAnalysis()
+  }, [owner, repo, path, sha, aiKey])
+
+  return (
+    <div className="flex-grow flex min-h-screen overflow-hidden relative z-10 flex-col bg-[#05070A] text-slate-100 font-sans">
+      <Navbar onToggleMobileMenu={() => {}} />
+
+      <main className="flex-grow p-4 md:p-6 overflow-y-auto relative grid-bg">
+        <div className="absolute inset-0 scanlines opacity-5 pointer-events-none" />
+
+        <div className="max-w-4xl mx-auto space-y-6 relative z-10">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center space-x-2 text-slate-400 hover:text-cyan-400 text-xs font-mono transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>BACK TO EXPLORER</span>
+          </button>
+
+          <div className="glass-panel p-6 rounded-xl border border-slate-800 bg-slate-950/40 space-y-4">
+            <div className="flex items-center space-x-3 border-b border-slate-800 pb-4">
+              <FileCode className="w-6 h-6 text-cyan-400" />
+              <div>
+                <h1 className="text-xl font-bold text-white">{path?.split('/').pop()}</h1>
+                <p className="text-xs text-slate-500 font-mono">{path}</p>
+              </div>
+            </div>
+
+            {loading && (
+              <div className="flex flex-col items-center justify-center py-20 space-y-5">
+                <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
+                <motion.p
+                  key={loadingTextIndex}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -5 }}
+                  className="text-sm text-cyan-300 font-mono"
+                >
+                  {loadingTexts[loadingTextIndex]}
+                </motion.p>
+              </div>
+            )}
+
+            {error && !loading && (
+              <div className="p-8 bg-slate-900/50 border border-slate-800 rounded-xl flex flex-col items-center justify-center space-y-4">
+                <AlertCircle className="w-10 h-10 text-slate-500" />
+                <p className="text-slate-400 font-sans text-sm">{error}</p>
+                <button 
+                  onClick={fetchAnalysis}
+                  className="mt-2 flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>RETRY ANALYSIS</span>
+                </button>
+              </div>
+            )}
+
+            {analysis && !loading && !error && (
+              <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-800">
+                <ReactMarkdown>{analysis}</ReactMarkdown>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
+    </div>
+  )
+}

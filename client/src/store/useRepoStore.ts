@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from 'zustand'
-import { analyzeRepository, askAiQuestion } from '../lib/api'
+import { analyzeRepository, askAiQuestion, getAiSummary, getAiSecurityReview, getApiExplanation } from '../lib/api'
 
 // -- API Types (matching backend schema) --
 export interface RepoAnalysis {
+  sandboxEnvironment?: { dockerfile: string, dockerCompose: string };
   meta: {
     owner: string
     repo: string
@@ -17,6 +19,13 @@ export interface RepoAnalysis {
     totalFiles: number
     analyzedFiles: number
     projectType: string
+    architectureType: string
+    primaryTechStack: string[]
+    complexity: string
+    onboardingTime: string
+    projectMaturity: { check: string, status: string }[]
+    quickInsights: string[]
+    aiExecutiveSummary?: string
     oneLiner: string
   }
   entryPoint: {
@@ -42,14 +51,26 @@ export interface RepoAnalysis {
     githubUrl: string
   }[]
   routes: {
-    method: string
-    path: string
-    file: string
-    line: number
-    usesEnvVars: string[]
-    usesApis: string[]
-    githubUrl: string
+    method: string;
+    path: string;
+    file: string;
+    line: number;
+    controller?: string;
+    middleware: string[];
+    auth: string | null;
+    parameters: { type: string, name: string }[];
+    responseTypes: number[];
+    dbOperations: string[];
+    externalApis: string[];
+    complexity: string;
+    securityScore: number;
+    description?: string;
+    githubUrl: string;
+    usesEnvVars: string[];
+    usesApis: string[];
+    aiExplanation?: string;
   }[]
+  apiHealth: number;
   apis: {
     name: string
     package: string
@@ -63,6 +84,25 @@ export interface RepoAnalysis {
     role: string
     size: number
     githubUrl: string
+  }[]
+  files: {
+    path: string
+    filename: string
+    extension: string
+    role: string
+    imports: string[]
+    exports: string[]
+    functions: number
+    classes: number
+    routeCount: number
+    middlewareCount: number
+    linesOfCode: number
+    entryPoint: boolean
+    framework: string
+    description: string
+    size: number
+    sha: string
+    githubUrl: string | null
   }[]
   graph: {
     nodes: { id: string, type: string, label: string, file: string, line: number, githubUrl: string }[]
@@ -80,6 +120,16 @@ export interface RepoAnalysis {
     line: number
     githubUrl: string
   }[]
+  securityScore: number;
+  dependencySecurity: { severity: string; type: string; package: string; installedVersion: string; safeVersion: string; message: string; referenceLink: string; }[];
+  gitHygiene: { severity: string; type: string; message: string; file: string; matchedPattern: string; recommendation: string; }[];
+  missingFiles: { file: string; required: boolean; }[];
+  configSecurity: { feature: string; status: string; }[];
+  staticCodeAnalysis: { severity: string; type: string; message: string; file: string; line: number; codeSnippet: string; recommendation: string; githubUrl: string; }[];
+  envAudit: { variable: string; status: string; desc: string; }[];
+  bestPractices: { practice: string; status: string; }[];
+  securityRecommendations: string[];
+  aiSecurityReview?: string;
 }
 
 export interface ChatMessage {
@@ -103,12 +153,28 @@ interface RepoStore {
   searchQueryApis: string
   aiKey: string | null
   
+  // AI Summary State
+  aiSummary: string | null
+  isAiSummaryLoading: boolean
+  aiSummaryError: string | null
+  
+  // AI Security Review State
+  aiSecurityReview: string | null
+  isAiSecurityReviewLoading: boolean
+  aiSecurityReviewError: string | null
+  
+  // API Explanations State
+  apiExplanations: Record<string, { data: string | null, isLoading: boolean, error: string | null }>
+  
   // Actions
   setCurrentTab: (tab: string) => void
   setAiKey: (key: string) => void
   setSearchQueryFiles: (query: string) => void
   setSearchQueryApis: (query: string) => void
   analyzeRepo: (owner: string, repo: string, force?: boolean) => Promise<void>
+  fetchAiSummary: (owner: string, repo: string) => Promise<void>
+  fetchAiSecurityReview: (owner: string, repo: string) => Promise<void>
+  fetchApiExplanation: (owner: string, repo: string, path: string, method: string) => Promise<void>
   sendChatMessage: (text: string) => Promise<void>
 }
 
@@ -118,6 +184,13 @@ export const useRepoStore = create<RepoStore>((set, get) => ({
   isAnalyzing: false,
   error: null,
   analysis: null,
+  aiSummary: null,
+  isAiSummaryLoading: false,
+  aiSummaryError: null,
+  aiSecurityReview: null,
+  isAiSecurityReviewLoading: false,
+  aiSecurityReviewError: null,
+  apiExplanations: {},
   chatMessages: [
     {
       id: 'welcome',
@@ -147,6 +220,13 @@ export const useRepoStore = create<RepoStore>((set, get) => ({
       isAnalyzing: true, 
       error: null,
       analysis: null,
+      aiSummary: null,
+      isAiSummaryLoading: false,
+      aiSummaryError: null,
+      aiSecurityReview: null,
+      isAiSecurityReviewLoading: false,
+      aiSecurityReviewError: null,
+      apiExplanations: {},
       chatMessages: [
         {
           id: 'welcome2',
@@ -159,9 +239,26 @@ export const useRepoStore = create<RepoStore>((set, get) => ({
     
     try {
       const data = await analyzeRepository(owner, repo, force)
+      if (!data) {
+        set({
+          isAnalyzing: false,
+          error: 'Analysis completed but returned no data. The server may be experiencing issues.',
+          chatMessages: [
+            {
+              id: `error-null-${Date.now()}`,
+              sender: 'assistant',
+              text: `Analysis of **${owner}/${repo}** completed but no data was received. This may happen if the GitHub API rate limit is exhausted. Please wait a few minutes and try again.`,
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }
+          ]
+        })
+        return
+      }
+      const existingSummary = data?.summary?.aiExecutiveSummary || null
       set({ 
         analysis: data, 
         isAnalyzing: false,
+        aiSummary: existingSummary,
         chatMessages: [
           {
             id: `success-${Date.now()}`,
@@ -171,6 +268,10 @@ export const useRepoStore = create<RepoStore>((set, get) => ({
           }
         ]
       })
+
+      if (!existingSummary) {
+        get().fetchAiSummary(owner, repo)
+      }
     } catch (error: any) {
       set({ 
         isAnalyzing: false, 
@@ -184,6 +285,92 @@ export const useRepoStore = create<RepoStore>((set, get) => ({
           }
         ]
       })
+    }
+  },
+
+  fetchAiSummary: async (owner: string, repo: string) => {
+    set({ isAiSummaryLoading: true, aiSummaryError: null })
+    try {
+      const data = await getAiSummary(owner, repo, get().aiKey || undefined)
+      set({
+        aiSummary: data.aiExecutiveSummary,
+        isAiSummaryLoading: false
+      })
+      // Sync the nested summary inside the analysis object
+      set((state) => {
+        if (state.analysis) {
+          return {
+            analysis: {
+              ...state.analysis,
+              summary: {
+                ...state.analysis.summary,
+                aiExecutiveSummary: data.aiExecutiveSummary
+              }
+            }
+          }
+        }
+        return {}
+      })
+    } catch (error: any) {
+      set({
+        isAiSummaryLoading: false,
+        aiSummaryError: error?.message || 'Failed to load AI summary'
+      })
+    }
+  },
+
+  fetchAiSecurityReview: async (owner: string, repo: string) => {
+    set({ isAiSecurityReviewLoading: true, aiSecurityReviewError: null })
+    try {
+      const data = await getAiSecurityReview(owner, repo, get().aiKey || undefined)
+      set({
+        aiSecurityReview: data.aiSecurityReview,
+        isAiSecurityReviewLoading: false
+      })
+      // Sync the nested summary inside the analysis object
+      set((state) => {
+        if (state.analysis) {
+          return {
+            analysis: {
+              ...state.analysis,
+              aiSecurityReview: data.aiSecurityReview
+            }
+          }
+        }
+        return {}
+      })
+    } catch (error: any) {
+      set({
+        isAiSecurityReviewLoading: false,
+        aiSecurityReviewError: error?.message || 'Failed to load AI security review'
+      })
+    }
+  },
+
+  fetchApiExplanation: async (owner: string, repo: string, path: string, method: string) => {
+    const key = `${method}_${path}`
+    set((state) => ({
+      apiExplanations: {
+        ...state.apiExplanations,
+        [key]: { data: null, isLoading: true, error: null }
+      }
+    }))
+    try {
+      const data = await getApiExplanation(owner, repo, path, method, get().aiKey || undefined)
+      
+      set((state) => ({
+        apiExplanations: {
+          ...state.apiExplanations,
+          [key]: { data: data.aiExplanation, isLoading: false, error: null }
+        }
+      }))
+    } catch (error: any) {
+      set((state) => ({
+        apiExplanations: {
+          ...state.apiExplanations,
+          [key]: { data: null, isLoading: false, error: error?.message || 'Failed to load explanation' }
+        }
+      }))
     }
   },
 
@@ -220,7 +407,7 @@ export const useRepoStore = create<RepoStore>((set, get) => ({
       const errorMsg: ChatMessage = {
         id: `m_ai_err_${Date.now()}`,
         sender: 'assistant',
-        text: `Error contacting AI service: ${error.message}`,
+        text: `Error contacting AI service: ${error.response?.data?.error || error.message}`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
       set(state => ({ chatMessages: [...state.chatMessages, errorMsg] }))

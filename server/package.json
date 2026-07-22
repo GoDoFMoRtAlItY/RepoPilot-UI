@@ -7,6 +7,8 @@
     "test": "tests"
   },
   "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,7 +16,10 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@babel/parser": "^8.0.4",
+    "@babel/traverse": "^8.0.4",
     "@google/generative-ai": "^0.24.1",
+    "axios": "^1.18.1",
     "compression": "^1.8.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",

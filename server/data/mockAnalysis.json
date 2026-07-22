@@ -12,7 +12,25 @@
   "summary": {
     "totalFiles": 45,
     "analyzedFiles": 28,
-    "projectType": "Express.js API",
+    "projectType": "Express.js REST API",
+    "architectureType": "REST API",
+    "primaryTechStack": ["Express", "MongoDB", "Mongoose", "Passport.js", "JWT", "Helmet"],
+    "complexity": "Medium",
+    "onboardingTime": "20-30 minutes",
+    "projectMaturity": [
+      { "check": "README", "status": "Present" },
+      { "check": "Docker", "status": "Missing" },
+      { "check": "TypeScript", "status": "Missing" },
+      { "check": "Linting", "status": "Configured" },
+      { "check": "CI/CD", "status": "Missing" }
+    ],
+    "quickInsights": [
+      "Project contains 45 files with 8 mapped API routes.",
+      "4 environment variables detected.",
+      "Backend follows Express Router pattern.",
+      "Docker configuration is missing."
+    ],
+    "aiExecutiveSummary": "This repository contains an exemplary RealWorld backend API built using Node.js, Express, and Mongoose. It features modular routing, schema-based modeling, token-based authentication via Passport and jsonwebtoken, and comprehensive security policies using Helmet. The onboarding curve is low for standard Express architectures, but it is currently missing TypeScript and containerization features like Docker.",
     "oneLiner": "A production-ready Express API using MongoDB and JWT authentication, implementing the RealWorld specification."
   },
   "entryPoint": {
@@ -93,86 +111,182 @@
       "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/app.js#L45"
     }
   ],
+  "apiHealth": 88,
   "routes": [
     {
       "method": "POST",
       "path": "/users/login",
       "file": "routes/api/users.js",
       "line": 15,
-      "handlerName": null,
+      "controller": "UserController.login",
+      "middleware": ["validateLogin"],
+      "auth": null,
+      "parameters": [
+        { "type": "body", "name": "user.email" },
+        { "type": "body", "name": "user.password" }
+      ],
+      "responseTypes": [200, 422],
+      "dbOperations": ["Reads"],
+      "externalApis": [],
+      "complexity": "Simple",
+      "securityScore": 85,
+      "description": "Authenticates user credentials and issues a JWT token.",
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/users.js#L15",
       "usesEnvVars": [],
-      "usesApis": ["passport", "jsonwebtoken"],
-      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/users.js#L15"
+      "usesApis": ["passport", "jsonwebtoken"]
     },
     {
       "method": "POST",
       "path": "/users",
       "file": "routes/api/users.js",
       "line": 40,
-      "handlerName": null,
+      "controller": "UserController.register",
+      "middleware": ["validateRegister"],
+      "auth": null,
+      "parameters": [
+        { "type": "body", "name": "user.username" },
+        { "type": "body", "name": "user.email" },
+        { "type": "body", "name": "user.password" }
+      ],
+      "responseTypes": [201, 422],
+      "dbOperations": ["Creates", "Reads"],
+      "externalApis": [],
+      "complexity": "Medium",
+      "securityScore": 85,
+      "description": "Registers a new user account with hashed password and returns user profile.",
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/users.js#L40",
       "usesEnvVars": [],
-      "usesApis": ["mongoose"],
-      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/users.js#L40"
+      "usesApis": ["mongoose"]
     },
     {
       "method": "GET",
       "path": "/user",
       "file": "routes/api/users.js",
       "line": 55,
-      "handlerName": null,
+      "controller": "UserController.getCurrentUser",
+      "middleware": ["auth.required"],
+      "auth": "auth.required",
+      "parameters": [
+        { "type": "headers", "name": "Authorization" }
+      ],
+      "responseTypes": [200, 401],
+      "dbOperations": ["Reads"],
+      "externalApis": [],
+      "complexity": "Simple",
+      "securityScore": 100,
+      "description": "Gets currently logged in user profile using JWT token.",
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/users.js#L55",
       "usesEnvVars": [],
-      "usesApis": ["passport"],
-      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/users.js#L55"
+      "usesApis": ["passport"]
     },
     {
       "method": "PUT",
       "path": "/user",
       "file": "routes/api/users.js",
       "line": 64,
-      "handlerName": null,
+      "controller": "UserController.updateCurrentUser",
+      "middleware": ["auth.required"],
+      "auth": "auth.required",
+      "parameters": [
+        { "type": "body", "name": "user.email" },
+        { "type": "body", "name": "user.username" }
+      ],
+      "responseTypes": [200, 401, 422],
+      "dbOperations": ["Updates", "Reads"],
+      "externalApis": [],
+      "complexity": "Medium",
+      "securityScore": 100,
+      "description": "Updates current user profile details in the database.",
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/users.js#L64",
       "usesEnvVars": [],
-      "usesApis": ["passport"],
-      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/users.js#L64"
+      "usesApis": ["passport"]
     },
     {
       "method": "GET",
       "path": "/profiles/:username",
       "file": "routes/api/profiles.js",
       "line": 15,
-      "handlerName": null,
+      "controller": "ProfileController.getProfile",
+      "middleware": ["auth.optional"],
+      "auth": null,
+      "parameters": [
+        { "type": "params", "name": "username" }
+      ],
+      "responseTypes": [200, 404],
+      "dbOperations": ["Reads"],
+      "externalApis": [],
+      "complexity": "Simple",
+      "securityScore": 90,
+      "description": "Retrieve profile details of a user by username.",
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/profiles.js#L15",
       "usesEnvVars": [],
-      "usesApis": ["mongoose"],
-      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/profiles.js#L15"
+      "usesApis": ["mongoose"]
     },
     {
       "method": "GET",
       "path": "/articles",
       "file": "routes/api/articles.js",
       "line": 20,
-      "handlerName": null,
+      "controller": "ArticleController.listArticles",
+      "middleware": ["auth.optional"],
+      "auth": null,
+      "parameters": [
+        { "type": "query", "name": "tag" },
+        { "type": "query", "name": "author" },
+        { "type": "query", "name": "limit" }
+      ],
+      "responseTypes": [200],
+      "dbOperations": ["Reads"],
+      "externalApis": [],
+      "complexity": "Complex",
+      "securityScore": 90,
+      "description": "Query database for articles matching filter criteria.",
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/articles.js#L20",
       "usesEnvVars": [],
-      "usesApis": ["mongoose"],
-      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/articles.js#L20"
+      "usesApis": ["mongoose"]
     },
     {
       "method": "POST",
       "path": "/articles",
       "file": "routes/api/articles.js",
       "line": 85,
-      "handlerName": null,
+      "controller": "ArticleController.createArticle",
+      "middleware": ["auth.required", "validateArticle"],
+      "auth": "auth.required",
+      "parameters": [
+        { "type": "body", "name": "article.title" },
+        { "type": "body", "name": "article.body" }
+      ],
+      "responseTypes": [201, 401, 422],
+      "dbOperations": ["Creates"],
+      "externalApis": [],
+      "complexity": "Medium",
+      "securityScore": 100,
+      "description": "Creates a new article post and stores it in the database.",
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/articles.js#L85",
       "usesEnvVars": [],
-      "usesApis": ["mongoose"],
-      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/articles.js#L85"
+      "usesApis": ["mongoose"]
     },
     {
       "method": "DELETE",
       "path": "/articles/:article",
       "file": "routes/api/articles.js",
       "line": 155,
-      "handlerName": null,
+      "controller": "ArticleController.deleteArticle",
+      "middleware": ["auth.required"],
+      "auth": "auth.required",
+      "parameters": [
+        { "type": "params", "name": "article" }
+      ],
+      "responseTypes": [204, 401, 403, 404],
+      "dbOperations": ["Deletes", "Reads"],
+      "externalApis": [],
+      "complexity": "Simple",
+      "securityScore": 100,
+      "description": "Deletes an article by slug if user is the author.",
+      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/articles.js#L155",
       "usesEnvVars": [],
-      "usesApis": ["mongoose"],
-      "githubUrl": "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/routes/api/articles.js#L155"
+      "usesApis": ["mongoose"]
     }
   ],
   "apis": [

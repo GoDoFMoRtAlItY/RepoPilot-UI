@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { 
   ShieldCheck, 
   BarChart, 
@@ -21,9 +22,30 @@ import {
 } from 'recharts'
 
 import { useRepoStore } from '../store/useRepoStore'
+import RepositorySnapshot from './RepositorySnapshot'
 
 export default function OverviewTab() {
-  const { isAnalyzing, analysis } = useRepoStore()
+  const { isAnalyzing, analysis, error } = useRepoStore()
+  const navigate = useNavigate()
+
+  if (error) {
+    return (
+      <div className="glass-panel p-6 rounded-xl border border-rose-500/20 bg-rose-500/5 text-rose-400 font-sans space-y-3">
+        <h2 className="text-lg font-bold flex items-center space-x-2">
+          <ShieldCheck className="w-5 h-5 text-rose-500" />
+          <span>Repository Analysis Failed</span>
+        </h2>
+        <p className="text-sm font-mono text-slate-300 bg-slate-950/80 p-3 rounded border border-slate-800">{error}</p>
+        <p className="text-xs text-slate-400">Please verify that the repository is public and the URL is correct, or try again later.</p>
+        <button
+          onClick={() => navigate('/')}
+          className="mt-4 px-4 py-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 rounded-lg text-xs font-semibold tracking-wide transition-all border border-rose-500/30"
+        >
+          Try Another Repository
+        </button>
+      </div>
+    )
+  }
 
   if (isAnalyzing || !analysis) {
     return (
@@ -77,6 +99,8 @@ export default function OverviewTab() {
       transition={{ duration: 0.5 }}
       className="space-y-6 font-mono text-slate-300 text-left"
     >
+      <RepositorySnapshot />
+
       {/* Top Banner Dashboard Message */}
       <div className="glass-panel p-6 rounded-xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Neon blue ambient glow */}

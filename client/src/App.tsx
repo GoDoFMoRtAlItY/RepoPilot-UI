@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route, useNavigate, useParams } from 'react-router-dom'
+import { Routes, Route, useNavigate, useParams, Navigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRepoStore } from './store/useRepoStore'
 import HeroSection from './components/HeroSection'
@@ -15,7 +15,10 @@ import ApiRoutesTab from './components/ApiRoutesTab'
 import EnvVariablesTab from './components/EnvVariablesTab'
 import AiAssistantTab from './components/AiAssistantTab'
 import SecurityTab from './components/SecurityTab'
+import TechDebtTab from './components/TechDebtTab'
 import OnboardingScoreCard from './components/OnboardingScoreCard'
+import ReadmeGeneratorTab from './components/ReadmeGeneratorTab'
+import LineByLineAnalysis from './components/LineByLineAnalysis'
 import { Compass, Terminal, ShieldAlert } from 'lucide-react'
 import Lenis from 'lenis'
 
@@ -43,15 +46,18 @@ function LandingPage() {
 
   const handleAnalyzeRepoUrl = (url: string) => {
     let repoName = url.trim()
-    if (repoName.startsWith('https://github.com/')) {
-      repoName = repoName.replace('https://github.com/', '')
-    }
-    if (repoName.endsWith('.git')) {
-      repoName = repoName.substring(0, repoName.length - 4)
-    }
     
-    if (repoName) {
-      navigate(`/repo/${repoName}`)
+    // Remove protocol and www if present
+    repoName = repoName.replace(/^(https?:\/\/)?(www\.)?/, '')
+    // Remove github.com/ if present
+    repoName = repoName.replace(/^github\.com\//, '')
+    
+    const match = repoName.match(/^([^/]+)\/([^/]+)/)
+    
+    if (match) {
+      const owner = match[1]
+      const repo = match[2].replace(/\.git$/, '')
+      navigate(`/repo/${owner}/${repo}`)
     }
   }
 
@@ -111,7 +117,9 @@ function DashboardPage() {
       case 'APIs & Routes': return <ApiRoutesTab />
       case 'Env Variables': return <EnvVariablesTab />
       case 'Security Audit': return <SecurityTab />
+      case 'Tech Debt Radar': return <TechDebtTab />
       case 'Onboarding Score': return <OnboardingScoreCard />
+      case 'README Generator': return <ReadmeGeneratorTab />
       case 'AI Assistant': return <AiAssistantTab />
       default: return <OverviewTab />
     }
@@ -233,6 +241,8 @@ export default function App() {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/repo/:owner/:repo" element={<DashboardPage />} />
+            <Route path="/repo/:owner/:repo/analyze" element={<LineByLineAnalysis />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         )}
       </AnimatePresence>

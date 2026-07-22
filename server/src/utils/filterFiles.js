@@ -7,7 +7,10 @@ const IGNORED_DIRECTORIES = [
   '.next',
   '__pycache__',
   '.vscode',
-  '.idea'
+  '.idea',
+  'archive',
+  'vendor',
+  'assets'
 ];
 
 const IGNORED_FILES = [
@@ -44,38 +47,39 @@ const ALLOWED_EXTENSIONS = [
   '.ts',
   '.tsx',
   '.json',
-  '.env.example'
+  '.env.example',
+  // Multi-language support
+  '.py',     // Python
+  '.go',     // Go
+  '.rb',     // Ruby
+  '.java',   // Java
+  '.yaml',
+  '.yml',
+  '.toml',
+  '.md',
+  '.env'
 ];
 
 function isParseableFile(filePath, size = 0) {
-  // Skip large files (> 100KB)
-  if (size > 100 * 1024) return false;
+  // Skip oversized files (200 KB)
+  if (size > 200 * 1024) return false;
 
+  // Skip ignored directories
   const parts = filePath.split('/');
+  if (parts.some(part => IGNORED_DIRECTORIES.includes(part))) return false;
+
+  // Skip ignored filenames
   const fileName = parts[parts.length - 1];
-
-  // Check directories
-  for (const part of parts) {
-    if (IGNORED_DIRECTORIES.includes(part) || part.startsWith('.')) {
-      if (part !== '.env.example') return false; // Allow .env.example
-    }
-  }
-
-  // Check exact file names
   if (IGNORED_FILES.includes(fileName)) return false;
 
-  // Ensure it matches an allowed extension
-  const extMatch = fileName.match(/\.[0-9a-z]+$/i);
-  if (!extMatch) {
-    return fileName === '.env.example';
-  }
-  
-  const ext = extMatch[0].toLowerCase();
+  // Skip ignored extensions
+  if (IGNORED_EXTENSIONS.some(ext => filePath.endsWith(ext))) return false;
 
-  if (IGNORED_EXTENSIONS.includes(ext)) return false;
-  if (!ALLOWED_EXTENSIONS.includes(ext)) return false;
+  // Allow only known extensions + dotfiles like .env, .gitignore
+  const hasAllowedExt = ALLOWED_EXTENSIONS.some(ext => filePath.endsWith(ext));
+  const isDotFile = fileName.startsWith('.') && !fileName.includes('.min.');
 
-  return true;
+  return hasAllowedExt || isDotFile;
 }
 
 module.exports = {

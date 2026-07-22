@@ -3,11 +3,13 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
-require('dotenv').config();
+require('dotenv').config({ override: true });
 
 const analyzeRoutes = require('./routes/analyze');
 const chatRoutes = require('./routes/chat');
 const webhookRoutes = require('./routes/webhook');
+const readmeRoutes = require('./routes/readme');
+const explorerRoutes = require('./routes/explorer');
 
 const app = express();
 
@@ -24,6 +26,8 @@ app.use(express.json());
 app.use('/api/analyze', analyzeRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/webhook', webhookRoutes);
+app.use('/api/readme', readmeRoutes);
+app.use('/api/explorer', explorerRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -39,7 +43,11 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3001;
 
 if (require.main === module) {
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, (err) => {
+    if (err) {
+      console.error('Failed to start server:', err);
+      process.exit(1);
+    }
     console.log(`Server running on port ${PORT}`);
   });
 }

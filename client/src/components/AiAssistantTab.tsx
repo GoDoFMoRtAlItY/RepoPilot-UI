@@ -1,35 +1,124 @@
-import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { motion } from 'framer-motion'
 import { 
   MessageSquareCode, 
   Send, 
   Bot, 
   User, 
   Loader2, 
-  Copy, 
-  Check, 
-  Compass,
   ArrowRight,
   Key,
   Lock,
-  ExternalLink
+  ExternalLink,
+  Download,
+  Sparkles
 } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { useRepoStore } from '../store/useRepoStore'
 
+// Markdown renderer component for AI responses
+function MarkdownRenderer({ content }: { content: string }) {
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        code({ className, children, ...props }) {
+          const match = /language-(\w+)/.exec(className || '')
+          const codeString = String(children).replace(/\n$/, '')
+          
+          if (match) {
+            return (
+              <div className="relative group my-3 rounded-lg overflow-hidden">
+                <div className="flex items-center justify-between bg-slate-900 border border-slate-800 px-3 py-1.5 text-[9px] text-slate-500 font-mono uppercase tracking-widest">
+                  <span>{match[1]}</span>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(codeString)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-cyan-400"
+                  >
+                    Copy
+                  </button>
+                </div>
+                <SyntaxHighlighter
+                  style={oneDark}
+                  language={match[1]}
+                  PreTag="div"
+                  customStyle={{
+                    margin: 0,
+                    borderRadius: '0 0 8px 8px',
+                    fontSize: '11px',
+                    lineHeight: '1.6',
+                    padding: '14px',
+                    background: '#0d1117',
+                    border: '1px solid #1e293b',
+                    borderTop: 'none'
+                  }}
+                >
+                  {codeString}
+                </SyntaxHighlighter>
+              </div>
+            )
+          }
+          
+          return (
+            <code className="px-1.5 py-0.5 bg-slate-900 border border-slate-800 rounded text-cyan-400 text-[11px] font-mono" {...props}>
+              {children}
+            </code>
+          )
+        },
+        h1: ({ children }) => <h1 className="text-lg font-bold text-white mt-4 mb-2 font-sans">{children}</h1>,
+        h2: ({ children }) => <h2 className="text-base font-bold text-white mt-3 mb-2 font-sans">{children}</h2>,
+        h3: ({ children }) => <h3 className="text-sm font-bold text-slate-200 mt-3 mb-1.5 font-sans">{children}</h3>,
+        p: ({ children }) => <p className="text-xs leading-relaxed mb-2 last:mb-0">{children}</p>,
+        ul: ({ children }) => <ul className="list-disc list-inside space-y-1 text-xs mb-2 ml-1">{children}</ul>,
+        ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 text-xs mb-2 ml-1">{children}</ol>,
+        li: ({ children }) => <li className="text-xs leading-relaxed">{children}</li>,
+        a: ({ href, children }) => (
+          <a href={href} target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+            {children}
+          </a>
+        ),
+        blockquote: ({ children }) => (
+          <blockquote className="border-l-2 border-cyan-500/40 pl-3 my-2 text-slate-400 italic text-xs">
+            {children}
+          </blockquote>
+        ),
+        table: ({ children }) => (
+          <div className="overflow-x-auto my-3 rounded-lg border border-slate-800">
+            <table className="w-full text-xs">{children}</table>
+          </div>
+        ),
+        thead: ({ children }) => <thead className="bg-slate-900/80 text-slate-400">{children}</thead>,
+        th: ({ children }) => <th className="px-3 py-2 text-left font-semibold text-[10px] uppercase tracking-wider border-b border-slate-800">{children}</th>,
+        td: ({ children }) => <td className="px-3 py-2 border-b border-slate-900 text-slate-300">{children}</td>,
+        strong: ({ children }) => <strong className="font-bold text-white">{children}</strong>,
+        hr: () => <hr className="border-slate-800 my-3" />,
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  )
+}
+
 export default function AiAssistantTab() {
-  const { chatMessages, sendChatMessage, aiKey, setAiKey, isAnalyzing } = useRepoStore()
+  const { chatMessages, sendChatMessage, aiKey, setAiKey, isAnalyzing, analysis } = useRepoStore()
   const [inputText, setInputText] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null)
   
   const [tempKey, setTempKey] = useState('')
   
   const chatEndRef = useRef<HTMLDivElement>(null)
 
+  // Dynamic suggested questions based on the analyzed repo
   const suggestedQuestions = [
-    'How does authentication work?',
-    'Explain the database schema.',
-    'Where are the API routes defined?'
+    'How does authentication work in this project?',
+    'Explain the database schema and models.',
+    'Where are the API routes defined and how are they structured?',
+    `What does ${analysis?.entryPoint?.file || 'the entry point'} do?`,
+    'What are the main dependencies and why are they used?',
+    'How should I set up this project for local development?'
   ]
 
   // Scroll to bottom whenever messages update
@@ -61,55 +150,43 @@ export default function AiAssistantTab() {
     }
   }
 
-  if (!aiKey) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="h-full flex items-center justify-center font-mono p-4"
-      >
-        <div className="glass-panel p-8 rounded-2xl max-w-md w-full relative overflow-hidden text-center space-y-6">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-cyan-400 to-purple-500" />
-          
-          <div className="mx-auto w-16 h-16 bg-slate-900 border border-slate-800 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.15)]">
-            <Key className="w-8 h-8 text-cyan-400" />
-          </div>
+  // Export chat as markdown
+  const exportChat = useCallback(() => {
+    const repoName = analysis?.meta ? `${analysis.meta.owner}/${analysis.meta.repo}` : 'unknown'
+    const lines = [
+      `# RepoPilot Chat — ${repoName}`,
+      `_Exported on ${new Date().toLocaleString()}_\n`,
+      '---\n'
+    ]
+    
+    for (const msg of chatMessages) {
+      const sender = msg.sender === 'assistant' ? '🤖 **RepoPilot Mentor**' : '👤 **Developer**'
+      lines.push(`### ${sender} — ${msg.timestamp}`)
+      if (msg.mode) lines.push(`> Mode: ${msg.mode}`)
+      lines.push('')
+      lines.push(msg.text)
+      
+      if (msg.citations && msg.citations.length > 0) {
+        lines.push('\n**Sources:**')
+        for (const cite of msg.citations) {
+          lines.push(`- [${cite.file}${cite.line ? `:${cite.line}` : ''}](${cite.githubUrl})`)
+        }
+      }
+      lines.push('\n---\n')
+    }
+    
+    const blob = new Blob([lines.join('\n')], { type: 'text/markdown' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `repopilot-chat-${repoName.replace('/', '-')}.md`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }, [chatMessages, analysis])
 
-          <div className="space-y-2">
-            <h2 className="text-xl font-bold text-white font-sans">AI Mentor Authorization</h2>
-            <p className="text-xs text-slate-400 leading-relaxed font-sans">
-              To unlock the intelligent codebase assistant, please provide your Google Gemini API key. Keys are stored locally in your browser session.
-            </p>
-          </div>
 
-          <form onSubmit={handleSaveKey} className="space-y-4">
-            <div className="relative text-left">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-              <input
-                type="password"
-                value={tempKey}
-                onChange={(e) => setTempKey(e.target.value)}
-                placeholder="Paste your Gemini API key..."
-                className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-400 rounded-lg pl-10 pr-4 py-3 text-sm text-white placeholder-slate-600 outline-none transition-colors"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white text-sm font-bold rounded-lg transition-all active:scale-[0.98] shadow-lg shadow-cyan-500/20"
-            >
-              INITIALIZE AI CONNECTION
-            </button>
-          </form>
-          
-          <div className="text-[10px] text-slate-500 pt-4 border-t border-slate-800/80">
-            Don't have an API key? Get one from <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" className="text-cyan-400 hover:underline">Google AI Studio</a>.
-          </div>
-        </div>
-      </motion.div>
-    )
-  }
 
   return (
     <motion.div
@@ -128,12 +205,31 @@ export default function AiAssistantTab() {
           </div>
         </div>
         <div className="flex items-center space-x-3">
-          <button 
-            onClick={() => setAiKey('')} 
-            className="text-[9px] text-slate-500 hover:text-red-400 transition-colors uppercase border-b border-slate-700 hover:border-red-400/50 pb-0.5"
+          <button
+            onClick={exportChat}
+            className="flex items-center space-x-1.5 text-[9px] text-slate-400 hover:text-cyan-400 transition-colors uppercase border border-slate-800 hover:border-cyan-500/40 rounded-lg px-2.5 py-1.5 bg-slate-950 hover:bg-slate-900"
+            title="Export chat as markdown"
           >
-            Clear Key
+            <Download className="w-3 h-3" />
+            <span>Export</span>
           </button>
+          <button 
+            onClick={() => {
+              const key = window.prompt('Enter your Google Gemini API Key (Starts with AIzaSy...):');
+              if (key) setAiKey(key);
+            }} 
+            className="text-[9px] text-slate-500 hover:text-cyan-400 transition-colors uppercase border border-slate-700 hover:border-cyan-400/50 rounded-lg px-2.5 py-1.5 bg-slate-950"
+          >
+            Update API Key
+          </button>
+          {aiKey && (
+            <button 
+              onClick={() => setAiKey('')} 
+              className="text-[9px] text-slate-500 hover:text-red-400 transition-colors uppercase border-b border-slate-700 hover:border-red-400/50 pb-0.5"
+            >
+              Clear Key
+            </button>
+          )}
           <span className="inline-flex items-center space-x-1.5 text-[8px] bg-green-500/10 border border-green-500/20 text-green-400 px-2 py-0.5 rounded font-bold font-mono">
             <span>AI_AGENT_ONLINE</span>
           </span>
@@ -176,12 +272,16 @@ export default function AiAssistantTab() {
                   )}
                 </div>
                 
-                <div className={`p-4 rounded-xl text-xs leading-relaxed border font-sans ${
+                <div className={`p-4 rounded-xl border font-sans ${
                   isAi 
                     ? 'bg-[#0B1220]/75 border-slate-850/80 text-slate-200' 
                     : 'bg-blue-600/15 border-blue-500/30 text-white'
                 }`}>
-                  <p className="whitespace-pre-wrap">{msg.text}</p>
+                  {isAi ? (
+                    <MarkdownRenderer content={msg.text} />
+                  ) : (
+                    <p className="whitespace-pre-wrap text-xs leading-relaxed">{msg.text}</p>
+                  )}
 
                   {/* Citations */}
                   {msg.citations && msg.citations.length > 0 && (
@@ -203,8 +303,6 @@ export default function AiAssistantTab() {
                       </div>
                     </div>
                   )}
-
-                  {/* Attachment code block rendering (if we had it, but we render text) */}
                 </div>
               </div>
             </div>
@@ -231,7 +329,7 @@ export default function AiAssistantTab() {
       {chatMessages.length <= 2 && !isTyping && (
         <div className="shrink-0 mb-3 space-y-2">
           <div className="flex items-center space-x-1.5 text-[10px] text-slate-500">
-            <Compass className="w-3.5 h-3.5 text-cyan-500" />
+            <Sparkles className="w-3.5 h-3.5 text-cyan-500" />
             <span>SUGGESTED DISPATCH QUERIES:</span>
           </div>
           <div className="flex flex-wrap gap-2.5">
@@ -255,7 +353,7 @@ export default function AiAssistantTab() {
           type="text"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          placeholder={isAnalyzing ? "Waiting for analysis..." : "Ask AI technical mentor about files, code architectures, database schemas..."}
+          placeholder={isAnalyzing ? "Waiting for analysis..." : "Ask about files, architecture, database schemas, authentication flows..."}
           disabled={isTyping || isAnalyzing}
           className="w-full bg-slate-950 border border-slate-800 hover:border-slate-750 focus:border-cyan-400 rounded-xl pl-4 pr-14 py-3 text-xs md:text-sm text-slate-200 placeholder-slate-500 transition-all font-mono outline-none shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
         />

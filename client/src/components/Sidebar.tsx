@@ -10,7 +10,9 @@ import {
   X,
   Compass,
   Target,
-  ShieldAlert
+  ShieldAlert,
+  Activity,
+  FileText
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -29,7 +31,9 @@ const menuItems = [
   { name: 'APIs & Routes', icon: Terminal },
   { name: 'Env Variables', icon: KeyRound },
   { name: 'Security Audit', icon: ShieldAlert },
+  { name: 'Tech Debt Radar', icon: Activity },
   { name: 'Onboarding Score', icon: Target },
+  { name: 'README Generator', icon: FileText },
   { name: 'AI Assistant', icon: MessageSquareCode }
 ]
 

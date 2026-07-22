@@ -8,12 +8,7 @@ interface ConversationStep {
   code?: string
 }
 
-export default function AiPreviewSection() {
-  const [messages, setMessages] = useState<ConversationStep[]>([])
-  const [typing, setTyping] = useState(false)
-  const [copied, setCopied] = useState(false)
-
-  const mockCode = `// middleware/jwtAuth.js
+const mockCode = `// middleware/jwtAuth.js
 const jwt = require('jsonwebtoken');
 
 function jwtAuth(req, res, next) {
@@ -29,17 +24,22 @@ function jwtAuth(req, res, next) {
   });
 }`
 
-  const conversationSteps: ConversationStep[] = [
-    {
-      sender: 'user',
-      text: 'How does authentication work in this codebase?'
-    },
-    {
-      sender: 'assistant',
-      text: 'Authentication begins in routes/auth.js and is validated using jwtAuth middleware. Here is the active validation handler:',
-      code: mockCode
-    }
-  ]
+const conversationSteps: ConversationStep[] = [
+  {
+    sender: 'user',
+    text: 'How does authentication work in this codebase?'
+  },
+  {
+    sender: 'assistant',
+    text: 'Authentication begins in routes/auth.js and is validated using jwtAuth middleware. Here is the active validation handler:',
+    code: mockCode
+  }
+]
+
+export default function AiPreviewSection() {
+  const [messages, setMessages] = useState<ConversationStep[]>([])
+  const [typing, setTyping] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     let active = true

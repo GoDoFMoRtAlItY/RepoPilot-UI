@@ -15,10 +15,9 @@ interface NavbarProps {
 export default function Navbar({ onToggleMobileMenu }: NavbarProps) {
   const { 
     analyzedRepo, 
-    setAnalyzedRepo, 
-    isAnalyzing, 
-    analysisProgress, 
-    startAnalysis 
+    analyzeRepo,
+    isAnalyzing,
+    error
   } = useRepoStore()
 
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -62,7 +61,8 @@ export default function Navbar({ onToggleMobileMenu }: NavbarProps) {
                   <button
                     key={repo}
                     onClick={() => {
-                      setAnalyzedRepo(repo)
+                      const [owner, name] = repo.split('/')
+                      analyzeRepo(owner, name)
                       setDropdownOpen(false)
                     }}
                     className={`w-full text-left px-3.5 py-2.5 rounded-md text-xs font-sans tracking-wide transition-all text-slate-300 hover:text-white hover:bg-slate-900 flex items-center space-x-2 ${
@@ -89,7 +89,7 @@ export default function Navbar({ onToggleMobileMenu }: NavbarProps) {
             <span>PING: <span className="text-white">12ms</span></span>
           </div>
           <div>
-            <span>INTELLIGENCE: <span className="text-cyan-400">GPT-4o</span></span>
+            <span>INTELLIGENCE: <span className="text-cyan-400">OPENROUTER</span></span>
           </div>
         </div>
 
@@ -99,16 +99,27 @@ export default function Navbar({ onToggleMobileMenu }: NavbarProps) {
             <div className="flex items-center space-x-2">
               <RefreshCw className="w-3.5 h-3.5 text-cyan-400 animate-spin" />
               <span className="text-cyan-400 font-semibold tracking-wider animate-pulse">
-                INGESTING {analysisProgress}%
+                INGESTING...
               </span>
             </div>
           ) : (
             <div className="flex items-center space-x-3">
-              <span className="hidden md:inline-flex text-green-400 bg-green-500/10 border border-green-500/25 px-2 py-0.5 rounded text-[10px]">
-                SYNCED
-              </span>
+              {error ? (
+                <span className="hidden md:inline-flex text-rose-400 bg-rose-500/10 border border-rose-500/25 px-2 py-0.5 rounded text-[10px]">
+                  FAILED
+                </span>
+              ) : (
+                <span className="hidden md:inline-flex text-green-400 bg-green-500/10 border border-green-500/25 px-2 py-0.5 rounded text-[10px]">
+                  SYNCED
+                </span>
+              )}
               <button
-                onClick={startAnalysis}
+                onClick={() => {
+                  if (analyzedRepo) {
+                    const [owner, repo] = analyzedRepo.split('/')
+                    analyzeRepo(owner, repo, true)
+                  }
+                }}
                 className="flex items-center space-x-1.5 bg-slate-900 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-800 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition-all cursor-pointer text-xs"
               >
                 <RefreshCw className="w-3 h-3 text-cyan-400" />
