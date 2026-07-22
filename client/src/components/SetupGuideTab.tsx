@@ -298,7 +298,7 @@ export default function SetupGuideTab() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-6 font-mono text-slate-300 text-left pb-10"
+      className="space-y-6 font-mono text-[var(--text-primary)] text-left pb-10"
     >
       {/* Progress Card header */}
       <div className="glass-panel p-6 rounded-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
@@ -306,14 +306,14 @@ export default function SetupGuideTab() {
         <div className="absolute top-0 left-0 w-80 h-full bg-gradient-to-r from-blue-500/5 to-transparent pointer-events-none" />
         
         <div className="space-y-2 relative z-10 flex-1">
-          <div className="text-xs text-cyan-400 font-semibold uppercase flex items-center space-x-1.5">
+          <div className="text-xs text-cyan-600 dark:text-cyan-400 font-semibold uppercase flex items-center space-x-1.5">
             <ListTodo className="w-3.5 h-3.5" />
             <span>LOCAL ENV CONFIG CHECKLIST</span>
           </div>
-          <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight font-sans">
+          <h2 className="text-xl md:text-2xl font-bold text-[var(--text-primary)] tracking-tight font-sans">
             Environment Checklist
           </h2>
-          <p className="text-slate-400 text-xs md:text-sm font-sans max-w-xl">
+          <p className="text-[var(--text-secondary)] text-xs md:text-sm font-sans max-w-xl">
             Spin up database dependencies, install workspace packages, and launch local development sandboxes.
           </p>
         </div>
@@ -333,18 +333,18 @@ export default function SetupGuideTab() {
                 className="transition-all duration-700 ease-out"
               />
             </svg>
-            <span className="absolute text-xs font-bold text-white">{progressPercent}%</span>
+            <span className="absolute text-xs font-bold text-[var(--text-primary)]">{progressPercent}%</span>
           </div>
           <div className="text-xs">
-            <div className="text-slate-400 font-sans">COMPLETED STEPS</div>
-            <div className="text-sm font-bold text-cyan-400">{completedCount} of {totalCount} DONE</div>
+            <div className="text-[var(--text-secondary)] font-sans">COMPLETED STEPS</div>
+            <div className="text-sm font-bold text-cyan-600 dark:text-cyan-400">{completedCount} of {totalCount} DONE</div>
           </div>
         </div>
       </div>
 
       {/* OS Selector */}
       <div className="flex items-center space-x-3">
-        <span className="text-[10px] text-slate-500 uppercase tracking-widest">PLATFORM:</span>
+        <span className="text-[10px] text-[var(--text-secondary)] uppercase tracking-widest">PLATFORM:</span>
         {(['macOS', 'Linux', 'Windows'] as OSType[]).map(os => {
           const OsIcon = osIcons[os]
           return (
@@ -353,8 +353,8 @@ export default function SetupGuideTab() {
               onClick={() => setSelectedOS(os)}
               className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
                 selectedOS === os
-                  ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400'
-                  : 'bg-slate-950 border-slate-800 text-slate-500 hover:text-slate-300 hover:border-slate-700'
+                  ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-600 dark:text-cyan-400'
+                  : 'bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-color)]'
               }`}
             >
               <OsIcon className="w-3 h-3" />
@@ -369,18 +369,18 @@ export default function SetupGuideTab() {
         <div className="glass-panel rounded-xl overflow-hidden">
           <button
             onClick={() => setShowPrereqs(!showPrereqs)}
-            className="w-full p-4 md:p-5 flex items-center justify-between cursor-pointer hover:bg-slate-900/40 transition-colors"
+            className="w-full p-4 md:p-5 flex items-center justify-between cursor-pointer hover:bg-[var(--bg-secondary)] transition-colors"
           >
             <div className="flex items-center space-x-3">
               <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/25">
-                <Wrench className="w-4 h-4 text-amber-400" />
+                <Wrench className="w-4 h-4 text-amber-600 dark:text-amber-400" />
               </div>
               <div className="text-left">
-                <h3 className="font-sans font-bold text-sm text-white">Prerequisites</h3>
-                <p className="text-[10px] text-slate-500">{prerequisites.length} dependencies detected for this stack</p>
+                <h3 className="font-sans font-bold text-sm text-[var(--text-primary)]">Prerequisites</h3>
+                <p className="text-[10px] text-[var(--text-secondary)]">{prerequisites.length} dependencies detected for this stack</p>
               </div>
             </div>
-            {showPrereqs ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
+            {showPrereqs ? <ChevronUp className="w-4 h-4 text-[var(--text-secondary)]" /> : <ChevronDown className="w-4 h-4 text-[var(--text-secondary)]" />}
           </button>
           
           <AnimatePresence initial={false}>
@@ -394,13 +394,13 @@ export default function SetupGuideTab() {
               >
                 <div className="p-4 md:p-5 grid grid-cols-1 md:grid-cols-2 gap-3">
                   {prerequisites.map((prereq, i) => (
-                    <div key={i} className="bg-slate-950/60 border border-slate-800 rounded-lg p-3.5 space-y-2">
+                    <div key={i} className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg p-3.5 space-y-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                          <Package className="w-3.5 h-3.5 text-cyan-400" />
-                          <span className="text-xs font-bold text-white font-sans">{prereq.name}</span>
+                          <Package className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+                          <span className="text-xs font-bold text-[var(--text-primary)] font-sans">{prereq.name}</span>
                           {prereq.version && (
-                            <span className="text-[9px] text-slate-500">{prereq.version}</span>
+                            <span className="text-[9px] text-[var(--text-secondary)]">{prereq.version}</span>
                           )}
                         </div>
                         <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded border ${
@@ -411,9 +411,9 @@ export default function SetupGuideTab() {
                           {prereq.required ? 'REQUIRED' : 'RECOMMENDED'}
                         </span>
                       </div>
-                      <p className="text-[10px] text-slate-500 font-sans">{prereq.reason}</p>
-                      <div className="bg-slate-900 border border-slate-800 p-2 rounded text-[10px]">
-                        <code className="text-cyan-400">{prereq.installCmd[selectedOS]}</code>
+                      <p className="text-[10px] text-[var(--text-secondary)] font-sans">{prereq.reason}</p>
+                      <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] p-2 rounded text-[10px]">
+                        <code className="text-cyan-600 dark:text-cyan-400">{prereq.installCmd[selectedOS]}</code>
                       </div>
                     </div>
                   ))}
@@ -427,7 +427,7 @@ export default function SetupGuideTab() {
       {/* Checklist list */}
       <div className="space-y-4">
         {setupSteps.length === 0 ? (
-          <div className="glass-panel p-12 text-center rounded-xl text-slate-500 font-sans">
+          <div className="glass-panel p-12 text-center rounded-xl text-[var(--text-secondary)] font-sans">
             No setup steps generated for this repository.
           </div>
         ) : setupSteps.map((step, index) => {
@@ -447,7 +447,7 @@ export default function SetupGuideTab() {
               {/* Card Title Trigger header */}
               <div 
                 onClick={() => toggleExpand(step.order)}
-                className={`p-4 md:p-5 flex items-center justify-between cursor-pointer hover:bg-slate-900/40 select-none transition-colors duration-200 ${
+                className={`p-4 md:p-5 flex items-center justify-between cursor-pointer hover:bg-[var(--bg-secondary)] select-none transition-colors duration-200 ${
                   isRunning ? 'bg-blue-950/10' : ''
                 }`}
               >
@@ -457,9 +457,9 @@ export default function SetupGuideTab() {
                     {isSuccess ? (
                       <CheckCircle2 className="w-6 h-6 text-green-400 text-glow-cyan" />
                     ) : isRunning ? (
-                      <Loader2 className="w-6 h-6 text-cyan-400 animate-spin" />
+                      <Loader2 className="w-6 h-6 text-cyan-600 dark:text-cyan-400 animate-spin" />
                     ) : (
-                      <div className="w-6 h-6 rounded-full border-2 border-slate-700 flex items-center justify-center text-[10px] text-slate-500 font-bold font-mono">
+                      <div className="w-6 h-6 rounded-full border-2 border-[var(--border-color)] flex items-center justify-center text-[10px] text-[var(--text-secondary)] font-bold font-mono">
                         0{index + 1}
                       </div>
                     )}
@@ -468,11 +468,11 @@ export default function SetupGuideTab() {
                   {/* Text labels */}
                   <div className="min-w-0">
                     <h3 className={`font-sans font-bold text-sm md:text-base leading-snug truncate ${
-                      isSuccess ? 'text-slate-300 line-through decoration-slate-600' : 'text-white'
+                      isSuccess ? 'text-[var(--text-primary)] line-through decoration-slate-600' : 'text-[var(--text-primary)]'
                     }`}>
                       {step.title}
                     </h3>
-                    <p className="text-slate-400 font-sans text-xs mt-0.5 truncate hidden sm:block">
+                    <p className="text-[var(--text-secondary)] font-sans text-xs mt-0.5 truncate hidden sm:block">
                       {step.description}
                     </p>
                   </div>
@@ -487,15 +487,15 @@ export default function SetupGuideTab() {
                         e.stopPropagation()
                         runSetupStep(step.order)
                       }}
-                      className="px-3.5 py-1.5 bg-slate-900 border border-slate-700 hover:border-cyan-400/50 hover:text-white rounded text-[10px] md:text-xs text-slate-300 font-bold tracking-wider flex items-center space-x-1.5 transition-all active:scale-95 cursor-pointer"
+                      className="px-3.5 py-1.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-cyan-400/50 hover:text-[var(--text-primary)] rounded text-[10px] md:text-xs text-[var(--text-primary)] font-bold tracking-wider flex items-center space-x-1.5 transition-all active:scale-95 cursor-pointer"
                     >
-                      <Play className="w-3 h-3 text-cyan-400" />
+                      <Play className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
                       <span>RUN STEP</span>
                     </button>
                   )}
 
                   {isRunning && (
-                    <span className="text-[10px] text-cyan-400 tracking-wider font-semibold animate-pulse">
+                    <span className="text-[10px] text-cyan-600 dark:text-cyan-400 tracking-wider font-semibold animate-pulse">
                       EXECUTING...
                     </span>
                   )}
@@ -507,9 +507,9 @@ export default function SetupGuideTab() {
                   )}
 
                   {isExpanded ? (
-                    <ChevronUp className="w-4 h-4 text-slate-500" />
+                    <ChevronUp className="w-4 h-4 text-[var(--text-secondary)]" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-slate-500" />
+                    <ChevronDown className="w-4 h-4 text-[var(--text-secondary)]" />
                   )}
                 </div>
               </div>
@@ -522,18 +522,18 @@ export default function SetupGuideTab() {
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="border-t border-slate-900 bg-slate-950/90 font-mono text-xs overflow-hidden"
+                    className="border-t border-slate-900 bg-[var(--bg-primary)] font-mono text-xs overflow-hidden"
                   >
                     <div className="p-4 md:p-5 space-y-4">
                       {/* Code Execution Block */}
                       <div className="space-y-1.5">
-                        <div className="text-[9px] text-slate-500 uppercase tracking-widest">ONBOARD CMD</div>
-                        <div className="bg-slate-900 border border-slate-800 p-3 rounded-lg flex items-center justify-between text-slate-200">
-                          <code className="text-cyan-400">{step.command}</code>
+                        <div className="text-[9px] text-[var(--text-secondary)] uppercase tracking-widest">ONBOARD CMD</div>
+                        <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] p-3 rounded-lg flex items-center justify-between text-slate-200">
+                          <code className="text-cyan-600 dark:text-cyan-400">{step.command}</code>
                           {isPending && (
                             <button
                               onClick={() => runSetupStep(step.order)}
-                              className="text-cyan-400 hover:text-cyan-300 text-[10px] hover:underline"
+                              className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-300 text-[10px] hover:underline"
                             >
                               Run Command
                             </button>
@@ -549,17 +549,17 @@ export default function SetupGuideTab() {
 
                       {/* Log Console Output Block */}
                       <div className="space-y-1.5">
-                        <div className="text-[9px] text-slate-500 uppercase tracking-widest">CONSOLE OUTPUT</div>
-                        <div className="bg-slate-900 border border-slate-800 p-4 rounded-lg text-slate-400 font-mono text-[11px] leading-relaxed max-h-48 overflow-y-auto">
+                        <div className="text-[9px] text-[var(--text-secondary)] uppercase tracking-widest">CONSOLE OUTPUT</div>
+                        <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] p-4 rounded-lg text-[var(--text-secondary)] font-mono text-[11px] leading-relaxed max-h-48 overflow-y-auto">
                           {isRunning ? (
-                            <div className="flex items-center space-x-2 text-cyan-400">
+                            <div className="flex items-center space-x-2 text-cyan-600 dark:text-cyan-400">
                               <Loader2 className="w-3.5 h-3.5 animate-spin" />
                               <span className="animate-pulse">Executing command in local sandbox...</span>
                             </div>
                           ) : isSuccess ? (
                             <div className="space-y-1">
                               <span className="text-green-400 font-bold">$ {step.command}</span>
-                              <pre className="text-slate-300 whitespace-pre-wrap">Execution complete. Exit Code: 0 (SUCCESS).</pre>
+                              <pre className="text-[var(--text-primary)] whitespace-pre-wrap">Execution complete. Exit Code: 0 (SUCCESS).</pre>
                             </div>
                           ) : (
                             <span className="text-slate-600">Pending command dispatch execution logs.</span>
@@ -580,18 +580,18 @@ export default function SetupGuideTab() {
         <div className="glass-panel rounded-xl overflow-hidden border-amber-500/15">
           <button
             onClick={() => setShowTroubleshooting(!showTroubleshooting)}
-            className="w-full p-4 md:p-5 flex items-center justify-between cursor-pointer hover:bg-slate-900/40 transition-colors"
+            className="w-full p-4 md:p-5 flex items-center justify-between cursor-pointer hover:bg-[var(--bg-secondary)] transition-colors"
           >
             <div className="flex items-center space-x-3">
               <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/25">
-                <HelpCircle className="w-4 h-4 text-amber-400" />
+                <HelpCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
               </div>
               <div className="text-left">
-                <h3 className="font-sans font-bold text-sm text-white">Common Issues & Troubleshooting</h3>
-                <p className="text-[10px] text-slate-500">{troubleshootingTips.length} tips based on detected stack</p>
+                <h3 className="font-sans font-bold text-sm text-[var(--text-primary)]">Common Issues & Troubleshooting</h3>
+                <p className="text-[10px] text-[var(--text-secondary)]">{troubleshootingTips.length} tips based on detected stack</p>
               </div>
             </div>
-            {showTroubleshooting ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
+            {showTroubleshooting ? <ChevronUp className="w-4 h-4 text-[var(--text-secondary)]" /> : <ChevronDown className="w-4 h-4 text-[var(--text-secondary)]" />}
           </button>
           
           <AnimatePresence initial={false}>
@@ -605,19 +605,19 @@ export default function SetupGuideTab() {
               >
                 <div className="p-4 md:p-5 space-y-4">
                   {troubleshootingTips.map((tip, i) => (
-                    <div key={i} className="bg-slate-950/60 border border-slate-800 rounded-lg p-4 space-y-3">
+                    <div key={i} className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg p-4 space-y-3">
                       <div className="flex items-center space-x-2">
-                        <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                        <span className="text-xs font-bold text-white font-sans">{tip.title}</span>
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                        <span className="text-xs font-bold text-[var(--text-primary)] font-sans">{tip.title}</span>
                       </div>
                       <div className="space-y-2 text-[11px] font-sans">
                         <div>
                           <span className="text-[9px] text-red-400 uppercase tracking-widest font-mono block mb-1">PROBLEM</span>
-                          <p className="text-slate-400">{tip.problem}</p>
+                          <p className="text-[var(--text-secondary)]">{tip.problem}</p>
                         </div>
                         <div>
                           <span className="text-[9px] text-green-400 uppercase tracking-widest font-mono block mb-1">SOLUTION</span>
-                          <p className="text-slate-300">{tip.solution}</p>
+                          <p className="text-[var(--text-primary)]">{tip.solution}</p>
                         </div>
                       </div>
                     </div>
@@ -631,20 +631,20 @@ export default function SetupGuideTab() {
 
       {/* Docker Sandbox Integration section */}
       {analysis?.sandboxEnvironment && (
-        <div className="mt-8 pt-8 border-t border-slate-800/80">
+        <div className="mt-8 pt-8 border-t border-[var(--border-color)]">
           <div className="glass-panel p-6 rounded-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden border-blue-500/20 hover:border-blue-500/40 transition-colors">
             <div className="absolute top-0 left-0 w-80 h-full bg-gradient-to-r from-blue-500/5 to-transparent pointer-events-none" />
             
             <div className="space-y-2 relative z-10 flex-1">
-              <div className="text-xs text-blue-400 font-semibold uppercase flex items-center space-x-1.5">
+              <div className="text-xs text-blue-600 dark:text-blue-400 font-semibold uppercase flex items-center space-x-1.5">
                 <Box className="w-3.5 h-3.5" />
                 <span>SANDBOX ENVIRONMENT GENERATOR</span>
               </div>
-              <h2 className="text-xl font-bold text-white tracking-tight font-sans">
+              <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight font-sans">
                 1-Click Docker Sandbox
               </h2>
-              <p className="text-slate-400 text-xs md:text-sm font-sans max-w-xl leading-relaxed">
-                We've analyzed the stack and environment variables to automatically generate a <strong className="text-white">docker-compose.yml</strong> file. Get up and running in a completely isolated sandbox without polluting your local machine.
+              <p className="text-[var(--text-secondary)] text-xs md:text-sm font-sans max-w-xl leading-relaxed">
+                We've analyzed the stack and environment variables to automatically generate a <strong className="text-[var(--text-primary)]">docker-compose.yml</strong> file. Get up and running in a completely isolated sandbox without polluting your local machine.
               </p>
             </div>
 
@@ -658,7 +658,7 @@ export default function SetupGuideTab() {
                 className={`flex items-center space-x-2 px-5 py-3 rounded-lg font-bold text-sm transition-all shadow-lg active:scale-95 ${
                   dockerCopied 
                     ? 'bg-green-500/20 text-green-400 border border-green-500/40' 
-                    : 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white shadow-blue-500/20'
+                    : 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-[var(--text-primary)] shadow-blue-500/20'
                 }`}
               >
                 {dockerCopied ? (
@@ -679,7 +679,7 @@ export default function SetupGuideTab() {
       )}
 
       {/* Deployment Integration section */}
-      <div className="mt-8 pt-8 border-t border-slate-800/80">
+      <div className="mt-8 pt-8 border-t border-[var(--border-color)]">
         <div className="glass-panel p-6 rounded-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden border-orange-500/20 hover:border-orange-500/40 transition-colors">
           <div className="absolute top-0 left-0 w-80 h-full bg-gradient-to-r from-orange-500/5 to-transparent pointer-events-none" />
           
@@ -688,11 +688,11 @@ export default function SetupGuideTab() {
               <Webhook className="w-3.5 h-3.5" />
               <span>N8N AUTOMATION INTEGRATION</span>
             </div>
-            <h2 className="text-xl font-bold text-white tracking-tight font-sans">
+            <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight font-sans">
               Deployment Workflow
             </h2>
-            <p className="text-slate-400 text-xs md:text-sm font-sans max-w-xl leading-relaxed">
-              Generate a pre-configured <strong className="text-white">n8n</strong> workflow file to automate deployments and Continuous Integration for this repository. Import this directly into your n8n instance.
+            <p className="text-[var(--text-secondary)] text-xs md:text-sm font-sans max-w-xl leading-relaxed">
+              Generate a pre-configured <strong className="text-[var(--text-primary)]">n8n</strong> workflow file to automate deployments and Continuous Integration for this repository. Import this directly into your n8n instance.
             </p>
           </div>
 
@@ -702,7 +702,7 @@ export default function SetupGuideTab() {
               className={`flex items-center space-x-2 px-5 py-3 rounded-lg font-bold text-sm transition-all shadow-lg active:scale-95 ${
                 n8nDownloaded 
                   ? 'bg-green-500/20 text-green-400 border border-green-500/40' 
-                  : 'bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-500 hover:to-amber-400 text-white shadow-orange-500/20'
+                  : 'bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-500 hover:to-amber-400 text-[var(--text-primary)] shadow-orange-500/20'
               }`}
             >
               {n8nDownloaded ? (

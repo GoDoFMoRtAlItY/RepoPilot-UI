@@ -34,18 +34,18 @@ import { useRepoStore } from '../store/useRepoStore'
 
 // Role-based color palette for nodes
 const ROLE_COLORS: Record<string, { bg: string, border: string, accent: string, text: string, glow: string }> = {
-  'route':      { bg: 'bg-[#0a1628]', border: 'border-cyan-500/40',   accent: 'bg-cyan-400',   text: 'text-cyan-400',   glow: 'shadow-[0_0_8px_rgba(34,211,238,0.15)]' },
-  'controller': { bg: 'bg-[#0a1628]', border: 'border-cyan-500/40',   accent: 'bg-cyan-400',   text: 'text-cyan-400',   glow: 'shadow-[0_0_8px_rgba(34,211,238,0.15)]' },
+  'route':      { bg: 'bg-[#0a1628]', border: 'border-cyan-500/40',   accent: 'bg-cyan-400',   text: 'text-cyan-600 dark:text-cyan-400',   glow: 'shadow-[0_0_8px_rgba(34,211,238,0.15)]' },
+  'controller': { bg: 'bg-[#0a1628]', border: 'border-cyan-500/40',   accent: 'bg-cyan-400',   text: 'text-cyan-600 dark:text-cyan-400',   glow: 'shadow-[0_0_8px_rgba(34,211,238,0.15)]' },
   'middleware':  { bg: 'bg-[#1a0f28]', border: 'border-orange-500/40', accent: 'bg-orange-400', text: 'text-orange-400', glow: 'shadow-[0_0_8px_rgba(249,115,22,0.15)]' },
-  'model':      { bg: 'bg-[#0f1628]', border: 'border-purple-500/40', accent: 'bg-purple-400', text: 'text-purple-400', glow: 'shadow-[0_0_8px_rgba(168,85,247,0.15)]' },
+  'model':      { bg: 'bg-[#0f1628]', border: 'border-purple-500/40', accent: 'bg-purple-400', text: 'text-purple-600 dark:text-purple-400', glow: 'shadow-[0_0_8px_rgba(168,85,247,0.15)]' },
   'service':    { bg: 'bg-[#0f1a1a]', border: 'border-green-500/40',  accent: 'bg-green-400',  text: 'text-green-400',  glow: 'shadow-[0_0_8px_rgba(74,222,128,0.15)]' },
   'config':     { bg: 'bg-[#1a1a0f]', border: 'border-yellow-500/40', accent: 'bg-yellow-400', text: 'text-yellow-400', glow: 'shadow-[0_0_8px_rgba(250,204,21,0.15)]' },
-  'util':       { bg: 'bg-[#0B1220]', border: 'border-slate-500/40',  accent: 'bg-slate-400',  text: 'text-slate-400',  glow: '' },
-  'test':       { bg: 'bg-[#0B1220]', border: 'border-indigo-500/40', accent: 'bg-indigo-400', text: 'text-indigo-400', glow: '' },
-  'entry':      { bg: 'bg-[#0f1a28]', border: 'border-blue-500/50',   accent: 'bg-blue-400',   text: 'text-blue-400',   glow: 'shadow-[0_0_12px_rgba(59,130,246,0.25)]' },
-  'directory':  { bg: 'bg-[#0B1220]', border: 'border-slate-600/40',  accent: 'bg-slate-500',  text: 'text-slate-400',  glow: '' },
-  'system':     { bg: 'bg-[#0a1628]', border: 'border-blue-500/40',   accent: 'bg-blue-400',   text: 'text-blue-400',   glow: 'shadow-[0_0_8px_rgba(59,130,246,0.15)]' },
-  'default':    { bg: 'bg-[#0B1220]', border: 'border-slate-700/40',  accent: 'bg-cyan-400',   text: 'text-slate-300',  glow: '' },
+  'util':       { bg: 'bg-[#0B1220]', border: 'border-slate-500/40',  accent: 'bg-slate-400',  text: 'text-[var(--text-secondary)]',  glow: '' },
+  'test':       { bg: 'bg-[#0B1220]', border: 'border-indigo-500/40', accent: 'bg-indigo-400', text: 'text-indigo-600 dark:text-indigo-400', glow: '' },
+  'entry':      { bg: 'bg-[#0f1a28]', border: 'border-blue-500/50',   accent: 'bg-blue-400',   text: 'text-blue-600 dark:text-blue-400',   glow: 'shadow-[0_0_12px_rgba(59,130,246,0.25)]' },
+  'directory':  { bg: 'bg-[#0B1220]', border: 'border-slate-600/40',  accent: 'bg-slate-500',  text: 'text-[var(--text-secondary)]',  glow: '' },
+  'system':     { bg: 'bg-[#0a1628]', border: 'border-blue-500/40',   accent: 'bg-blue-400',   text: 'text-blue-600 dark:text-blue-400',   glow: 'shadow-[0_0_8px_rgba(59,130,246,0.15)]' },
+  'default':    { bg: 'bg-[#0B1220]', border: 'border-[var(--border-color)]',  accent: 'bg-cyan-400',   text: 'text-[var(--text-primary)]',  glow: '' },
 }
 
 // Get the appropriate icon for each node type
@@ -103,16 +103,16 @@ function HudNodeComponent({ data }: NodeProps<CustomNodeType>) {
       <div className={`absolute top-0 left-0 w-2.5 h-full ${colors.accent}`} />
       <div className="pl-2.5 space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-[8px] text-slate-500 font-mono tracking-widest truncate">{data.type.toUpperCase()}</span>
+          <span className="text-[8px] text-[var(--text-secondary)] font-mono tracking-widest truncate">{data.type.toUpperCase()}</span>
           <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] bg-green-500/10 border border-green-500/30 text-green-400 font-bold font-mono ml-2`}>
             {data.status}
           </span>
         </div>
         <div className="flex items-center space-x-2">
-          <div className="p-1.5 rounded bg-slate-950 border border-slate-800 shrink-0">
+          <div className="p-1.5 rounded bg-[var(--bg-primary)] border border-[var(--border-color)] shrink-0">
             <Icon className={`w-4 h-4 ${colors.text}`} />
           </div>
-          <span className="text-white font-sans font-bold text-xs tracking-wide truncate">{data.label}</span>
+          <span className="text-[var(--text-primary)] font-sans font-bold text-xs tracking-wide truncate">{data.label}</span>
         </div>
       </div>
       
@@ -282,18 +282,18 @@ export default function ArchitectureTab() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="h-[calc(100vh-120px)] flex gap-4 font-mono text-slate-300 relative select-none"
+      className="h-[calc(100vh-120px)] flex gap-4 font-mono text-[var(--text-primary)] relative select-none"
     >
       {/* Main flowchart canvas */}
-      <div className="flex-1 glass-panel rounded-xl overflow-hidden relative border-slate-800/80">
+      <div className="flex-1 glass-panel rounded-xl overflow-hidden relative border-[var(--border-color)]">
         {/* Top overlay: title + layout toggle */}
         <div className="absolute top-4 left-4 z-10 space-y-3">
-          <div className="bg-[#0B1220]/90 border border-slate-800 p-3 rounded-lg pointer-events-none">
-            <div className="text-xs text-cyan-400 font-semibold uppercase flex items-center space-x-1.5 font-mono">
+          <div className="bg-[#0B1220]/90 border border-[var(--border-color)] p-3 rounded-lg pointer-events-none">
+            <div className="text-xs text-cyan-600 dark:text-cyan-400 font-semibold uppercase flex items-center space-x-1.5 font-mono">
               <Workflow className="w-3.5 h-3.5" />
               <span>INTERACTIVE ARCHITECTURE SCHEMATIC</span>
             </div>
-            <p className="text-[10px] text-slate-400 font-sans max-w-sm mt-1">
+            <p className="text-[10px] text-[var(--text-secondary)] font-sans max-w-sm mt-1">
               Color-coded by architectural layer. Click nodes to inspect. Zoom/pan to navigate.
             </p>
           </div>
@@ -304,8 +304,8 @@ export default function ArchitectureTab() {
               onClick={() => setLayoutDirection('TB')}
               className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
                 layoutDirection === 'TB' 
-                  ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400' 
-                  : 'bg-slate-950 border-slate-800 text-slate-500 hover:text-slate-300'
+                  ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-600 dark:text-cyan-400' 
+                  : 'bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
               ↕ Vertical
@@ -314,8 +314,8 @@ export default function ArchitectureTab() {
               onClick={() => setLayoutDirection('LR')}
               className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
                 layoutDirection === 'LR' 
-                  ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400' 
-                  : 'bg-slate-950 border-slate-800 text-slate-500 hover:text-slate-300'
+                  ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-600 dark:text-cyan-400' 
+                  : 'bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
               ↔ Horizontal
@@ -324,13 +324,13 @@ export default function ArchitectureTab() {
         </div>
 
         {/* Legend overlay */}
-        <div className="absolute bottom-4 left-4 z-10 bg-[#0B1220]/90 border border-slate-800 p-3 rounded-lg">
-          <span className="text-[9px] text-slate-500 uppercase tracking-widest block mb-2">LAYER LEGEND</span>
+        <div className="absolute bottom-4 left-4 z-10 bg-[#0B1220]/90 border border-[var(--border-color)] p-3 rounded-lg">
+          <span className="text-[9px] text-[var(--text-secondary)] uppercase tracking-widest block mb-2">LAYER LEGEND</span>
           <div className="flex flex-wrap gap-2">
             {legendItems.map(item => (
               <div key={item.label} className="flex items-center space-x-1.5">
                 <div className={`w-2 h-2 rounded-full ${item.color}`} />
-                <span className="text-[9px] text-slate-400 font-sans">{item.label}</span>
+                <span className="text-[9px] text-[var(--text-secondary)] font-sans">{item.label}</span>
               </div>
             ))}
           </div>
@@ -385,14 +385,14 @@ export default function ArchitectureTab() {
           >
             <div className="space-y-6">
               {/* Header */}
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
                 <div className="flex items-center space-x-2">
-                  <selectedNode.icon className={`w-5 h-5 ${(selectedNode.roleColors as any)?.text || 'text-cyan-400'} shrink-0`} />
-                  <span className="font-bold text-white tracking-tight text-sm font-sans truncate">{selectedNode.label}</span>
+                  <selectedNode.icon className={`w-5 h-5 ${(selectedNode.roleColors as any)?.text || 'text-cyan-600 dark:text-cyan-400'} shrink-0`} />
+                  <span className="font-bold text-[var(--text-primary)] tracking-tight text-sm font-sans truncate">{selectedNode.label}</span>
                 </div>
                 <button 
                   onClick={() => setSelectedNode(null)}
-                  className="p-1 rounded bg-slate-950 hover:bg-slate-900 border border-slate-800/80 hover:border-slate-700 text-slate-400 hover:text-white cursor-pointer shrink-0 ml-2"
+                  className="p-1 rounded bg-[var(--bg-primary)] hover:bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer shrink-0 ml-2"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -400,8 +400,8 @@ export default function ArchitectureTab() {
 
               {/* Description */}
               <div className="space-y-1.5 font-sans">
-                <span className="text-[9px] text-slate-500 font-mono tracking-widest uppercase">MODULE DESCRIPTION</span>
-                <p className="text-slate-300 text-xs leading-relaxed">
+                <span className="text-[9px] text-[var(--text-secondary)] font-mono tracking-widest uppercase">MODULE DESCRIPTION</span>
+                <p className="text-[var(--text-primary)] text-xs leading-relaxed">
                   {selectedNode.details}
                 </p>
                 {selectedNode.githubUrl && (
@@ -409,7 +409,7 @@ export default function ArchitectureTab() {
                     href={selectedNode.githubUrl as string}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center space-x-2 mt-2 px-3 py-1.5 border border-slate-700 hover:border-cyan-400 hover:text-cyan-400 bg-slate-900 rounded-lg text-[10px] font-bold transition-colors"
+                    className="inline-flex items-center space-x-2 mt-2 px-3 py-1.5 border border-[var(--border-color)] hover:border-cyan-400 hover:text-cyan-600 dark:text-cyan-400 bg-[var(--bg-secondary)] rounded-lg text-[10px] font-bold transition-colors"
                   >
                     <span>View in GitHub</span>
                     <ExternalLink className="w-3 h-3" />
@@ -419,12 +419,12 @@ export default function ArchitectureTab() {
 
               {/* Detailed Specs list */}
               <div className="space-y-3 font-mono">
-                <span className="text-[9px] text-slate-500 tracking-widest uppercase">SPECIFICATION MATRIX</span>
-                <div className="bg-slate-950/60 border border-slate-850 p-3 rounded-lg space-y-2 text-[11px] overflow-hidden break-all">
+                <span className="text-[9px] text-[var(--text-secondary)] tracking-widest uppercase">SPECIFICATION MATRIX</span>
+                <div className="bg-[var(--bg-primary)] border border-slate-850 p-3 rounded-lg space-y-2 text-[11px] overflow-hidden break-all">
                   {Object.entries(selectedNode.specifications).map(([key, val]) => (
                     <div key={key} className="flex flex-col border-b border-slate-900 pb-1.5 last:border-b-0 last:pb-0">
-                      <span className="text-slate-500 mb-0.5">{key}:</span>
-                      <span className="text-cyan-400 font-semibold">{val as string}</span>
+                      <span className="text-[var(--text-secondary)] mb-0.5">{key}:</span>
+                      <span className="text-cyan-600 dark:text-cyan-400 font-semibold">{val as string}</span>
                     </div>
                   ))}
                 </div>
@@ -432,7 +432,7 @@ export default function ArchitectureTab() {
             </div>
 
             {/* Bottom System Sync Label */}
-            <div className="border-t border-slate-850 pt-4 flex items-center justify-between text-[10px] text-slate-500">
+            <div className="border-t border-slate-850 pt-4 flex items-center justify-between text-[10px] text-[var(--text-secondary)]">
               <span>SYS_DEPS: SYNCED</span>
               <span className="text-green-400 font-bold">ACTIVE</span>
             </div>

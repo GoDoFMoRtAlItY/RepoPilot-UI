@@ -92,11 +92,11 @@ export default function FeatureShowcase() {
 
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <h2 className="text-xs font-mono tracking-widest text-cyan-400 uppercase">SYS_CAPABILITIES</h2>
-          <h3 className="text-3xl md:text-4xl font-bold text-white tracking-tight font-sans">
+          <h2 className="text-xs font-mono tracking-widest text-cyan-600 dark:text-cyan-400 uppercase">SYS_CAPABILITIES</h2>
+          <h3 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] tracking-tight font-sans">
             Futuristic Command Modules
           </h3>
-          <p className="text-slate-400 max-w-xl mx-auto text-xs md:text-sm font-sans">
+          <p className="text-[var(--text-secondary)] max-w-xl mx-auto text-xs md:text-sm font-sans">
             Skip reading endless config setups and diving blindly into packages. RepoPilot compiles the developer blueprints for you.
           </p>
         </div>
@@ -124,27 +124,27 @@ export default function FeatureShowcase() {
               
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-lg bg-slate-950 border border-slate-850 flex items-center justify-center group-hover:border-cyan-400/50 transition-colors duration-300">
-                    <feature.icon className="w-5 h-5 text-cyan-400 group-hover:animate-pulse" />
+                  <div className="w-10 h-10 rounded-lg bg-[var(--bg-primary)] border border-slate-850 flex items-center justify-center group-hover:border-cyan-400/50 transition-colors duration-300">
+                    <feature.icon className="w-5 h-5 text-cyan-600 dark:text-cyan-400 group-hover:animate-pulse" />
                   </div>
                   {/* Status Indicator */}
-                  <span className="text-[8px] font-mono font-bold tracking-widest bg-cyan-500/10 border border-cyan-500/25 px-2 py-0.5 rounded text-cyan-400 animate-pulse">
+                  <span className="text-[8px] font-mono font-bold tracking-widest bg-cyan-500/10 border border-cyan-500/25 px-2 py-0.5 rounded text-cyan-600 dark:text-cyan-400 animate-pulse">
                     {feature.status}
                   </span>
                 </div>
                 
-                <h4 className="text-lg font-bold text-white tracking-tight group-hover:text-cyan-400 transition-colors duration-300 font-sans">
+                <h4 className="text-lg font-bold text-[var(--text-primary)] tracking-tight group-hover:text-cyan-600 dark:text-cyan-400 transition-colors duration-300 font-sans">
                   {feature.title}
                 </h4>
-                <p className="text-slate-400 text-xs md:text-sm leading-relaxed font-sans">
+                <p className="text-[var(--text-secondary)] text-xs md:text-sm leading-relaxed font-sans">
                   {feature.description}
                 </p>
               </div>
 
               {/* Laser dot technical graphics */}
-              <div className="mt-4 border-t border-slate-900 pt-3 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+              <div className="mt-4 border-t border-slate-900 pt-3 flex items-center justify-between text-[9px] text-[var(--text-secondary)] font-mono">
                 <span>SEC_INGEST: 100%</span>
-                <span className="text-[7px] text-cyan-400/40">● ● ● ●</span>
+                <span className="text-[7px] text-cyan-600 dark:text-cyan-400/40">● ● ● ●</span>
               </div>
 
               {/* HUD scanline overlay on hover */}

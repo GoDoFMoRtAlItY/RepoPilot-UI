@@ -32,7 +32,7 @@ function categorizeEnvVar(name: string): { category: string, icon: typeof Databa
     return {
       category: 'Database',
       icon: Database,
-      color: 'text-purple-400 bg-purple-500/10 border-purple-500/25',
+      color: 'text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/25',
       description: inferDescription(name, 'database')
     }
   }
@@ -44,7 +44,7 @@ function categorizeEnvVar(name: string): { category: string, icon: typeof Databa
     return {
       category: 'Auth & Security',
       icon: Shield,
-      color: 'text-rose-400 bg-rose-500/10 border-rose-500/25',
+      color: 'text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/25',
       description: inferDescription(name, 'auth')
     }
   }
@@ -56,7 +56,7 @@ function categorizeEnvVar(name: string): { category: string, icon: typeof Databa
     return {
       category: 'API Keys',
       icon: Zap,
-      color: 'text-amber-400 bg-amber-500/10 border-amber-500/25',
+      color: 'text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/25',
       description: inferDescription(name, 'api')
     }
   }
@@ -68,7 +68,7 @@ function categorizeEnvVar(name: string): { category: string, icon: typeof Databa
     return {
       category: 'Server Config',
       icon: Layers,
-      color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/25',
+      color: 'text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 border-cyan-500/25',
       description: inferDescription(name, 'server')
     }
   }
@@ -87,7 +87,7 @@ function categorizeEnvVar(name: string): { category: string, icon: typeof Databa
   return {
     category: 'Other',
     icon: FileCode,
-    color: 'text-slate-400 bg-slate-500/10 border-slate-500/25',
+    color: 'text-[var(--text-secondary)] bg-slate-500/10 border-slate-500/25',
     description: inferDescription(name, 'other')
   }
 }
@@ -295,20 +295,20 @@ export default function EnvVariablesTab() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-6 font-mono text-slate-300 text-left"
+      className="space-y-6 font-mono text-[var(--text-primary)] text-left"
     >
       {/* HUD Header */}
       <div className="glass-panel p-6 rounded-xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="absolute top-0 left-0 w-80 h-full bg-gradient-to-r from-blue-500/5 to-transparent pointer-events-none" />
         <div className="space-y-2 relative z-10">
-          <div className="text-xs text-cyan-400 font-semibold uppercase flex items-center space-x-1.5">
+          <div className="text-xs text-cyan-600 dark:text-cyan-400 font-semibold uppercase flex items-center space-x-1.5">
             <KeyRound className="w-3.5 h-3.5" />
             <span>WORKSPACE ENVIRONMENT VARIABLE SCHEMAS</span>
           </div>
-          <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight font-sans">
+          <h2 className="text-xl md:text-2xl font-bold text-[var(--text-primary)] tracking-tight font-sans">
             Environment Variables
           </h2>
-          <p className="text-slate-400 text-xs md:text-sm font-sans max-w-xl">
+          <p className="text-[var(--text-secondary)] text-xs md:text-sm font-sans max-w-xl">
             {envVariables.length} variables detected across {Object.keys(categoryCounts).length} categories. {requiredCount} required, {leakedCount > 0 ? `⚠️ ${leakedCount} potential secret leaks detected.` : 'no secret leaks detected.'}
           </p>
         </div>
@@ -316,7 +316,7 @@ export default function EnvVariablesTab() {
         <div className="flex items-center space-x-3 relative z-10 shrink-0">
           <button
             onClick={downloadEnvFile}
-            className="flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white text-xs font-bold rounded-lg transition-all active:scale-95 shadow-lg shadow-cyan-500/20"
+            className="flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-[var(--text-primary)] text-xs font-bold rounded-lg transition-all active:scale-95 shadow-lg shadow-cyan-500/20"
           >
             <Download className="w-3.5 h-3.5" />
             <span>DOWNLOAD .env</span>
@@ -328,13 +328,13 @@ export default function EnvVariablesTab() {
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
         {/* Search */}
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-secondary)]" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search variables..."
-            className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-400 rounded-lg pl-9 pr-4 py-2 text-xs text-white placeholder-slate-600 outline-none transition-colors font-mono"
+            className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] focus:border-cyan-400 rounded-lg pl-9 pr-4 py-2 text-xs text-[var(--text-primary)] placeholder-slate-600 outline-none transition-colors font-mono"
           />
         </div>
         
@@ -344,8 +344,8 @@ export default function EnvVariablesTab() {
             onClick={() => setSelectedCategory(null)}
             className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border transition-all ${
               !selectedCategory 
-                ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400' 
-                : 'bg-slate-950 border-slate-800 text-slate-500 hover:text-slate-300 hover:border-slate-700'
+                ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-600 dark:text-cyan-400' 
+                : 'bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-color)]'
             }`}
           >
             All ({envVariables.length})
@@ -356,8 +356,8 @@ export default function EnvVariablesTab() {
               onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border transition-all ${
                 selectedCategory === cat 
-                  ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400' 
-                  : 'bg-slate-950 border-slate-800 text-slate-500 hover:text-slate-300 hover:border-slate-700'
+                  ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-600 dark:text-cyan-400' 
+                  : 'bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-color)]'
               }`}
             >
               {cat} ({count})
@@ -372,9 +372,9 @@ export default function EnvVariablesTab() {
           <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
           <div className="space-y-1">
             <h3 className="text-sm font-bold text-red-400 font-sans">⚠️ Potential Secret Leak Detected</h3>
-            <p className="text-xs text-slate-400 font-sans">
+            <p className="text-xs text-[var(--text-secondary)] font-sans">
               {leakedCount} environment variable{leakedCount > 1 ? 's' : ''} appear to contain real credentials in the source code. 
-              Ensure these values are not committed to version control. Add them to <code className="text-cyan-400">.gitignore</code>.
+              Ensure these values are not committed to version control. Add them to <code className="text-cyan-600 dark:text-cyan-400">.gitignore</code>.
             </p>
           </div>
         </div>
@@ -418,14 +418,14 @@ export default function EnvVariablesTab() {
                 {/* Variable name */}
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center space-x-2 min-w-0">
-                    <Lock className="w-4 h-4 text-cyan-400 shrink-0" />
-                    <code className="text-white text-xs md:text-sm font-bold truncate block">
+                    <Lock className="w-4 h-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
+                    <code className="text-[var(--text-primary)] text-xs md:text-sm font-bold truncate block">
                       {variable.name}
                     </code>
                   </div>
                   <button
                     onClick={() => copyToClipboard(variable.name)}
-                    className="p-1 rounded bg-slate-950 hover:bg-slate-900 border border-slate-800 text-slate-500 hover:text-cyan-400 cursor-pointer transition-colors"
+                    className="p-1 rounded bg-[var(--bg-primary)] hover:bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-cyan-600 dark:text-cyan-400 cursor-pointer transition-colors"
                     title="Copy variable name"
                   >
                     {isCopied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -433,14 +433,14 @@ export default function EnvVariablesTab() {
                 </div>
 
                 {/* AI Description */}
-                <p className="text-slate-400 font-sans text-xs leading-relaxed">
+                <p className="text-[var(--text-secondary)] font-sans text-xs leading-relaxed">
                   {variable.aiDescription}
                 </p>
 
                 {/* Default value preview */}
                 <div className="space-y-1">
-                  <div className="text-[8px] text-slate-500 uppercase tracking-widest">DEFAULT VALUE</div>
-                  <div className="bg-slate-950 border border-slate-900 p-2.5 rounded text-[11px] text-slate-300 truncate">
+                  <div className="text-[8px] text-[var(--text-secondary)] uppercase tracking-widest">DEFAULT VALUE</div>
+                  <div className="bg-[var(--bg-primary)] border border-slate-900 p-2.5 rounded text-[11px] text-[var(--text-primary)] truncate">
                     {variable.defaultValue ? (
                       <code className={variable.isLeaked ? 'text-red-400' : ''}>{variable.defaultValue}</code>
                     ) : (
@@ -451,12 +451,12 @@ export default function EnvVariablesTab() {
 
                 {/* Source file link */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] text-slate-500 truncate">
+                  <span className="text-[9px] text-[var(--text-secondary)] truncate">
                     📄 {variable.file}:{variable.line}
                   </span>
                   <button
                     onClick={() => setExpandedVar(isExpanded ? null : variable.name)}
-                    className="text-[9px] text-slate-500 hover:text-cyan-400 transition-colors flex items-center space-x-1"
+                    className="text-[9px] text-[var(--text-secondary)] hover:text-cyan-600 dark:text-cyan-400 transition-colors flex items-center space-x-1"
                   >
                     <span>DETAILS</span>
                     {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
@@ -474,14 +474,14 @@ export default function EnvVariablesTab() {
                     transition={{ duration: 0.2 }}
                     className="border-t border-slate-900 overflow-hidden"
                   >
-                    <div className="p-4 space-y-3 bg-slate-950/50">
+                    <div className="p-4 space-y-3 bg-[var(--bg-primary)]">
                       {/* Cross-references */}
                       {variable.usedInRoutes.length > 0 && (
                         <div className="space-y-1.5">
-                          <span className="text-[9px] text-slate-500 uppercase tracking-widest">USED IN ROUTES</span>
+                          <span className="text-[9px] text-[var(--text-secondary)] uppercase tracking-widest">USED IN ROUTES</span>
                           <div className="flex flex-wrap gap-1.5">
                             {variable.usedInRoutes.map((route, i) => (
-                              <span key={i} className="px-2 py-1 bg-blue-500/10 border border-blue-500/20 rounded text-[10px] text-blue-400 font-mono">
+                              <span key={i} className="px-2 py-1 bg-blue-500/10 border border-blue-500/20 rounded text-[10px] text-blue-600 dark:text-blue-400 font-mono">
                                 {route}
                               </span>
                             ))}
@@ -495,7 +495,7 @@ export default function EnvVariablesTab() {
                           href={variable.githubUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center space-x-2 px-3 py-1.5 border border-slate-700 hover:border-cyan-400 hover:text-cyan-400 bg-slate-900 rounded-lg text-[10px] font-bold transition-colors"
+                          className="inline-flex items-center space-x-2 px-3 py-1.5 border border-[var(--border-color)] hover:border-cyan-400 hover:text-cyan-600 dark:text-cyan-400 bg-[var(--bg-secondary)] rounded-lg text-[10px] font-bold transition-colors"
                         >
                           <span>View in GitHub</span>
                           <ExternalLink className="w-3 h-3" />
@@ -511,13 +511,13 @@ export default function EnvVariablesTab() {
       </div>
 
       {envVariables.length === 0 && (
-        <div className="glass-panel p-12 text-center rounded-xl text-slate-500 font-sans">
+        <div className="glass-panel p-12 text-center rounded-xl text-[var(--text-secondary)] font-sans">
           No environment variables detected in the repository AST.
         </div>
       )}
 
       {filteredVars.length === 0 && envVariables.length > 0 && (
-        <div className="glass-panel p-8 text-center rounded-xl text-slate-500 font-sans text-sm">
+        <div className="glass-panel p-8 text-center rounded-xl text-[var(--text-secondary)] font-sans text-sm">
           No variables match your current filter. Try adjusting your search or category filter.
         </div>
       )}
@@ -525,29 +525,29 @@ export default function EnvVariablesTab() {
       {/* Generated .env.example preview */}
       {envVariables.length > 0 && (
         <div className="glass-panel p-5 rounded-xl space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <span className="font-semibold text-sm text-white font-sans">Generated .env.example</span>
+          <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
+            <span className="font-semibold text-sm text-[var(--text-primary)] font-sans">Generated .env.example</span>
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => {
                   const text = envVariables.map(v => `# ${v.aiDescription}\n${v.name}=${v.defaultValue || ''}`).join('\n\n')
                   copyToClipboard(text, 'env_full')
                 }}
-                className="flex items-center space-x-1 px-3 py-1 bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-cyan-400 text-[10px] text-slate-400 hover:text-white rounded transition-colors cursor-pointer"
+                className="flex items-center space-x-1 px-3 py-1 bg-[var(--bg-primary)] hover:bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-cyan-400 text-[10px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded transition-colors cursor-pointer"
               >
                 {copiedKey === 'env_full' ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
                 <span>{copiedKey === 'env_full' ? 'COPIED' : 'COPY ALL'}</span>
               </button>
               <button
                 onClick={downloadEnvFile}
-                className="flex items-center space-x-1 px-3 py-1 bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-cyan-400 text-[10px] text-slate-400 hover:text-white rounded transition-colors cursor-pointer"
+                className="flex items-center space-x-1 px-3 py-1 bg-[var(--bg-primary)] hover:bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-cyan-400 text-[10px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded transition-colors cursor-pointer"
               >
                 <Download className="w-3 h-3" />
                 <span>DOWNLOAD</span>
               </button>
             </div>
           </div>
-          <pre className="bg-slate-950 border border-slate-900 p-4 rounded-lg text-cyan-400/80 text-[10px] md:text-[11px] overflow-x-auto whitespace-pre leading-relaxed select-text max-h-96 overflow-y-auto">
+          <pre className="bg-[var(--bg-primary)] border border-slate-900 p-4 rounded-lg text-cyan-600 dark:text-cyan-400/80 text-[10px] md:text-[11px] overflow-x-auto whitespace-pre leading-relaxed select-text max-h-96 overflow-y-auto">
 {envVariables.map(v => `# ${v.aiDescription}${v.required ? ' (REQUIRED)' : ''}\n${v.name}=${v.defaultValue || ''}`).join('\n\n')}
           </pre>
         </div>

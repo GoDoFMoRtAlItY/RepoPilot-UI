@@ -30,13 +30,13 @@ export default function OverviewTab() {
 
   if (error) {
     return (
-      <div className="glass-panel p-6 rounded-xl border border-rose-500/20 bg-rose-500/5 text-rose-400 font-sans space-y-3">
+      <div className="glass-panel p-6 rounded-xl border border-rose-500/20 bg-rose-500/5 text-rose-600 dark:text-rose-400 font-sans space-y-3">
         <h2 className="text-lg font-bold flex items-center space-x-2">
           <ShieldCheck className="w-5 h-5 text-rose-500" />
           <span>Repository Analysis Failed</span>
         </h2>
-        <p className="text-sm font-mono text-slate-300 bg-slate-950/80 p-3 rounded border border-slate-800">{error}</p>
-        <p className="text-xs text-slate-400">Please verify that the repository is public and the URL is correct, or try again later.</p>
+        <p className="text-sm font-mono text-[var(--text-primary)] bg-[var(--bg-secondary)] p-3 rounded border border-[var(--border-color)]">{error}</p>
+        <p className="text-xs text-[var(--text-secondary)]">Please verify that the repository is public and the URL is correct, or try again later.</p>
         <button
           onClick={() => navigate('/')}
           className="mt-4 px-4 py-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 rounded-lg text-xs font-semibold tracking-wide transition-all border border-rose-500/30"
@@ -49,14 +49,14 @@ export default function OverviewTab() {
 
   if (isAnalyzing || !analysis) {
     return (
-      <div className="space-y-6 font-mono text-slate-300 text-left animate-pulse">
+      <div className="space-y-6 font-mono text-[var(--text-primary)] text-left animate-pulse">
         {/* Skeleton content */}
-        <div className="glass-panel p-6 rounded-xl relative overflow-hidden bg-slate-950/20 h-36 flex flex-col justify-between">
+        <div className="glass-panel p-6 rounded-xl relative overflow-hidden h-36 flex flex-col justify-between">
           <div className="space-y-2">
-            <div className="h-3.5 w-1/4 bg-slate-900 rounded skeleton-box" />
-            <div className="h-6 w-1/3 bg-slate-900 rounded skeleton-box" />
+            <div className="h-3.5 w-1/4 bg-[var(--bg-secondary)] rounded skeleton-box" />
+            <div className="h-6 w-1/3 bg-[var(--bg-secondary)] rounded skeleton-box" />
           </div>
-          <div className="h-3.5 w-2/3 bg-slate-900 rounded skeleton-box" />
+          <div className="h-3.5 w-2/3 bg-[var(--bg-secondary)] rounded skeleton-box" />
         </div>
       </div>
     )
@@ -81,13 +81,13 @@ export default function OverviewTab() {
 
   const stackData = analysis.apis.slice(0, 12).map((api, i) => {
     const colors = [
-      'border-cyan-500 text-cyan-400',
-      'border-blue-500 text-blue-400',
-      'border-indigo-500 text-indigo-400',
+      'border-cyan-500 text-cyan-600 dark:text-cyan-400',
+      'border-blue-500 text-blue-600 dark:text-blue-400',
+      'border-indigo-500 text-indigo-600 dark:text-indigo-400',
       'border-green-500 text-green-400',
-      'border-purple-500 text-purple-400',
+      'border-purple-500 text-purple-600 dark:text-purple-400',
       'border-orange-500 text-orange-400',
-      'border-rose-500 text-rose-400'
+      'border-rose-500 text-rose-600 dark:text-rose-400'
     ];
     return { name: api.name || api.package, type: api.category || 'Dependency', color: colors[i % colors.length] };
   });
@@ -97,30 +97,30 @@ export default function OverviewTab() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-6 font-mono text-slate-300 text-left"
+      className="space-y-6 font-mono text-[var(--text-primary)] text-left"
     >
       <RepositorySnapshot />
 
       {/* Top Banner Dashboard Message */}
       <div className="glass-panel p-6 rounded-xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Neon blue ambient glow */}
-        <div className="absolute top-0 right-0 w-80 h-full bg-gradient-to-l from-blue-500/5 to-transparent pointer-events-none" />
+        <div className="absolute top-0 right-0 w-80 h-full bg-gradient-to-l from-[var(--accent-primary)]/10 to-transparent pointer-events-none" />
         <div className="space-y-2 relative z-10">
-          <div className="text-xs text-cyan-400 font-semibold uppercase flex items-center space-x-1.5">
+          <div className="text-xs text-[var(--accent-primary)] font-semibold uppercase flex items-center space-x-1.5">
             <Cpu className="w-3.5 h-3.5" />
             <span>AI ANALYSIS DISPATCHED</span>
           </div>
-          <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight font-sans">
+          <h2 className="text-xl md:text-2xl font-bold text-[var(--text-primary)] tracking-tight font-sans">
             {analysis.meta.repo}
           </h2>
-          <p className="text-slate-400 text-xs md:text-sm font-sans max-w-xl">
+          <p className="text-[var(--text-secondary)] text-xs md:text-sm font-sans max-w-xl">
             {analysis.summary.oneLiner}
           </p>
         </div>
         <div className="flex items-center space-x-3 text-xs">
-          <div className="px-4 py-2.5 rounded-lg bg-slate-950 border border-slate-800 flex flex-col items-center">
-            <span className="text-slate-500 font-normal">SCORE</span>
-            <span className="text-green-400 font-bold text-sm">{analysis.onboardingScore.score}%</span>
+          <div className="px-4 py-2.5 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] flex flex-col items-center">
+            <span className="text-[var(--text-secondary)] font-normal">SCORE</span>
+            <span className="text-[var(--accent-secondary)] font-bold text-sm">{analysis.onboardingScore.score}%</span>
           </div>
         </div>
       </div>
@@ -128,17 +128,17 @@ export default function OverviewTab() {
       {/* Metrics Widgets Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total Files', val: analysis.summary.totalFiles.toString(), icon: Files, color: 'text-cyan-400' },
-          { label: 'Mapped API Routes', val: analysis.routes.length.toString(), icon: Network, color: 'text-blue-400' },
-          { label: 'Security Alerts', val: analysis.securityAlerts.length.toString(), icon: ShieldCheck, color: analysis.securityAlerts.length > 0 ? 'text-rose-400' : 'text-green-400' },
-          { label: 'Latest Commit', val: analysis.meta.commitSha?.substring(0, 7) || 'N/A', icon: GitCommit, color: 'text-purple-400' }
+          { label: 'Total Files', val: analysis.summary.totalFiles.toString(), icon: Files, color: 'text-[var(--accent-primary)]' },
+          { label: 'Mapped API Routes', val: analysis.routes.length.toString(), icon: Network, color: 'text-blue-600 dark:text-blue-400' },
+          { label: 'Security Alerts', val: analysis.securityAlerts.length.toString(), icon: ShieldCheck, color: analysis.securityAlerts.length > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-[var(--accent-secondary)]' },
+          { label: 'Latest Commit', val: analysis.meta.commitSha?.substring(0, 7) || 'N/A', icon: GitCommit, color: 'text-purple-600 dark:text-purple-400' }
         ].map((widget, i) => (
           <div key={i} className="glass-panel p-4 rounded-xl flex items-center justify-between">
             <div className="space-y-1">
-              <span className="text-[10px] text-slate-500 uppercase tracking-wider">{widget.label}</span>
-              <div className="text-2xl font-bold text-white tracking-tight font-sans">{widget.val}</div>
+              <span className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wider">{widget.label}</span>
+              <div className="text-2xl font-bold text-[var(--text-primary)] tracking-tight font-sans">{widget.val}</div>
             </div>
-            <div className={`p-2.5 rounded-lg bg-slate-950 border border-slate-850/60`}>
+            <div className={`p-2.5 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)]`}>
               <widget.icon className={`w-5 h-5 ${widget.color}`} />
             </div>
           </div>
@@ -149,10 +149,10 @@ export default function OverviewTab() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Module Complexity distribution */}
         <div className="lg:col-span-7 glass-panel p-5 rounded-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
+          <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3 mb-4">
             <div className="flex items-center space-x-2">
-              <BarChart className="w-4.5 h-4.5 text-cyan-400" />
-              <span className="font-semibold text-sm text-white font-sans">Project Size Overview</span>
+              <BarChart className="w-4.5 h-4.5 text-[var(--accent-primary)]" />
+              <span className="font-semibold text-sm text-[var(--text-primary)] font-sans">Project Size Overview</span>
             </div>
           </div>
           <div className="w-full h-64 font-sans text-xs">
@@ -183,12 +183,12 @@ export default function OverviewTab() {
 
         {/* Directory File Densities */}
         <div className="lg:col-span-5 glass-panel p-5 rounded-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
+          <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3 mb-4">
             <div className="flex items-center space-x-2">
-              <Boxes className="w-4.5 h-4.5 text-blue-400" />
-              <span className="font-semibold text-sm text-white font-sans">Module File Densities</span>
+              <Boxes className="w-4.5 h-4.5 text-blue-600 dark:text-blue-400" />
+              <span className="font-semibold text-sm text-[var(--text-primary)] font-sans">Module File Densities</span>
             </div>
-            <span className="text-[9px] text-slate-500 uppercase">FILE_COUNT</span>
+            <span className="text-[9px] text-[var(--text-secondary)] uppercase">FILE_COUNT</span>
           </div>
           <div className="w-full h-64 font-sans text-xs">
             <ResponsiveContainer width="100%" height="100%">
@@ -208,25 +208,25 @@ export default function OverviewTab() {
 
       {/* Technology Stack Grid */}
       <div className="glass-panel p-5 rounded-xl space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+        <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
           <div className="flex items-center space-x-2">
-            <FlameKindling className="w-4.5 h-4.5 text-purple-400" />
-            <span className="font-semibold text-sm text-white font-sans">Tech Stack Profile</span>
+            <FlameKindling className="w-4.5 h-4.5 text-purple-600 dark:text-purple-400" />
+            <span className="font-semibold text-sm text-[var(--text-primary)] font-sans">Tech Stack Profile</span>
           </div>
-          <span className="text-[9px] text-slate-500 uppercase">DETECTED_LIBRARIES</span>
+          <span className="text-[9px] text-[var(--text-secondary)] uppercase">DETECTED_LIBRARIES</span>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-1">
           {stackData.map((tech, i) => (
             <div 
               key={i} 
-              className={`p-3 rounded-lg border ${tech.color} bg-slate-950/40 hover:bg-slate-900/60 transition-colors duration-200 flex flex-col items-center justify-center text-center space-y-1.5`}
+              className={`p-3 rounded-lg border ${tech.color} bg-[var(--bg-secondary)] hover:bg-[var(--glass-hover-bg)] transition-colors duration-200 flex flex-col items-center justify-center text-center space-y-1.5`}
             >
               <span className="font-sans font-bold text-xs truncate w-full">{tech.name}</span>
-              <span className="text-[8px] text-slate-500 font-normal uppercase">{tech.type}</span>
+              <span className="text-[8px] text-[var(--text-secondary)] font-normal uppercase">{tech.type}</span>
             </div>
           ))}
           {stackData.length === 0 && (
-            <div className="col-span-full text-center text-slate-500 text-xs py-4">No specific libraries detected or mapped in lookup table.</div>
+            <div className="col-span-full text-center text-[var(--text-secondary)] text-xs py-4">No specific libraries detected or mapped in lookup table.</div>
           )}
         </div>
       </div>

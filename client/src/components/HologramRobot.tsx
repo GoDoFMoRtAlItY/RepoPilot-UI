@@ -218,7 +218,7 @@ export default function HologramRobot({ scanStatus = 'idle', repoUrl = '' }: Hol
           transform: `translate3d(${mousePos.x * 12}px, ${mousePos.y * 12}px, 0)`,
           filter: 'drop-shadow(0 0 20px rgba(34, 211, 238, 0.45)) saturate(1.1) brightness(1.05)',
         }}
-        className="w-[92%] h-[92%] relative rounded-2xl overflow-hidden bg-slate-950/20 border border-cyan-500/10 backdrop-blur-[2px] z-10"
+        className="w-[92%] h-[92%] relative rounded-2xl overflow-hidden bg-[var(--bg-primary)] border border-cyan-500/10 backdrop-blur-[2px] z-10"
       >
         {/* Hologram project overlays */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.1)_0%,transparent_70%)] pointer-events-none z-0" />
@@ -311,7 +311,7 @@ export default function HologramRobot({ scanStatus = 'idle', repoUrl = '' }: Hol
                 <button 
                   type="button"
                   onClick={() => setSelectedNode(label.text)}
-                  className="bg-[#0B1220]/95 border border-cyan-500/35 hover:border-cyan-400 text-[9px] font-mono font-bold tracking-wider px-2.5 py-1.5 rounded-lg text-cyan-400 hover:text-white shadow-[0_0_15px_rgba(34,211,238,0.25)] cursor-pointer flex items-center gap-1.5 transition-all active:scale-95 whitespace-nowrap"
+                  className="bg-[#0B1220]/95 border border-cyan-500/35 hover:border-cyan-400 text-[9px] font-mono font-bold tracking-wider px-2.5 py-1.5 rounded-lg text-cyan-600 dark:text-cyan-400 hover:text-[var(--text-primary)] shadow-[0_0_15px_rgba(34,211,238,0.25)] cursor-pointer flex items-center gap-1.5 transition-all active:scale-95 whitespace-nowrap"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
                   {label.text}
@@ -329,13 +329,13 @@ export default function HologramRobot({ scanStatus = 'idle', repoUrl = '' }: Hol
             initial={{ opacity: 0, y: -20, x: '-50%' }}
             animate={{ opacity: 1, y: 0, x: '-50%' }}
             exit={{ opacity: 0, y: -20, x: '-50%' }}
-            className="absolute top-2 left-1/2 bg-slate-950/95 border border-cyan-500/40 px-3.5 py-2 rounded-lg font-mono text-[9px] text-cyan-400 flex items-center space-x-2 shadow-2xl z-30"
+            className="absolute top-2 left-1/2 bg-[var(--bg-primary)] border border-cyan-500/40 px-3.5 py-2 rounded-lg font-mono text-[9px] text-cyan-600 dark:text-cyan-400 flex items-center space-x-2 shadow-2xl z-30"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-ping" />
             <span>AI SCANNING NODE: <strong>{selectedNode.toUpperCase()}</strong></span>
             <button 
               onClick={() => setSelectedNode(null)}
-              className="text-slate-500 hover:text-white font-bold ml-2 cursor-pointer"
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-bold ml-2 cursor-pointer"
             >
               ✕
             </button>
@@ -351,22 +351,22 @@ export default function HologramRobot({ scanStatus = 'idle', repoUrl = '' }: Hol
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 15 }}
             transition={{ type: 'spring', stiffness: 100, damping: 15 }}
-            className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] max-w-[340px] bg-slate-950/95 border border-cyan-500/30 rounded-xl p-4 shadow-[0_0_30px_rgba(34,211,238,0.15)] backdrop-blur-md z-30 font-mono text-left"
+            className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] max-w-[340px] bg-[var(--bg-primary)] border border-cyan-500/30 rounded-xl p-4 shadow-[0_0_30px_rgba(34,211,238,0.15)] backdrop-blur-md z-30 font-mono text-left"
           >
             <div className="flex items-center justify-between border-b border-slate-900 pb-2 mb-3">
-              <span className="text-[10px] text-cyan-400 font-bold tracking-widest flex items-center gap-1.5">
+              <span className="text-[10px] text-cyan-600 dark:text-cyan-400 font-bold tracking-widest flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
                 SYSTEM ANALYSIS STATUS
               </span>
-              <span className="text-[9px] text-slate-500 uppercase">
+              <span className="text-[9px] text-[var(--text-secondary)] uppercase">
                 {scanStatus}
               </span>
             </div>
 
             <div className="space-y-2 text-xs">
               <div className="flex justify-between">
-                <span className="text-slate-400">REPO:</span>
-                <span className="text-white font-bold truncate max-w-[180px]">
+                <span className="text-[var(--text-secondary)]">REPO:</span>
+                <span className="text-[var(--text-primary)] font-bold truncate max-w-[180px]">
                   {getRepoName()}
                 </span>
               </div>
@@ -380,12 +380,12 @@ export default function HologramRobot({ scanStatus = 'idle', repoUrl = '' }: Hol
               {(scanStatus === 'scanning' || scanStatus === 'ready') && (
                 <>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">LANGUAGE:</span>
-                    <span className="text-cyan-400">JavaScript / TS</span>
+                    <span className="text-[var(--text-secondary)]">LANGUAGE:</span>
+                    <span className="text-cyan-600 dark:text-cyan-400">JavaScript / TS</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">FILES DETECTED:</span>
-                    <span className="text-white">{scannedFilesCount.toLocaleString()} / 23,000</span>
+                    <span className="text-[var(--text-secondary)]">FILES DETECTED:</span>
+                    <span className="text-[var(--text-primary)]">{scannedFilesCount.toLocaleString()} / 23,000</span>
                   </div>
 
                   <div className="border-t border-slate-900 my-2 pt-2 space-y-1 text-[10px]">
@@ -414,7 +414,7 @@ export default function HologramRobot({ scanStatus = 'idle', repoUrl = '' }: Hol
 
             {/* Scanning progress bar */}
             {scanStatus === 'scanning' && (
-              <div className="mt-3 w-full bg-slate-900 h-1.5 rounded-full overflow-hidden border border-slate-800">
+              <div className="mt-3 w-full bg-[var(--bg-secondary)] h-1.5 rounded-full overflow-hidden border border-[var(--border-color)]">
                 <motion.div 
                   initial={{ width: '0%' }}
                   animate={{ width: `${(scannedFilesCount / 23000) * 100}%` }}
@@ -427,11 +427,11 @@ export default function HologramRobot({ scanStatus = 'idle', repoUrl = '' }: Hol
       </AnimatePresence>
 
       {/* HUD System spec tickers */}
-      <div className="absolute top-2 left-2 font-mono text-[9px] text-cyan-400/50 flex flex-col gap-0.5">
+      <div className="absolute top-2 left-2 font-mono text-[9px] text-cyan-600 dark:text-cyan-400/50 flex flex-col gap-0.5">
         <span>SYS.SEC: ONBOARD_AI_V4</span>
         <span>SYS.LNK: ACTIVE</span>
       </div>
-      <div className="absolute bottom-2 right-2 font-mono text-[9px] text-blue-400/50 flex flex-col items-end gap-0.5">
+      <div className="absolute bottom-2 right-2 font-mono text-[9px] text-blue-600 dark:text-blue-400/50 flex flex-col items-end gap-0.5">
         <span>RAD.STC: ROT_RAD_Z</span>
         <span>SCANNER: {scanStatus !== 'idle' ? scanStatus : 'active'}</span>
       </div>

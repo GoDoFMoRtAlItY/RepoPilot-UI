@@ -90,37 +90,37 @@ export default function AiPreviewSection() {
 
       <div className="max-w-4xl mx-auto w-full space-y-8 relative z-10 text-left">
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <h2 className="text-xs font-mono tracking-widest text-cyan-400 uppercase flex items-center justify-center space-x-1.5">
+          <h2 className="text-xs font-mono tracking-widest text-cyan-600 dark:text-cyan-400 uppercase flex items-center justify-center space-x-1.5">
             <Cpu className="w-3.5 h-3.5 animate-pulse" />
             <span>AI_ASSISTANT_PREVIEW</span>
           </h2>
-          <h3 className="text-3xl font-bold text-white tracking-tight font-sans">
+          <h3 className="text-3xl font-bold text-[var(--text-primary)] tracking-tight font-sans">
             Talk to an AI that knows the entire codebase.
           </h3>
-          <p className="text-slate-400 text-xs md:text-sm font-sans">
+          <p className="text-[var(--text-secondary)] text-xs md:text-sm font-sans">
             RepoPilot indexes repository functions, files, routes, and Docker config trees to answers queries instantly.
           </p>
         </div>
 
         {/* Console / IDE Frame mockup */}
-        <div className="glass-panel rounded-xl overflow-hidden border-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] font-mono">
+        <div className="glass-panel rounded-xl overflow-hidden border-[var(--border-color)] shadow-[0_20px_50px_rgba(0,0,0,0.5)] font-mono">
           {/* Header bar */}
-          <div className="bg-slate-950 px-4 py-3 border-b border-slate-850 flex items-center justify-between">
+          <div className="bg-[var(--bg-primary)] px-4 py-3 border-b border-slate-850 flex items-center justify-between">
             <div className="flex items-center space-x-2 text-xs">
               <span className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
               <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
               <span className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
-              <span className="text-slate-400 text-[10px] pl-2">AI_PREVIEW.SH</span>
+              <span className="text-[var(--text-secondary)] text-[10px] pl-2">AI_PREVIEW.SH</span>
             </div>
-            <div className="text-[9px] text-slate-500">PING: 10ms | PORT: 3000</div>
+            <div className="text-[9px] text-[var(--text-secondary)]">PING: 10ms | PORT: 3000</div>
           </div>
 
           {/* Chat area */}
-          <div className="p-4 md:p-6 min-h-[340px] flex flex-col justify-end space-y-4 bg-slate-950/40 font-sans text-xs md:text-sm">
+          <div className="p-4 md:p-6 min-h-[340px] flex flex-col justify-end space-y-4 bg-[var(--bg-primary)] font-sans text-xs md:text-sm">
             
             {messages.length === 0 && !typing && (
-              <div className="flex-1 flex flex-col items-center justify-center text-slate-500 text-xs gap-2 font-mono">
-                <Loader2 className="w-4 h-4 animate-spin text-cyan-500" />
+              <div className="flex-1 flex flex-col items-center justify-center text-[var(--text-secondary)] text-xs gap-2 font-mono">
+                <Loader2 className="w-4 h-4 animate-spin text-cyan-600 dark:text-cyan-500" />
                 <span>Initializing chat vector handshake...</span>
               </div>
             )}
@@ -139,37 +139,37 @@ export default function AiPreviewSection() {
                     {/* Avatar */}
                     <div className={`p-2 rounded-lg border shrink-0 ${
                       isUser 
-                        ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' 
-                        : 'bg-blue-500/10 border-blue-500/30 text-cyan-400'
+                        ? 'bg-purple-500/10 border-purple-500/20 dark:border-purple-500/30 text-purple-600 dark:text-purple-400' 
+                        : 'bg-blue-500/10 border-blue-500/30 text-cyan-600 dark:text-cyan-400'
                     }`}>
                       {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                     </div>
 
                     {/* Chat Bubble content */}
                     <div className="space-y-1">
-                      <div className={`text-[10px] text-slate-500 font-mono ${isUser ? 'text-right' : 'text-left'}`}>
+                      <div className={`text-[10px] text-[var(--text-secondary)] font-mono ${isUser ? 'text-right' : 'text-left'}`}>
                         {isUser ? 'DEVELOPER' : 'REPOPILOT MENTOR'}
                       </div>
                       <div className={`p-3.5 rounded-xl border leading-relaxed ${
                         isUser 
-                          ? 'bg-blue-600/10 border-blue-500/30 text-white' 
+                          ? 'bg-blue-600/10 border-blue-500/30 text-[var(--text-primary)]' 
                           : 'bg-[#0B1220]/80 border-slate-850/80 text-slate-200 shadow-xl'
                       }`}>
                         <p className="font-sans text-xs md:text-sm">{msg.text}</p>
 
                         {/* Attachment code block */}
                         {msg.code && (
-                          <div className="mt-3 bg-slate-950 border border-slate-850 rounded-lg overflow-hidden font-mono text-[11px] text-left">
-                            <div className="bg-slate-900/60 px-3 py-1 flex items-center justify-between border-b border-slate-900">
-                              <span className="text-[9px] text-slate-500 uppercase tracking-widest">javascript</span>
+                          <div className="mt-3 bg-[var(--bg-primary)] border border-slate-850 rounded-lg overflow-hidden font-mono text-[11px] text-left">
+                            <div className="bg-[var(--bg-secondary)] px-3 py-1 flex items-center justify-between border-b border-slate-900">
+                              <span className="text-[9px] text-[var(--text-secondary)] uppercase tracking-widest">javascript</span>
                               <button
                                 onClick={handleCopy}
-                                className="p-1 rounded hover:bg-slate-800 text-slate-500 hover:text-cyan-400 cursor-pointer"
+                                className="p-1 rounded hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-cyan-600 dark:text-cyan-400 cursor-pointer"
                               >
                                 {copied ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
                               </button>
                             </div>
-                            <pre className="p-3 overflow-x-auto whitespace-pre leading-normal max-h-52 text-cyan-400/90 font-medium select-all">
+                            <pre className="p-3 overflow-x-auto whitespace-pre leading-normal max-h-52 text-cyan-600 dark:text-cyan-400/90 font-medium select-all">
                               <code>{msg.code}</code>
                             </pre>
                           </div>
@@ -188,11 +188,11 @@ export default function AiPreviewSection() {
                 animate={{ opacity: 1, y: 0 }}
                 className="flex items-start gap-3 mr-auto"
               >
-                <div className="p-2 rounded-lg border bg-blue-500/10 border-blue-500/30 text-cyan-400 shrink-0">
+                <div className="p-2 rounded-lg border bg-blue-500/10 border-blue-500/30 text-cyan-600 dark:text-cyan-400 shrink-0">
                   <Bot className="w-4 h-4 animate-bounce" />
                 </div>
-                <div className="p-3 rounded-xl bg-[#0B1220]/80 border border-slate-850/80 text-slate-400 text-xs flex items-center space-x-2 font-mono">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-400" />
+                <div className="p-3 rounded-xl bg-[#0B1220]/80 border border-slate-850/80 text-[var(--text-secondary)] text-xs flex items-center space-x-2 font-mono">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-600 dark:text-cyan-400" />
                   <span className="animate-pulse">Analyzing routes/auth.js structure...</span>
                 </div>
               </motion.div>

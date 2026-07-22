@@ -20,7 +20,7 @@ export default function RepositorySnapshot() {
   return (
     <div className="space-y-4 mb-8">
       {/* 1. Main Header / Overview */}
-      <div className="glass-panel p-6 rounded-xl border border-slate-800/80 bg-gradient-to-br from-slate-900/90 to-slate-950/90 relative overflow-hidden">
+      <div className="glass-panel p-6 rounded-xl border border-[var(--border-color)] relative overflow-hidden">
         {/* Ambient background glow */}
         <div className="absolute top-0 right-0 w-[500px] h-full bg-gradient-to-l from-indigo-500/10 via-purple-500/5 to-transparent pointer-events-none blur-3xl" />
         
@@ -30,124 +30,117 @@ export default function RepositorySnapshot() {
           <div className="flex-1 space-y-5">
             <div>
               <div className="flex items-center space-x-3 mb-2">
-                <span className="px-2.5 py-1 text-[10px] uppercase font-bold tracking-wider rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                <span className="px-3 py-1.5 text-xs uppercase font-bold tracking-wider rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 dark:border-indigo-500/30">
                   {projectType}
                 </span>
-                <span className="px-2.5 py-1 text-[10px] uppercase font-bold tracking-wider rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30">
-                  {architectureType}
-                </span>
-              </div>
-              <h2 className="text-xl font-bold text-white font-sans tracking-tight mb-2">
-                Executive Summary
-              </h2>
-              <div className="text-sm text-slate-300 font-sans leading-relaxed border-l-2 border-indigo-500/50 pl-3 min-h-[40px] flex items-center">
-                {isAiSummaryLoading ? (
-                  <div className="flex items-center space-x-2 text-slate-400 italic">
-                    <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-                    <span>Generating onboarding summary...</span>
-                  </div>
-                ) : aiSummary ? (
-                  <p>{aiSummary}</p>
-                ) : (
-                  <p className="italic text-rose-400/80">{aiSummaryError || 'Repository insight unavailable.'}</p>
+                {architectureType !== "Unknown Architecture" && (
+                  <span className="px-3 py-1.5 text-xs uppercase font-bold tracking-wider rounded-full bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/20 dark:border-purple-500/30">
+                    {architectureType}
+                  </span>
                 )}
               </div>
+              <h2 className="text-2xl font-bold tracking-tight mb-2">Executive Summary</h2>
+              <p className="text-base text-[var(--text-secondary)] leading-relaxed max-w-2xl">
+                {isAiSummaryLoading ? (
+                  <span className="animate-pulse">Generating AI insights...</span>
+                ) : aiSummaryError ? (
+                  <span className="text-rose-600 dark:text-rose-400 flex items-start gap-2">
+                    <span className="font-bold shrink-0">* (Mock AI Fallback) *</span> 
+                    The repository analysis was completed successfully, but the AI executive summary generation is unavailable due to API rate limits or exhausted credits. Please update the API configuration to restore AI insights.
+                  </span>
+                ) : (
+                  aiSummary
+                )}
+              </p>
             </div>
-
-            <div className="space-y-2">
-              <h3 className="text-xs uppercase tracking-wider text-slate-500 font-semibold">Primary Tech Stack</h3>
+            
+            <div className="pt-2">
+              <span className="text-sm font-bold uppercase tracking-widest text-[var(--text-secondary)] block mb-3">
+                Primary Tech Stack
+              </span>
               <div className="flex flex-wrap gap-2">
-                {primaryTechStack.map((tech, i) => (
-                  <motion.div 
-                    key={i}
-                    whileHover={{ scale: 1.05 }}
-                    className="px-3 py-1.5 rounded-md bg-slate-900 border border-slate-700 text-xs font-semibold text-slate-300 shadow-sm flex items-center shadow-slate-950/50"
-                  >
+                {primaryTechStack.map((tech) => (
+                  <span key={tech} className="px-4 py-1.5 text-sm font-medium rounded-md bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] shadow-sm">
                     {tech}
-                  </motion.div>
+                  </span>
                 ))}
               </div>
             </div>
           </div>
 
           {/* Right Column: Stats & Setup */}
-          <div className="lg:w-80 flex flex-col space-y-4">
-            
-            {/* Complexity & Time */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-slate-950/60 p-3 rounded-lg border border-slate-800 flex flex-col items-center justify-center text-center">
-                <span className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Complexity</span>
-                <span className={`font-bold text-sm ${complexity === 'Enterprise' || complexity === 'Large' ? 'text-rose-400' : 'text-emerald-400'}`}>
+          <div className="lg:w-80 flex flex-col gap-3 lg:w-72 shrink-0">
+            <div className="bg-[var(--bg-secondary)] rounded-lg p-5 border border-[var(--border-color)] shadow-inner">
+              <div className="text-sm font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider text-center">Complexity</div>
+              <div className="flex justify-center items-center h-8">
+                <span className={`font-black text-lg ${complexity === 'Enterprise' || complexity === 'Large' ? 'text-rose-600 dark:text-rose-500' : 'text-[var(--accent-secondary)]'}`}>
                   {complexity}
                 </span>
               </div>
-              <div className="bg-slate-950/60 p-3 rounded-lg border border-slate-800 flex flex-col items-center justify-center text-center">
-                <span className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 flex items-center"><Clock className="w-3 h-3 mr-1" /> Onboarding</span>
-                <span className="font-bold text-sm text-amber-400">
-                  {onboardingTime}
-                </span>
+            </div>
+
+            <div className="bg-[var(--bg-secondary)] rounded-lg p-5 border border-[var(--border-color)] shadow-inner">
+              <div className="flex items-center justify-center space-x-2 text-sm font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider">
+                <Clock className="w-4 h-4" />
+                <span>Onboarding</span>
+              </div>
+              <div className="flex justify-center items-center h-8">
+                <span className="font-black text-lg text-amber-600 dark:text-amber-500">{onboardingTime}</span>
               </div>
             </div>
 
-            {/* Entry Point */}
-            <div className="bg-slate-950/60 p-4 rounded-lg border border-slate-800 group hover:border-slate-700 transition-colors">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] text-slate-500 uppercase tracking-wider flex items-center">
-                  <Play className="w-3 h-3 mr-1" /> Primary Entry Point
-                </span>
+            <div className="bg-[var(--bg-secondary)] rounded-lg p-5 border border-[var(--border-color)] shadow-inner">
+              <div className="flex items-center space-x-2 text-sm font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wider">
+                <Play className="w-4 h-4" />
+                <span>Primary Entry Point</span>
               </div>
-              <a 
-                href={entryPoint?.githubUrl || '#'} 
-                target="_blank" 
-                rel="noreferrer"
-                className="text-sm font-mono text-cyan-400 hover:text-cyan-300 truncate block bg-slate-900 p-2 rounded border border-slate-800"
-                title={entryPoint?.file || 'N/A'}
-              >
-                {entryPoint?.file || 'N/A'}
-              </a>
+              <div className="bg-[var(--bg-primary)] rounded p-3 overflow-hidden border border-[var(--border-color)]">
+                <code className="text-sm text-[var(--text-primary)] font-mono whitespace-nowrap">
+                  {entryPoint?.file || 'N/A'}
+                </code>
+              </div>
             </div>
-
           </div>
         </div>
       </div>
 
+      {/* 2. Grid for Developer Guide, Project Maturity, Quick Insights */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
         {/* Developer Starting Guide */}
-        <div className="glass-panel p-5 rounded-xl border border-slate-800/80 bg-slate-900/50 md:col-span-1 flex flex-col max-h-64 overflow-y-auto custom-scrollbar">
-          <h3 className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3 flex items-center">
-            <CheckCircle2 className="w-4 h-4 mr-1.5 text-emerald-500" /> Developer Starting Guide
-          </h3>
-          <ul className="space-y-3">
-            <li className="flex items-start text-xs font-sans text-slate-300">
-              <Check className="w-3.5 h-3.5 mr-2 text-emerald-500 mt-0.5 shrink-0" />
-              <span>Read README</span>
-            </li>
-            {setupSteps.map((step, i) => (
-              <li key={i} className="flex items-start text-xs font-sans text-slate-300">
-                <Check className="w-3.5 h-3.5 mr-2 text-emerald-500 mt-0.5 shrink-0" />
-                <span className="break-all">{step.title}</span>
-              </li>
+        <div className="glass-panel p-6 rounded-xl border border-[var(--border-color)]">
+          <div className="flex items-center space-x-2 mb-6">
+            <CheckCircle2 className="w-5 h-5 text-[var(--text-secondary)]" />
+            <h3 className="font-bold text-base uppercase tracking-wider text-[var(--text-secondary)]">Developer Starting Guide</h3>
+          </div>
+          <div className="space-y-4">
+            {setupSteps.map((step, idx) => (
+              <div key={idx} className="flex items-start space-x-3 group">
+                <div className="mt-0.5 opacity-50 group-hover:opacity-100 transition-opacity">
+                  <Check className="w-4 h-4 text-[var(--accent-secondary)]" />
+                </div>
+                <span className="text-base text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
+                  {step.title}
+                </span>
+              </div>
             ))}
-            <li className="flex items-start text-xs font-sans text-slate-300">
-              <Check className="w-3.5 h-3.5 mr-2 text-emerald-500 mt-0.5 shrink-0" />
-              <span>Explore Architecture Graph</span>
-            </li>
-          </ul>
+          </div>
         </div>
 
         {/* Project Maturity */}
-        <div className="glass-panel p-5 rounded-xl border border-slate-800/80 bg-slate-900/50 md:col-span-1">
-          <h3 className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3 flex items-center">
-            <ShieldCheck className="w-4 h-4 mr-1.5 text-blue-500" /> Project Maturity
-          </h3>
-          <div className="grid grid-cols-2 gap-2">
-            {projectMaturity.map((item, i) => (
-              <div key={i} className="flex items-center justify-between bg-slate-950 p-2 rounded-md border border-slate-800">
-                <span className="text-[10px] text-slate-400 uppercase">{item.check}</span>
+        <div className="glass-panel p-6 rounded-xl border border-[var(--border-color)]">
+          <div className="flex items-center space-x-2 mb-6">
+            <ShieldCheck className="w-5 h-5 text-[var(--text-secondary)]" />
+            <h3 className="font-bold text-base uppercase tracking-wider text-[var(--text-secondary)]">Project Maturity</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {projectMaturity.map((item, idx) => (
+              <div key={idx} className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-md p-3 flex items-center justify-between shadow-sm">
+                <span className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">{item.check}</span>
                 {item.status === 'Present' || item.status === 'Configured' ? (
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />
                 ) : (
-                  <XCircle className="w-3.5 h-3.5 text-slate-600" />
+                  <XCircle className="w-4 h-4 text-[var(--border-color)]" />
                 )}
               </div>
             ))}
@@ -155,18 +148,19 @@ export default function RepositorySnapshot() {
         </div>
 
         {/* Quick Insights */}
-        <div className="glass-panel p-5 rounded-xl border border-slate-800/80 bg-slate-900/50 md:col-span-1 max-h-64 overflow-y-auto custom-scrollbar">
-          <h3 className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3 flex items-center">
-            <Lightbulb className="w-4 h-4 mr-1.5 text-amber-500" /> Quick Insights
-          </h3>
-          <ul className="space-y-2.5">
-            {quickInsights.map((insight, i) => (
-              <li key={i} className="flex items-start text-xs font-sans text-slate-300 leading-tight bg-slate-950/50 p-2.5 rounded-lg border border-slate-800/50">
-                <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1 mr-2 shrink-0" />
-                <span>{insight}</span>
-              </li>
+        <div className="glass-panel p-6 rounded-xl border border-[var(--border-color)]">
+          <div className="flex items-center space-x-2 mb-6">
+            <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-500" />
+            <h3 className="font-bold text-base uppercase tracking-wider text-[var(--text-secondary)]">Quick Insights</h3>
+          </div>
+          <div className="space-y-3">
+            {quickInsights.map((insight, idx) => (
+              <div key={idx} className="flex items-start space-x-3 bg-[var(--bg-secondary)] p-4 rounded-lg border border-[var(--border-color)] shadow-sm">
+                <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                <span className="text-base text-[var(--text-primary)] leading-snug">{insight}</span>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
     </div>

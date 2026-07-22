@@ -14,6 +14,7 @@ import {
   Activity,
   FileText
 } from 'lucide-react'
+import { useUIStore } from '../store/useUIStore'
 
 interface SidebarProps {
   activeTab: string
@@ -45,21 +46,25 @@ export default function Sidebar({
   onClose 
 }: SidebarProps) {
   
+  const { isFocusMode } = useUIStore()
+
   const content = (
-    <div className="h-full flex flex-col justify-between bg-[#0B1220]/95 border-r border-slate-800/80 p-4 font-mono select-none overflow-y-auto">
+    <div className={`h-full flex flex-col justify-between bg-transparent border-r border-white/5 py-4 font-sans select-none overflow-y-auto transition-all duration-300 ${isFocusMode ? 'px-2' : 'px-4'}`}>
       <div className="space-y-6">
         {/* LOGO */}
-        <div className="flex items-center justify-between border-b border-slate-800/80 pb-4 shrink-0">
+        <div className={`flex items-center border-b border-white/5 pb-4 shrink-0 transition-all ${isFocusMode ? 'justify-center' : 'justify-between'}`}>
           <div className="flex items-center space-x-2">
-            <Compass className="w-6 h-6 text-cyan-400 animate-spin [animation-duration:12s]" />
-            <span className="font-sans font-extrabold text-white text-lg tracking-wider">
-              REPO<span className="text-cyan-400 text-glow-cyan">PILOT</span>
-            </span>
+            <Compass className="w-6 h-6 opacity-80" />
+            {!isFocusMode && (
+              <span className="font-extrabold text-[var(--text-primary)] text-lg tracking-wider">
+                REPO<span className="text-[var(--text-primary)]/60">PILOT</span>
+              </span>
+            )}
           </div>
           {onClose && (
             <button 
               onClick={onClose}
-              className="lg:hidden p-1 rounded bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"
+              className="lg:hidden p-1 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
               <X className="w-4 h-4" />
             </button>
@@ -67,16 +72,18 @@ export default function Sidebar({
         </div>
 
         {/* HUD System Spec */}
-        <div className="bg-slate-950/80 border border-slate-800/60 p-2.5 rounded text-[10px] text-slate-400 space-y-1 shrink-0">
-          <div className="flex justify-between">
-            <span>SECTOR:</span>
-            <span className="text-cyan-400">MAIN_HUB</span>
+        {!isFocusMode && (
+          <div className="glass-panel p-2.5 rounded text-[10px] text-[var(--text-primary)]/50 space-y-1 shrink-0 font-mono">
+            <div className="flex justify-between">
+              <span>SECTOR:</span>
+              <span className="text-[var(--text-primary)]/80">MAIN_HUB</span>
+            </div>
+            <div className="flex justify-between">
+              <span>SYS_SYS:</span>
+              <span className="text-[var(--text-primary)]/80">ONLINE</span>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span>SYS_SYS:</span>
-            <span className="text-green-400">ONLINE</span>
-          </div>
-        </div>
+        )}
 
         {/* NAVIGATION LINKS */}
         <nav className="flex flex-col gap-1.5 pt-2 pb-4">
@@ -89,14 +96,15 @@ export default function Sidebar({
                   onSelectTab(item.name)
                   if (onClose) onClose()
                 }}
-                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm transition-all cursor-pointer text-left ${
+                className={`w-full flex items-center rounded-lg text-sm transition-all cursor-pointer text-left ${isFocusMode ? 'justify-center p-3' : 'space-x-3 px-4 py-3'} ${
                   isActive
-                    ? 'bg-blue-600/25 border border-blue-500/40 text-cyan-400 shadow-[0_0_12px_rgba(59,130,246,0.15)] font-semibold'
-                    : 'bg-transparent border border-transparent text-slate-400 hover:text-white hover:bg-slate-900/60 hover:border-slate-800/60'
+                    ? 'bg-white/10 text-[var(--text-primary)] font-medium shadow-sm'
+                    : 'bg-transparent text-[var(--text-primary)]/50 hover:text-[var(--text-primary)] hover:bg-white/5'
                 }`}
+                title={isFocusMode ? item.name : undefined}
               >
-                <item.icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
-                <span className="font-sans tracking-wide truncate">{item.name}</span>
+                <item.icon className={`w-4 h-4 shrink-0 ${isActive ? 'opacity-100' : 'opacity-70'}`} />
+                {!isFocusMode && <span className="tracking-wide truncate">{item.name}</span>}
               </button>
             )
           })}
@@ -104,13 +112,14 @@ export default function Sidebar({
       </div>
 
       {/* FOOTER ACTION */}
-      <div className="border-t border-slate-800/80 pt-4 mt-auto shrink-0">
+      <div className="border-t border-white/5 pt-4 mt-auto shrink-0">
         <button
           onClick={onBackToLanding}
-          className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm text-red-400 hover:text-red-300 bg-red-950/15 border border-transparent hover:border-red-900/30 hover:bg-red-950/30 transition-all cursor-pointer font-sans"
+          className={`w-full flex items-center rounded-lg text-sm text-red-400/80 hover:text-red-400 transition-all cursor-pointer ${isFocusMode ? 'justify-center p-3' : 'space-x-3 px-4 py-3 hover:bg-red-500/10'}`}
+          title={isFocusMode ? "Exit" : undefined}
         >
           <LogOut className="w-4 h-4 shrink-0" />
-          <span className="truncate">Exit Command Hub</span>
+          {!isFocusMode && <span className="truncate">Exit Command Hub</span>}
         </button>
       </div>
     </div>
@@ -119,7 +128,7 @@ export default function Sidebar({
   return (
     <>
       {/* Desktop Sidebar (visible lg+) */}
-      <aside className="hidden lg:block w-64 h-screen sticky top-0 shrink-0">
+      <aside className={`hidden lg:block h-screen sticky top-0 shrink-0 transition-all duration-300 ${isFocusMode ? 'w-16' : 'w-64'}`}>
         {content}
       </aside>
 

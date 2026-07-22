@@ -31,40 +31,40 @@ export default function OnboardingScoreCard() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-6 font-mono text-slate-300 text-left"
+      className="space-y-6 font-mono text-[var(--text-primary)] text-left"
     >
       {/* HUD Header */}
       <div className="glass-panel p-6 rounded-xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="absolute top-0 left-0 w-80 h-full bg-gradient-to-r from-blue-500/5 to-transparent pointer-events-none" />
         <div className="space-y-2 relative z-10 flex-1">
-          <div className="text-xs text-cyan-400 font-semibold uppercase flex items-center space-x-1.5">
+          <div className="text-xs text-cyan-600 dark:text-cyan-400 font-semibold uppercase flex items-center space-x-1.5">
             <Target className="w-3.5 h-3.5" />
             <span>DEVELOPER EXPERIENCE METRICS</span>
           </div>
-          <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight font-sans">
+          <h2 className="text-xl md:text-2xl font-bold text-[var(--text-primary)] tracking-tight font-sans">
             Onboarding Score
           </h2>
-          <p className="text-slate-400 text-xs md:text-sm font-sans max-w-xl">
+          <p className="text-[var(--text-secondary)] text-xs md:text-sm font-sans max-w-xl">
             A metric quantifying how easy it is for a new developer to set up and understand this repository.
           </p>
         </div>
 
         {/* Large Score Display */}
         <div className={`relative z-10 flex flex-col items-center justify-center p-6 rounded-xl border ${getScoreBg(score)} min-w-[150px]`}>
-          <span className="text-[10px] text-slate-400 font-bold tracking-widest uppercase mb-1">TOTAL SCORE</span>
+          <span className="text-[10px] text-[var(--text-secondary)] font-bold tracking-widest uppercase mb-1">TOTAL SCORE</span>
           <div className="flex items-baseline space-x-1">
             <span className={`text-4xl md:text-5xl font-black ${getScoreColor(score)}`}>
               {score}
             </span>
-            <span className="text-slate-500 font-bold text-lg">/100</span>
+            <span className="text-[var(--text-secondary)] font-bold text-lg">/100</span>
           </div>
         </div>
       </div>
 
       {/* Breakdown Grid */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold text-white tracking-widest uppercase mb-2 flex items-center space-x-2 border-b border-slate-800 pb-2">
-          <TrendingUp className="w-4 h-4 text-cyan-400" />
+        <h3 className="text-sm font-bold text-[var(--text-primary)] tracking-widest uppercase mb-2 flex items-center space-x-2 border-b border-[var(--border-color)] pb-2">
+          <TrendingUp className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
           <span>Evaluation Breakdown</span>
         </h3>
         
@@ -72,7 +72,7 @@ export default function OnboardingScoreCard() {
           {breakdown.map((item, index) => (
             <div 
               key={index} 
-              className={`glass-panel p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 border ${item.passed ? 'border-green-500/20' : 'border-slate-800/80 hover:border-slate-700'}`}
+              className={`glass-panel p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 border ${item.passed ? 'border-green-500/20' : 'border-[var(--border-color)] hover:border-[var(--border-color)]'}`}
             >
               <div className="flex items-start space-x-3.5">
                 <div className="mt-0.5">
@@ -84,7 +84,7 @@ export default function OnboardingScoreCard() {
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center space-x-2">
-                    <span className={`font-bold text-sm font-sans ${item.passed ? 'text-white' : 'text-slate-400'}`}>
+                    <span className={`font-bold text-sm font-sans ${item.passed ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>
                       {item.check}
                     </span>
                     {!item.passed && item.points > 10 && (
@@ -94,14 +94,14 @@ export default function OnboardingScoreCard() {
                       </span>
                     )}
                   </div>
-                  <p className="text-slate-500 text-xs font-sans">
+                  <p className="text-[var(--text-secondary)] text-xs font-sans">
                     {item.detail}
                   </p>
                 </div>
               </div>
               
               <div className="shrink-0 flex items-center justify-end sm:w-24">
-                <span className={`text-xs font-bold px-2.5 py-1 rounded border ${item.passed ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
+                <span className={`text-xs font-bold px-2.5 py-1 rounded border ${item.passed ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-secondary)]'}`}>
                   {item.passed ? `+${item.points} pts` : `0 / ${item.points} pts`}
                 </span>
               </div>
@@ -111,7 +111,7 @@ export default function OnboardingScoreCard() {
       </div>
       
       {breakdown.length === 0 && (
-        <div className="glass-panel p-12 text-center rounded-xl text-slate-500 font-sans">
+        <div className="glass-panel p-12 text-center rounded-xl text-[var(--text-secondary)] font-sans">
           No onboarding metrics available for this repository.
         </div>
       )}

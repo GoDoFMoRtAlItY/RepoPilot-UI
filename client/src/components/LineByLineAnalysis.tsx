@@ -75,24 +75,24 @@ export default function LineByLineAnalysis() {
         <div className="max-w-4xl mx-auto space-y-6 relative z-10">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center space-x-2 text-slate-400 hover:text-cyan-400 text-xs font-mono transition-colors"
+            className="flex items-center space-x-2 text-[var(--text-secondary)] hover:text-cyan-600 dark:text-cyan-400 text-xs font-mono transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>BACK TO EXPLORER</span>
           </button>
 
-          <div className="glass-panel p-6 rounded-xl border border-slate-800 bg-slate-950/40 space-y-4">
-            <div className="flex items-center space-x-3 border-b border-slate-800 pb-4">
-              <FileCode className="w-6 h-6 text-cyan-400" />
+          <div className="glass-panel p-6 rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] space-y-4">
+            <div className="flex items-center space-x-3 border-b border-[var(--border-color)] pb-4">
+              <FileCode className="w-6 h-6 text-cyan-600 dark:text-cyan-400" />
               <div>
-                <h1 className="text-xl font-bold text-white">{path?.split('/').pop()}</h1>
-                <p className="text-xs text-slate-500 font-mono">{path}</p>
+                <h1 className="text-xl font-bold text-[var(--text-primary)]">{path?.split('/').pop()}</h1>
+                <p className="text-xs text-[var(--text-secondary)] font-mono">{path}</p>
               </div>
             </div>
 
             {loading && (
               <div className="flex flex-col items-center justify-center py-20 space-y-5">
-                <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
+                <Loader2 className="w-8 h-8 text-cyan-600 dark:text-cyan-400 animate-spin" />
                 <motion.p
                   key={loadingTextIndex}
                   initial={{ opacity: 0, y: 5 }}
@@ -106,12 +106,12 @@ export default function LineByLineAnalysis() {
             )}
 
             {error && !loading && (
-              <div className="p-8 bg-slate-900/50 border border-slate-800 rounded-xl flex flex-col items-center justify-center space-y-4">
-                <AlertCircle className="w-10 h-10 text-slate-500" />
-                <p className="text-slate-400 font-sans text-sm">{error}</p>
+              <div className="p-8 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl flex flex-col items-center justify-center space-y-4">
+                <AlertCircle className="w-10 h-10 text-[var(--text-secondary)]" />
+                <p className="text-[var(--text-secondary)] font-sans text-sm">{error}</p>
                 <button 
                   onClick={fetchAnalysis}
-                  className="mt-2 flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all"
+                  className="mt-2 flex items-center space-x-2 px-4 py-2 bg-[var(--bg-secondary)] hover:bg-slate-700 border border-[var(--border-color)] text-[var(--text-primary)] rounded-lg text-xs font-bold transition-all"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   <span>RETRY ANALYSIS</span>
@@ -120,7 +120,7 @@ export default function LineByLineAnalysis() {
             )}
 
             {analysis && !loading && !error && (
-              <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-800">
+              <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-[var(--bg-secondary)] prose-pre:border prose-pre:border-[var(--border-color)]">
                 <ReactMarkdown>{analysis}</ReactMarkdown>
               </div>
             )}

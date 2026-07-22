@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Routes, Route, useNavigate, useParams, Navigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRepoStore } from './store/useRepoStore'
+import { useUIStore } from './store/useUIStore'
 import HeroSection from './components/HeroSection'
 import FeatureShowcase from './components/FeatureShowcase'
 import AiPreviewSection from './components/AiPreviewSection'
@@ -19,11 +20,14 @@ import TechDebtTab from './components/TechDebtTab'
 import OnboardingScoreCard from './components/OnboardingScoreCard'
 import ReadmeGeneratorTab from './components/ReadmeGeneratorTab'
 import LineByLineAnalysis from './components/LineByLineAnalysis'
-import { Compass, Terminal, ShieldAlert } from 'lucide-react'
+import { Compass, Terminal, ShieldAlert, Sun, Moon } from 'lucide-react'
 import Lenis from 'lenis'
+import InteractiveBackground from './components/ui/InteractiveBackground'
+import LoginPage from './components/LoginPage'
 
 function LandingPage() {
   const navigate = useNavigate()
+  const { theme, toggleTheme } = useUIStore()
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -70,27 +74,38 @@ function LandingPage() {
       transition={{ duration: 0.4 }}
       className="flex-grow flex flex-col relative z-10"
     >
-      <header className="absolute top-0 w-full z-30 px-6 py-4 flex items-center justify-between border-b border-slate-900/30">
+      <header className="absolute top-0 w-full z-30 px-6 py-4 flex items-center justify-between border-b border-[var(--border-color)]">
         <div className="flex items-center space-x-2">
-          <Compass className="w-5.5 h-5.5 text-cyan-400 animate-spin [animation-duration:15s]" />
-          <span className="font-extrabold text-white text-md tracking-wider">
-            REPO<span className="text-cyan-400 text-glow-cyan">PILOT</span>
+          <Compass className="w-5.5 h-5.5 opacity-80" />
+          <span className="font-extrabold text-[var(--text-primary)] text-md tracking-wider">
+            REPO<span className="opacity-60">PILOT</span>
           </span>
         </div>
-        <button
-          onClick={() => navigate('/repo/gothinkster/node-express-realworld-example-app')}
-          className="px-4.5 py-2 border border-cyan-500/30 hover:border-cyan-400 bg-cyan-500/5 hover:bg-cyan-500/10 text-cyan-400 rounded-lg text-xs font-mono tracking-wider transition-all cursor-pointer shadow-[0_0_12px_rgba(34,211,238,0.1)] active:scale-95"
-        >
-          ENTER COMMAND HUB
-        </button>
+        <div className="flex items-center space-x-4">
+          <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-[var(--glass-hover-bg)] transition-all cursor-pointer">
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+          <button
+            onClick={() => navigate('/login')}
+            className="base-btn px-4.5 py-2 rounded-lg text-xs font-mono tracking-wider cursor-pointer"
+          >
+            LOGIN
+          </button>
+          <button
+            onClick={() => navigate('/repo/gothinkster/node-express-realworld-example-app')}
+            className="px-4.5 py-2 bg-[var(--accent-primary)] hover:opacity-90 rounded-lg text-xs font-mono tracking-wider text-white transition-all cursor-pointer shadow-[0_0_12px_rgba(59,130,246,0.3)]"
+          >
+            COMMAND HUB
+          </button>
+        </div>
       </header>
 
       <HeroSection onAnalyzeRepo={handleAnalyzeRepoUrl} />
       <AiPreviewSection />
       <FeatureShowcase />
 
-      <footer className="py-8 bg-slate-950 border-t border-slate-900/80 text-center font-mono text-[10px] text-slate-600">
-        <span>REPO-PILOT © 2026 | MISSION CONTROL INGESTION LAYER v1.0.4</span>
+      <footer className="py-8 bg-transparent border-t border-white/5 text-center font-mono text-[10px] text-white/40">
+        <span>REPO-PILOT © 2026 | MISSION CONTROL</span>
       </footer>
     </motion.div>
   )
@@ -145,8 +160,7 @@ function DashboardPage() {
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         <Navbar onToggleMobileMenu={() => setMobileMenuOpen(true)} />
         
-        <main className="flex-grow p-4 md:p-6 overflow-y-auto bg-[#05070A] relative grid-bg">
-          <div className="absolute inset-0 scanlines opacity-5 pointer-events-none" />
+        <main className="flex-grow p-4 md:p-6 overflow-y-auto bg-transparent relative">
           
           <AnimatePresence mode="wait">
             <motion.div
@@ -167,6 +181,7 @@ function DashboardPage() {
 }
 
 export default function App() {
+  const { theme } = useUIStore()
   const [booting, setBooting] = useState(true)
   const [bootLogs, setBootLogs] = useState<string[]>([])
   
@@ -197,11 +212,9 @@ export default function App() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#05070A] text-slate-100 flex flex-col font-sans relative overflow-hidden">
-      <div className="absolute inset-0 grid-bg opacity-[0.05] pointer-events-none z-0" />
-      <div className="absolute inset-0 scanlines opacity-[0.02] pointer-events-none z-0" />
-      <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[500px] bg-cyan-500/[0.03] filter blur-[100px] rounded-full pointer-events-none z-0" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[500px] bg-purple-500/[0.03] filter blur-[100px] rounded-full pointer-events-none z-0" />
+    <div className={theme}>
+      <InteractiveBackground>
+        <div className="flex flex-col font-sans relative overflow-hidden h-full">
 
       <AnimatePresence mode="wait">
         {booting ? (
@@ -212,40 +225,43 @@ export default function App() {
             transition={{ duration: 0.5 }}
             className="fixed inset-0 bg-[#05070A] z-50 flex items-center justify-center font-mono p-4"
           >
-            <div className="max-w-xl w-full glass-panel p-6 rounded-xl border-cyan-500/20 text-left space-y-4">
-              <div className="flex items-center space-x-2 border-b border-slate-800 pb-3">
-                <Terminal className="w-5 h-5 text-cyan-400 animate-pulse" />
+            <div className="max-w-xl w-full glass-panel p-6 rounded-xl text-left space-y-4">
+              <div className="flex items-center space-x-2 border-b border-white/10 pb-3">
+                <Terminal className="w-5 h-5 text-white/80" />
                 <span className="font-extrabold text-white text-md tracking-wider">
-                  REPO<span className="text-cyan-400 text-glow-cyan">PILOT</span>
+                  REPO<span className="text-white/60">PILOT</span>
                 </span>
-                <span className="text-[10px] text-slate-500">v1.0.4</span>
+                <span className="text-[10px] text-white/40">v1.0.4</span>
               </div>
               <div className="space-y-1.5 text-xs text-slate-300 min-h-36 max-h-48 overflow-y-auto">
                 {bootLogs.map((log, i) => (
                   <div key={i} className="flex items-start space-x-2">
-                    <span className="text-cyan-400 select-none">&gt;</span>
-                    <span>{log}</span>
+                    <span className="text-white/40 select-none">&gt;</span>
+                    <span className="text-white/80">{log}</span>
                   </div>
                 ))}
               </div>
-              <div className="border-t border-slate-800 pt-4 flex items-center justify-between text-[10px] text-slate-500">
+              <div className="border-t border-white/10 pt-4 flex items-center justify-between text-[10px] text-white/50">
                 <span className="flex items-center">
-                  <ShieldAlert className="w-3.5 h-3.5 text-yellow-500 mr-1.5 animate-pulse" />
+                  <ShieldAlert className="w-3.5 h-3.5 mr-1.5 opacity-80" />
                   INITIALIZING HUB...
                 </span>
-                <span className="text-cyan-400 font-bold uppercase animate-pulse">BOOTING</span>
+                <span className="font-bold uppercase opacity-80">BOOTING</span>
               </div>
             </div>
           </motion.div>
         ) : (
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/repo/:owner/:repo" element={<DashboardPage />} />
             <Route path="/repo/:owner/:repo/analyze" element={<LineByLineAnalysis />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         )}
       </AnimatePresence>
+      </div>
+    </InteractiveBackground>
     </div>
   )
 }
