@@ -1,30 +1,35 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 /**
- * Generate a clean, human-written README.md based on analysis data
+ * Generate a clean, comprehensive, human-written README.md based on analysis data
  */
 async function generateReadme(analysisJson, apiKey) {
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-    const systemPrompt = `You are an experienced open-source maintainer writing a clean, professional README.md for a repository.
+    const systemPrompt = `You are an experienced open-source maintainer writing a clean, comprehensive README.md for a project.
+
+REQUIRED STRUCTURE:
+1. # [Project Name]
+2. **[One-line description summarizing the entire project right at the top]**
+3. ## About the Project
+   - Provide a detailed 2-3 paragraph explanation:
+     - WHAT the project is for (its primary purpose, architectural goals, core functionality).
+     - WHAT it is used for (practical use cases, how developers or end-users interact with it, and what problem it solves).
+     - How its components work together based on the detected stack and files.
+4. ## Quick Start
+   - Clean bash code blocks for installation and local dev setup.
+5. ## Environment Variables (if applicable)
+6. ## API Reference / Endpoints (if applicable)
+7. ## Tech Stack
 
 FORMATTING & TONE RULES:
-1. Write naturally like a human developer documenting their project.
-2. ABSOLUTELY NO EMOJIS in headers or body text (do NOT use 🚀, ⚙️, 🛠️, 📝, 💡, etc.).
-3. DO NOT over-use markdown symbols:
-   - Use # once for the main project title at the top.
-   - Use ## only for major sections: Overview, Quick Start, Environment Variables, Architecture, API Reference.
-   - DO NOT nest multiple sub-headings (###, ####).
-   - DO NOT over-bold text or put asterisks on every line. Keep text clean and readable.
-4. Keep installation steps concise inside clean bash code blocks:
-   \`\`\`bash
-   # Clone and setup project
-   npm install
-   npm run dev
-   \`\`\`
-5. Output ONLY the raw markdown content. No conversational intro/outro or codeblock fence wrappers.`;
+- Write naturally in a human developer voice.
+- ABSOLUTELY NO EMOJIS in headers or body text (no 🚀, ⚙️, 🛠️, 📝, 💡, etc.).
+- Use # once for the title and ## only for major section headers.
+- Avoid excessive markdown bolding (**word**) or bullet star clutter on every line.
+- Output ONLY raw markdown without codeblock fence wrappers or intro chat text.`;
 
     const result = await model.generateContent([
       systemPrompt,
@@ -32,7 +37,6 @@ FORMATTING & TONE RULES:
     ]);
 
     let readmeContent = result.response.text().trim();
-    // Clean up any markdown code block fences if the AI wrapped the whole response
     readmeContent = readmeContent.replace(/^```markdown\n?/i, '').replace(/^```\n?/, '').replace(/\n?```$/i, '');
 
     return readmeContent;
@@ -47,14 +51,38 @@ FORMATTING & TONE RULES:
  */
 function generateFallbackReadme(analysisJson) {
   const { summary, setupSteps, envVars, routes, apis } = analysisJson;
-  const { repo } = analysisJson.meta || { repo: 'Project' };
+  const { owner, repo, description } = analysisJson.meta || { owner: 'Owner', repo: 'Project' };
+
+  const projectType = summary?.projectType || 'Software Application';
+  const archType = summary?.architectureType || 'Modular Architecture';
+  const stackList = (summary?.primaryTechStack || []).join(', ') || 'Node.js, JavaScript';
+  const entryFile = analysisJson.entryPoint?.file || 'the primary entry point';
 
   let readme = `# ${repo}\n\n`;
 
-  if (summary && summary.oneLiner) {
-    readme += `${summary.oneLiner}\n\n`;
-  }
+  // 1. One-line project description at the top
+  const oneLiner = summary?.oneLiner || `${repo} is a ${projectType} built with ${stackList}.`;
+  readme += `**${oneLiner}**\n\n`;
 
+  // 2. Detailed project description section
+  readme += `## About the Project\n\n`;
+  readme += `${repo} is a ${projectType} utilizing a ${archType}. `;
+  if (description) {
+    readme += `${description} `;
+  }
+  readme += `It is designed to provide a structured, maintainable code environment powered by ${stackList}.\n\n`;
+
+  readme += `### What It Is Used For\n`;
+  readme += `This repository is used to run and deploy ${projectType.toLowerCase()} services. `;
+  if (routes && routes.length > 0) {
+    readme += `It exposes ${routes.length} application routing endpoints starting from \`${entryFile}\`, facilitating client-server communication and API processing. `;
+  }
+  if (envVars && envVars.length > 0) {
+    readme += `It includes configurable runtime environments managed via ${envVars.length} environment variables. `;
+  }
+  readme += `Developers can use this project as a foundation for building, testing, and deploying production features.\n\n`;
+
+  // 3. Quick Start
   readme += `## Quick Start\n\n`;
   if (setupSteps && setupSteps.length > 0) {
     readme += `\`\`\`bash\n`;
@@ -63,9 +91,10 @@ function generateFallbackReadme(analysisJson) {
     });
     readme = readme.trimEnd() + `\n\`\`\`\n\n`;
   } else {
-    readme += `\`\`\`bash\nnpm install\nnpm run dev\n\`\`\`\n\n`;
+    readme += `\`\`\`bash\n# Install dependencies & start dev server\nnpm install\nnpm run dev\n\`\`\`\n\n`;
   }
 
+  // 4. Environment Variables
   if (envVars && envVars.length > 0) {
     readme += `## Environment Variables\n\nConfigure the following environment keys in a .env file:\n\n`;
     readme += `| Key | Required | Default |\n| --- | --- | --- |\n`;
@@ -75,6 +104,7 @@ function generateFallbackReadme(analysisJson) {
     readme += '\n';
   }
 
+  // 5. API Endpoints
   if (routes && routes.length > 0) {
     readme += `## API Endpoints\n\n`;
     readme += `| Method | Endpoint Path | Source File |\n| --- | --- | --- |\n`;
@@ -87,6 +117,7 @@ function generateFallbackReadme(analysisJson) {
     readme += '\n';
   }
 
+  // 6. Tech Stack
   if (apis && apis.length > 0) {
     readme += `## Tech Stack\n\n`;
     const categories = {};
