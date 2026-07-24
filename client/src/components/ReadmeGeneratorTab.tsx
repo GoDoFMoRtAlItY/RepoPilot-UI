@@ -26,7 +26,7 @@ export default function ReadmeGeneratorTab() {
     if (!analysis?.meta) return
     setIsGenerating(true)
     try {
-      const response = await generateReadme(analysis.meta.owner, analysis.meta.repo, aiKey || undefined)
+      const response = await generateReadme(analysis.meta.owner, analysis.meta.repo, aiKey || undefined, analysis)
       setReadmeContent(response.readme)
     } catch (err) {
       console.error('Failed to generate readme', err)

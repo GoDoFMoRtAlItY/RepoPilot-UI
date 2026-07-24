@@ -98,7 +98,7 @@ export const askAiQuestion = async (owner: string, repo: string, question: strin
   }
 };
 
-export const generateReadme = async (owner: string, repo: string, aiKey?: string) => {
+export const generateReadme = async (owner: string, repo: string, aiKey?: string, analysis?: any) => {
   try {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json'
@@ -109,7 +109,8 @@ export const generateReadme = async (owner: string, repo: string, aiKey?: string
     
     const response = await axios.post(`${API_BASE_URL}/readme`, {
       owner,
-      repo
+      repo,
+      analysis
     }, { headers });
     
     return response.data;

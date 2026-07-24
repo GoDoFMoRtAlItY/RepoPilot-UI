@@ -5,16 +5,16 @@ const { generateReadme, generateFallbackReadme } = require('../services/aiReadme
 
 router.post('/', async (req, res) => {
   try {
-    const { owner, repo } = req.body;
+    const { owner, repo, analysis: bodyAnalysis } = req.body;
     const apiKey = req.headers['x-ai-key'];
     
     if (!owner || !repo) {
       return res.status(400).json({ error: 'Missing owner or repo' });
     }
 
-    // Get cached analysis for this repo
+    // Get cached analysis for this repo or fallback to body analysis
     const cacheKey = `${owner}/${repo}`;
-    const analysis = cache.get(cacheKey);
+    const analysis = bodyAnalysis || cache.get(cacheKey);
     
     if (!analysis) {
       return res.status(404).json({ error: 'Repo not analyzed yet. Please analyze first.' });
