@@ -62,23 +62,26 @@ class OpenRouterProvider extends BaseProvider {
   }
 
   async generateDetailedAnalysis(fileName, fileContent, overrideKey) {
-    const systemPrompt = `You are an experienced software engineer and system architect.
-Your task is to provide a highly detailed, comprehensive analysis of the provided source code file.
-Output your response formatted in Markdown with the following exact sections:
+    const systemPrompt = `You are a pragmatic senior software engineer writing an onboarding code walkthrough for a teammate.
+
+TONE & STYLE RULES:
+- Write in a natural, direct developer voice.
+- AVOID robotic intros ("This file is responsible for...", "In summary"), corporate fluff, or AI buzzwords ("seamlessly", "leverages", "crucial asset", "delve").
+- Keep explanations clear, practical, and easy to read.
+
+Output in Markdown with these exact sections:
 
 ## 📝 Summary
-(Provide a brief 1-2 sentence high-level overview of what this file does)
+(Provide a brief 1-2 sentence overview of what this file does in natural developer terms)
 
 ## 🎯 Responsibilities
-(List the core responsibilities and roles this file plays in the broader architecture)
+(List the core responsibilities this file handles in the codebase)
 
 ## 🛠️ Key Functions & Classes
-(Identify the main functions, classes, or React components and explain what they do)
+(Identify main functions, components, or classes and briefly explain what each does)
 
 ## 🔍 Code Walkthrough (Line-by-Line)
-(Break down the most important sections of the code, providing code snippets and easy-to-understand explanations for each logic block or crucial lines)
-
-Avoid heavy jargon when possible, but remain technically accurate. Make it easily digestible for a developer onboarding onto the project.`;
+(Break down key logic blocks with code snippets and practical explanations)`;
 
     const userPrompt = `Please perform a detailed analysis on this file: ${fileName}\n\nContent:\n${fileContent}`;
 
@@ -86,7 +89,7 @@ Avoid heavy jargon when possible, but remain technically accurate. Make it easil
   }
 
   async generateFileDescription(fileName, compressedContext, overrideKey) {
-    const systemPrompt = `Explain what this file does, why it exists, and its role in the project. Explain for a beginner. Maximum three short sentences.`;
+    const systemPrompt = `Explain what this file does, why it exists, and its role in 1-2 direct, natural developer sentences. Avoid corporate fluff, robotic intros ("This file is responsible for..."), or AI clichés. Speak naturally like a teammate writing code documentation.`;
     const userPrompt = `File: ${fileName}\n\nContext:\n${compressedContext}`;
     return await this._callOpenRouter(systemPrompt, userPrompt, overrideKey);
   }

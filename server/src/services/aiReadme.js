@@ -8,17 +8,20 @@ async function generateReadme(analysisJson, apiKey) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-    const systemPrompt = `You are an expert developer who writes excellent, clear, and comprehensive README.md files for software projects.
+    const systemPrompt = `You are a practical senior software engineer writing a clean, professional, and authentic README.md for a project.
 
-You will be provided with the JSON analysis of a repository. Your task is to generate a professional README.md that includes:
-1. Title and Project description (using the summary data)
-2. Features/Tech Stack (using the detected APIs and frameworks)
-3. Getting Started / Installation (using the setup steps and env vars)
-4. Project Structure / Architecture (using the entry point and file roles)
-5. API Reference (summarize the key routes if any)
-
-Make it look beautiful with markdown, badges (if applicable), and clear headings.
-Do NOT include a greeting or conversation, just output the raw markdown content for the README.`;
+GUIDELINES FOR HUMAN TONE:
+1. Write in a natural, direct developer voice.
+2. AVOID corporate fluff, generic promotional hype ("This revolutionary project...", "State-of-the-art solution"), or AI clichés ("In summary", "Seamlessly integrates", "Delve into").
+3. Include these practical sections:
+   - # Project Title & One-line Summary
+   - ## Overview
+   - ## Tech Stack & Architecture
+   - ## Quick Start / Local Setup (with exact copy-paste commands)
+   - ## Environment Variables
+   - ## Key Endpoints / API Overview (if applicable)
+4. Make code blocks clean, bash/shell ready, and tables readable.
+5. Output ONLY raw markdown without backtick codeblock wrappers or chat intro text.`;
 
     const result = await model.generateContent([
       systemPrompt,
@@ -27,7 +30,7 @@ Do NOT include a greeting or conversation, just output the raw markdown content 
 
     let readmeContent = result.response.text();
     // Clean up any markdown code block fences if the AI wrapped the whole response
-    readmeContent = readmeContent.replace(/^```markdown\n/, '').replace(/\n```$/, '');
+    readmeContent = readmeContent.replace(/^```markdown\n/, '').replace(/\n```$/, '').replace(/^```\n/, '');
 
     return readmeContent;
   } catch (error) {
@@ -44,44 +47,47 @@ function generateFallbackReadme(analysisJson) {
   const { owner, repo } = analysisJson.meta || { owner: 'Owner', repo: 'Repo' };
 
   let readme = `# ${repo}\n\n`;
-  readme += `> ${summary.oneLiner}\n\n`;
+  if (summary.oneLiner) {
+    readme += `${summary.oneLiner}\n\n`;
+  }
 
-  readme += `## 🚀 Getting Started\n\n### Prerequisites\n\nMake sure you have the required dependencies installed.\n\n### Installation\n\n`;
+  readme += `## 🚀 Quick Start\n\n`;
   setupSteps.forEach(step => {
-    readme += `**${step.title}**\n\`\`\`bash\n${step.command}\n\`\`\`\n\n`;
+    readme += `### ${step.title}\n${step.description ? `${step.description}\n` : ''}\`\`\`bash\n${step.command}\n\`\`\`\n\n`;
   });
 
   if (envVars.length > 0) {
-    readme += `## ⚙️ Environment Variables\n\nCreate a \`.env\` file in the root directory and add the following:\n\n| Variable | Required | Default |\n|---|---|---|\n`;
+    readme += `## ⚙️ Environment Variables\n\nCopy \`.env.example\` to \`.env\` and configure the following keys:\n\n| Key | Required | Default |\n|---|---|---|\n`;
     envVars.forEach(ev => {
-      readme += `| \`${ev.name}\` | ${ev.required ? '✅' : '❌'} | ${ev.defaultValue || '-'} |\n`;
+      readme += `| \`${ev.name}\` | ${ev.required ? 'Yes' : 'No'} | ${ev.defaultValue ? `\`${ev.defaultValue}\`` : '-'} |\n`;
     });
     readme += '\n';
   }
 
   if (routes.length > 0) {
-    readme += `## 🛣️ API Routes\n\n| Method | Path | File |\n|---|---|---|\n`;
+    readme += `## 🛣️ API Endpoints\n\n| Method | Endpoint Path | Source File |\n|---|---|---|\n`;
     routes.slice(0, 15).forEach(rt => {
       readme += `| \`${rt.method}\` | \`${rt.path}\` | \`${rt.file}\` |\n`;
     });
     if (routes.length > 15) {
-      readme += `\n*...and ${routes.length - 15} more routes.*\n`;
+      readme += `\n_*...and ${routes.length - 15} additional endpoints.*_\n`;
     }
     readme += '\n';
   }
 
-  readme += `## 🛠️ Tech Stack\n\n`;
-  const categories = {};
-  apis.forEach(api => {
-    if (!categories[api.category]) categories[api.category] = [];
-    categories[api.category].push(api.name);
-  });
-  
-  for (const [cat, items] of Object.entries(categories)) {
-    readme += `- **${cat.charAt(0).toUpperCase() + cat.slice(1)}**: ${items.join(', ')}\n`;
+  if (apis.length > 0) {
+    readme += `## 🛠️ Tech Stack & Packages\n\n`;
+    const categories = {};
+    apis.forEach(api => {
+      if (!categories[api.category]) categories[api.category] = [];
+      categories[api.category].push(api.name);
+    });
+    
+    for (const [cat, items] of Object.entries(categories)) {
+      readme += `- **${cat.charAt(0).toUpperCase() + cat.slice(1)}**: ${items.join(', ')}\n`;
+    }
   }
 
-  readme += `\n---\n*Auto-generated by RepoPilot*`;
   return readme;
 }
 

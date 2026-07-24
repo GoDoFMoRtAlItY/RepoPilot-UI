@@ -146,88 +146,88 @@ function generateDeterministicDescription(metadata) {
   const lowerFilename = filename.toLowerCase();
 
   // LEVEL 1: Specific Files
-  if (lowerFilename === 'readme.md') return 'Introduces the project and explains how to run it.';
-  if (lowerFilename === 'package.json') return 'Stores project information, dependencies and development commands.';
-  if (lowerFilename === 'package-lock.json' || lowerFilename === 'yarn.lock' || lowerFilename === 'pnpm-lock.yaml') return 'Locks dependency versions for consistent installations.';
-  if (lowerFilename === 'dockerfile') return 'Contains instructions for building a Docker container image.';
-  if (lowerFilename === 'docker-compose.yml' || lowerFilename === 'docker-compose.yaml') return 'Defines and runs multi-container Docker applications.';
-  if (lowerFilename === 'tsconfig.json') return 'Configures TypeScript compiler options for the project.';
-  if (lowerFilename.startsWith('vite.config.')) return 'Configuration file for the Vite build tool and development server.';
-  if (lowerFilename.startsWith('next.config.')) return 'Configuration settings for the Next.js framework.';
-  if (lowerFilename.startsWith('tailwind.config.')) return 'Configuration for Tailwind CSS utility classes and design system.';
-  if (lowerFilename === '.gitignore') return 'Specifies intentionally untracked files that Git should ignore.';
-  if (lowerFilename === '.env') return 'Stores local environment variables and secrets.';
-  if (lowerFilename === '.env.example') return 'Provides a template for required environment variables.';
-  if (lowerFilename === 'license' || lowerFilename === 'license.md') return 'Specifies the legal license and terms of use for the project.';
-  if (lowerFilename === 'favicon.ico') return 'The website icon displayed in the browser tab.';
-  if (lowerFilename === 'index.html') return 'The main HTML entry point for the web application.';
-  if (lowerFilename === 'robots.txt') return 'Tells web crawlers which pages they can or cannot request.';
-  if (lowerFilename === 'manifest.json') return 'Provides metadata for Progressive Web Apps (PWA).';
-  if (lowerFilename === 'requirements.txt') return 'Lists Python dependencies required for the project.';
-  if (lowerFilename === 'cargo.toml') return 'Configuration and dependency manifest for Rust projects.';
-  if (lowerFilename === 'pom.xml') return 'Configuration file for Maven-based Java projects.';
+  if (lowerFilename === 'readme.md') return 'Main project README — setup guide, overview, and usage instructions.';
+  if (lowerFilename === 'package.json') return 'NPM manifest — project dependencies, scripts, and package configuration.';
+  if (lowerFilename === 'package-lock.json' || lowerFilename === 'yarn.lock' || lowerFilename === 'pnpm-lock.yaml') return 'Locked dependency tree ensuring consistent installations across environments.';
+  if (lowerFilename === 'dockerfile') return 'Docker container image configuration and build steps.';
+  if (lowerFilename === 'docker-compose.yml' || lowerFilename === 'docker-compose.yaml') return 'Multi-container Docker application setup for local services.';
+  if (lowerFilename === 'tsconfig.json') return 'TypeScript compiler options and type-checking rules.';
+  if (lowerFilename.startsWith('vite.config.')) return 'Vite dev server and bundler configuration.';
+  if (lowerFilename.startsWith('next.config.')) return 'Next.js framework configuration and build settings.';
+  if (lowerFilename.startsWith('tailwind.config.')) return 'Tailwind CSS design tokens and theme settings.';
+  if (lowerFilename === '.gitignore') return 'Git ignore rules for untracked build artifacts and secrets.';
+  if (lowerFilename === '.env') return 'Local environment variables and secrets (uncommitted).';
+  if (lowerFilename === '.env.example') return 'Environment variable template listing required keys.';
+  if (lowerFilename === 'license' || lowerFilename === 'license.md') return 'Open-source software license and usage terms.';
+  if (lowerFilename === 'favicon.ico') return 'Browser favicon asset.';
+  if (lowerFilename === 'index.html') return 'Main HTML entry point for the frontend.';
+  if (lowerFilename === 'robots.txt') return 'Search engine crawler rules.';
+  if (lowerFilename === 'manifest.json') return 'Progressive Web App (PWA) manifest and metadata.';
+  if (lowerFilename === 'requirements.txt') return 'Python package dependencies list.';
+  if (lowerFilename === 'cargo.toml') return 'Rust project configuration and dependencies.';
+  if (lowerFilename === 'pom.xml') return 'Maven build and dependency configuration for Java.';
 
   // LEVEL 1: Media, binary, archives, fonts
   const ext = metadata.extension;
-  if (['.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.webp'].includes(ext)) return "This image is used as part of the application's interface.";
-  if (['.mp4', '.mov', '.avi', '.webm'].includes(ext)) return "This video file is used within the application.";
-  if (['.woff', '.woff2', '.ttf', '.otf', '.eot'].includes(ext)) return "This font file provides custom typography for the application.";
-  if (['.zip', '.tar', '.gz', '.rar'].includes(ext)) return "Compressed archive file containing project resources.";
-  if (ext === '.pdf') return "Portable Document Format file, likely containing documentation.";
-  if (['.bin', '.exe', '.dll', '.so', '.dylib'].includes(ext)) return "Compiled binary executable or library file.";
+  if (['.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.webp'].includes(ext)) return "UI image asset.";
+  if (['.mp4', '.mov', '.avi', '.webm'].includes(ext)) return "Media video file.";
+  if (['.woff', '.woff2', '.ttf', '.otf', '.eot'].includes(ext)) return "Custom web font asset.";
+  if (['.zip', '.tar', '.gz', '.rar'].includes(ext)) return "Compressed resource archive.";
+  if (ext === '.pdf') return "Document file.";
+  if (['.bin', '.exe', '.dll', '.so', '.dylib'].includes(ext)) return "Compiled binary executable or library.";
 
   switch (role) {
     case 'Entry Point':
       if (metadata.framework === 'Express') {
-        return `Main Express application entry point. ${majorImports ? `Initializes ${majorImports} and registers ${routeCount} API route groups.` : 'Initializes server and middleware.'}`;
+        return `Express server entry point — initializes app server${majorImports ? ` and imports ${majorImports}` : ''}${routeCount > 0 ? ` (${routeCount} routes)` : ''}.`;
       }
       if (metadata.framework === 'React') {
-        return `Main React application entry point. Bootstraps the frontend application.`;
+        return `Frontend entry point — mounts the React component tree.`;
       }
       return `Main application entry point.`;
 
     case 'Express Route':
-      return `Defines Express API routes. ${routeCount > 0 ? `Contains ${routeCount} HTTP endpoints.` : ''}`;
+      return `Express API route handlers${routeCount > 0 ? ` (${routeCount} endpoints)` : ''}.`;
 
     case 'React Component':
-      return `Reusable React UI component${majorImports ? ` utilizing ${majorImports}` : ''}.`;
+      return `React UI component${majorImports ? ` using ${majorImports}` : ''}.`;
 
     case 'React Hook':
-      return `Custom React hook that manages application state or side effects.`;
+      return `Custom React hook managing component state or side effects.`;
 
     case 'Utility':
-      return `Collection of helper functions used across the project.`;
+      return `Utility functions for data formatting and common helpers.`;
 
     case 'Controller':
-      return `Handles incoming HTTP requests and business logic.`;
+      return `Request controller handling business logic and responses.`;
 
     case 'Middleware':
-      return `Express middleware responsible for intercepting requests and adding context or validation.`;
+      return `Express middleware for request parsing, validation, or authentication.`;
 
     case 'Database Model':
-      return `Defines the database schema and data relationships.`;
+      return `Database model defining schema and query methods.`;
 
     case 'Configuration':
-      if (filename === 'package.json') return `Project manifest containing dependencies and script configurations.`;
-      return `Application configuration and runtime settings.`;
+      if (filename === 'package.json') return `NPM manifest defining project dependencies and scripts.`;
+      return `Application runtime and build configuration.`;
 
     case 'Environment':
-      return `Environment configuration file containing environment variables.`;
+      return `Environment configuration file.`;
 
     case 'Service':
-      return `Contains business logic and external API integrations${majorImports ? ` using ${majorImports}` : ''}.`;
+      return `Service module for core business logic${majorImports ? ` with ${majorImports}` : ''}.`;
 
     case 'Parser':
-      return `Responsible for AST parsing and metadata extraction.`;
+      return `AST parser and code metadata extractor module.`;
 
     case 'Documentation':
-      return `Project documentation and setup instructions.`;
+      return `Project documentation file.`;
 
     default:
-      if (filename.endsWith('.json')) return 'JSON data or configuration file.';
+      if (filename.endsWith('.json')) return 'JSON configuration or data file.';
       if (filename.endsWith('.md')) return 'Markdown documentation file.';
-      if (metadata.extension === '.css') return 'Stylesheet defining visual styles.';
-      return `Project source file.`;
+      if (metadata.extension === '.css') return 'CSS stylesheet for UI styling.';
+      return `Source code file.`;
   }
 }
 
