@@ -19,20 +19,21 @@ class ProviderManager {
   }
 
   _getFallbackOrder() {
-    const primary = (process.env.AI_PROVIDER || 'openrouter').toLowerCase();
-    // Do not try placeholder providers, or providers without credentials. Besides
-    // producing misleading logs, this made a real OpenRouter failure look like a
-    // generic failure after Gemini, Kalavai and Local had also failed.
-    const available = Object.keys(this.providers).filter((provider) => {
+    const primary = (process.env.AI_PROVIDER || 'gemini').toLowerCase();
+    // Build a list of providers that have credentials configured
+    const configured = Object.keys(this.providers).filter((provider) => {
       if (provider === 'openrouter') return Boolean(process.env.OPENROUTER_API_KEY);
       if (provider === 'gemini') return Boolean(process.env.GEMINI_API_KEY);
+      if (provider === 'kalavai') return Boolean(process.env.KALAVAI_API_KEY);
+      if (provider === 'local') return Boolean(process.env.LOCAL_AI_URL);
       return false;
     });
+    // Primary goes first, then all other configured providers, then mock
     const order = [primary];
-    for (const p of available) {
+    for (const p of configured) {
       if (p !== primary) order.push(p);
     }
-    order.push('mock'); // Always fallback to mock so it never breaks
+    order.push('mock'); // Always fallback to mock so it never throws
     return order;
   }
 

@@ -52,9 +52,9 @@ export default function Navbar({ onToggleMobileMenu }: NavbarProps) {
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="base-btn flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs md:text-sm transition-all cursor-pointer"
           >
-            <Database className="w-4 h-4 text-[var(--text-secondary)]" />
-            <span className="font-semibold">{analyzedRepo}</span>
-            <span className="text-[10px] text-[var(--text-secondary)] font-normal">▼</span>
+            <Database className="w-4 h-4 text-[var(--text-secondary)] shrink-0" />
+            <span className="font-semibold truncate max-w-[120px] md:max-w-[300px]">{analyzedRepo}</span>
+            <span className="text-[10px] text-[var(--text-secondary)] font-normal shrink-0">▼</span>
           </button>
 
           {dropdownOpen && (
@@ -108,13 +108,13 @@ export default function Navbar({ onToggleMobileMenu }: NavbarProps) {
               </span>
             </div>
           ) : (
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-1.5 md:space-x-3">
               <button
                 onClick={toggleTheme}
-                className="base-btn flex items-center space-x-1.5 px-3 py-1.5 rounded-lg cursor-pointer text-xs"
+                className="base-btn flex items-center justify-center p-1.5 md:px-3 md:py-1.5 rounded-lg cursor-pointer text-xs"
                 title="Toggle Light/Dark Theme"
               >
-                {theme === 'dark' ? <Sun className="w-3 h-3 opacity-70" /> : <Moon className="w-3 h-3 opacity-70" />}
+                {theme === 'dark' ? <Sun className="w-3.5 h-3.5 opacity-70" /> : <Moon className="w-3.5 h-3.5 opacity-70" />}
               </button>
 
               <button
@@ -124,18 +124,18 @@ export default function Navbar({ onToggleMobileMenu }: NavbarProps) {
                     analyzeRepo(owner, repo, true)
                   }
                 }}
-                className="base-btn flex items-center space-x-1.5 px-3 py-1.5 rounded-lg cursor-pointer text-xs"
+                className="base-btn flex items-center justify-center p-1.5 md:px-3 md:py-1.5 rounded-lg cursor-pointer text-xs"
                 title="Re-Analyze Repository"
               >
-                <RefreshCw className="w-3 h-3 opacity-70" />
+                <RefreshCw className="w-3.5 h-3.5 opacity-70" />
               </button>
               
               <button
                 onClick={toggleFocusMode}
-                className={`base-btn flex items-center space-x-1.5 px-3 py-1.5 rounded-lg cursor-pointer text-xs ${isFocusMode ? 'bg-[var(--glass-hover-bg)] border-[var(--glass-hover-border)]' : ''}`}
+                className={`base-btn flex items-center justify-center p-1.5 md:px-3 md:py-1.5 rounded-lg cursor-pointer text-xs ${isFocusMode ? 'bg-[var(--glass-hover-bg)] border-[var(--glass-hover-border)]' : ''}`}
                 title="Toggle Focus Mode"
               >
-                <Focus className="w-3 h-3 opacity-70" />
+                <Focus className="w-3.5 h-3.5 opacity-70" />
               </button>
             </div>
           )}

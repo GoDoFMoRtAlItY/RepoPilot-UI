@@ -40,12 +40,12 @@ const ROLE_COLORS: Record<string, { bg: string, border: string, accent: string, 
   'model':      { bg: 'bg-[#0f1628]', border: 'border-purple-500/40', accent: 'bg-purple-400', text: 'text-purple-600 dark:text-purple-400', glow: 'shadow-[0_0_8px_rgba(168,85,247,0.15)]' },
   'service':    { bg: 'bg-[#0f1a1a]', border: 'border-green-500/40',  accent: 'bg-green-400',  text: 'text-green-400',  glow: 'shadow-[0_0_8px_rgba(74,222,128,0.15)]' },
   'config':     { bg: 'bg-[#1a1a0f]', border: 'border-yellow-500/40', accent: 'bg-yellow-400', text: 'text-yellow-400', glow: 'shadow-[0_0_8px_rgba(250,204,21,0.15)]' },
-  'util':       { bg: 'bg-[#0B1220]', border: 'border-slate-500/40',  accent: 'bg-slate-400',  text: 'text-[var(--text-secondary)]',  glow: '' },
-  'test':       { bg: 'bg-[#0B1220]', border: 'border-indigo-500/40', accent: 'bg-indigo-400', text: 'text-indigo-600 dark:text-indigo-400', glow: '' },
+  'util':       { bg: 'bg-[var(--surface-card)]', border: 'border-slate-500/40',  accent: 'bg-slate-400',  text: 'text-[var(--text-secondary)]',  glow: '' },
+  'test':       { bg: 'bg-[var(--surface-card)]', border: 'border-indigo-500/40', accent: 'bg-indigo-400', text: 'text-indigo-600 dark:text-indigo-400', glow: '' },
   'entry':      { bg: 'bg-[#0f1a28]', border: 'border-blue-500/50',   accent: 'bg-blue-400',   text: 'text-blue-600 dark:text-blue-400',   glow: 'shadow-[0_0_12px_rgba(59,130,246,0.25)]' },
-  'directory':  { bg: 'bg-[#0B1220]', border: 'border-slate-600/40',  accent: 'bg-slate-500',  text: 'text-[var(--text-secondary)]',  glow: '' },
+  'directory':  { bg: 'bg-[var(--surface-card)]', border: 'border-slate-600/40',  accent: 'bg-slate-500',  text: 'text-[var(--text-secondary)]',  glow: '' },
   'system':     { bg: 'bg-[#0a1628]', border: 'border-blue-500/40',   accent: 'bg-blue-400',   text: 'text-blue-600 dark:text-blue-400',   glow: 'shadow-[0_0_8px_rgba(59,130,246,0.15)]' },
-  'default':    { bg: 'bg-[#0B1220]', border: 'border-[var(--border-color)]',  accent: 'bg-cyan-400',   text: 'text-[var(--text-primary)]',  glow: '' },
+  'default':    { bg: 'bg-[var(--surface-card)]', border: 'border-[var(--border-color)]',  accent: 'bg-cyan-400',   text: 'text-[var(--text-primary)]',  glow: '' },
 }
 
 // Get the appropriate icon for each node type
@@ -288,7 +288,7 @@ export default function ArchitectureTab() {
       <div className="flex-1 glass-panel rounded-xl overflow-hidden relative border-[var(--border-color)]">
         {/* Top overlay: title + layout toggle */}
         <div className="absolute top-4 left-4 z-10 space-y-3">
-          <div className="bg-[#0B1220]/90 border border-[var(--border-color)] p-3 rounded-lg pointer-events-none">
+          <div className="bg-[var(--surface-card)]/90 border border-[var(--border-color)] p-3 rounded-lg pointer-events-none shadow-sm">
             <div className="text-xs text-cyan-600 dark:text-cyan-400 font-semibold uppercase flex items-center space-x-1.5 font-mono">
               <Workflow className="w-3.5 h-3.5" />
               <span>INTERACTIVE ARCHITECTURE SCHEMATIC</span>
@@ -324,7 +324,7 @@ export default function ArchitectureTab() {
         </div>
 
         {/* Legend overlay */}
-        <div className="absolute bottom-4 left-4 z-10 bg-[#0B1220]/90 border border-[var(--border-color)] p-3 rounded-lg">
+        <div className="absolute bottom-4 left-4 z-10 bg-[var(--surface-card)] border border-[var(--border-color)] p-3 rounded-lg shadow-sm">
           <span className="text-[9px] text-[var(--text-secondary)] uppercase tracking-widest block mb-2">LAYER LEGEND</span>
           <div className="flex flex-wrap gap-2">
             {legendItems.map(item => (
@@ -381,7 +381,7 @@ export default function ArchitectureTab() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 320, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="w-80 h-full glass-panel rounded-xl p-5 border-l border-cyan-500/20 bg-[#0B1220]/95 flex flex-col justify-between absolute right-0 z-30 lg:relative lg:right-auto text-left shadow-2xl"
+            className="w-80 h-full glass-panel rounded-xl p-5 border-l border-[var(--border-color)] bg-[var(--surface-card)] flex flex-col justify-between absolute right-0 z-30 lg:relative lg:right-auto text-left shadow-2xl"
           >
             <div className="space-y-6">
               {/* Header */}

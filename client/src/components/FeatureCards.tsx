@@ -8,8 +8,8 @@ const featureCards = [
     description:
       'Instantly analyze complex codebases. We transform raw source code into actionable architectural insights and interactive visual graphs.',
     accentColor: 'text-indigo-400',
-    glowColor: 'rgba(99, 102, 241, 0.15)',
-    borderHover: 'group-hover:border-indigo-500/40',
+    glowColor: 'var(--accent-primary)',
+    borderHover: 'group-hover:border-[var(--accent-primary)]',
   },
   {
     icon: Cpu,
@@ -17,8 +17,8 @@ const featureCards = [
     description:
       'Let AI do the heavy lifting. Generate documentation, map APIs, and discover tech debt seamlessly within seconds.',
     accentColor: 'text-emerald-400',
-    glowColor: 'rgba(16, 185, 129, 0.15)',
-    borderHover: 'group-hover:border-emerald-500/40',
+    glowColor: 'var(--accent-success, #10b981)',
+    borderHover: 'group-hover:border-[var(--accent-success,#10b981)]',
   },
   {
     icon: ShieldAlert,
@@ -26,8 +26,8 @@ const featureCards = [
     description:
       'Scan for vulnerabilities, exposed secrets, and insecure patterns. Get actionable security audit reports with severity scoring.',
     accentColor: 'text-amber-400',
-    glowColor: 'rgba(245, 158, 11, 0.15)',
-    borderHover: 'group-hover:border-amber-500/40',
+    glowColor: 'var(--accent-warning, #f59e0b)',
+    borderHover: 'group-hover:border-[var(--accent-warning,#f59e0b)]',
   },
 ]
 
@@ -58,13 +58,13 @@ export default function FeatureCards() {
       <div className="max-w-5xl mx-auto">
         {/* Section header */}
         <div className="text-center mb-12 space-y-3">
-          <h2 className="text-xs font-mono tracking-widest text-cyan-400 uppercase">
+          <h2 className="text-xs font-mono tracking-widest text-[var(--accent-primary)] uppercase">
             CORE_MODULES
           </h2>
           <h3 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)] tracking-tight">
             Built for developer velocity
           </h3>
-          <p className="text-slate-400 dark:text-slate-400 text-sm max-w-lg mx-auto">
+          <p className="text-[var(--text-secondary)] text-sm max-w-lg mx-auto">
             Three pillars powering every repository analysis.
           </p>
         </div>
@@ -82,17 +82,20 @@ export default function FeatureCards() {
               key={card.title}
               variants={cardVariants}
               whileHover={{ y: -4, scale: 1.01 }}
-              className={`glass-panel p-6 rounded-2xl flex flex-col gap-4 group cursor-default relative overflow-hidden border border-[var(--border-color)] ${card.borderHover} transition-colors duration-300`}
-              style={{
-                boxShadow: `0 8px 32px 0 rgba(0, 0, 0, 0.25), inset 0 0 12px ${card.glowColor}`,
-              }}
+              className={`glass-panel p-6 md:p-8 rounded-2xl flex flex-col gap-4 group cursor-default relative overflow-hidden border border-[var(--border-color)] ${card.borderHover} transition-all duration-300`}
             >
+              {/* Dynamic glow in dark mode, hidden in light mode */}
+              <div 
+                className="absolute inset-0 opacity-0 group-hover:opacity-10 dark:group-hover:opacity-15 transition-opacity duration-300 pointer-events-none"
+                style={{ background: `radial-gradient(circle at center, ${card.glowColor}, transparent 70%)` }}
+              />
+
               {/* Top glow line on hover */}
-              <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[var(--accent-secondary)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
               {/* Icon */}
-              <div className="w-10 h-10 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] flex items-center justify-center group-hover:border-cyan-400/50 transition-colors duration-300">
-                <card.icon className={`w-5 h-5 ${card.accentColor}`} />
+              <div className="w-12 h-12 rounded-xl bg-[var(--surface-sunken,var(--bg-secondary))] border border-[var(--border-color)] flex items-center justify-center group-hover:border-[var(--accent-secondary)]/50 transition-colors duration-300 shadow-sm relative z-10">
+                <card.icon className={`w-5 h-5 ${card.accentColor} dark:opacity-100 opacity-90`} />
               </div>
 
               {/* Title */}
@@ -101,7 +104,7 @@ export default function FeatureCards() {
               </h4>
 
               {/* Description — high contrast */}
-              <p className="text-sm leading-relaxed text-slate-300 dark:text-slate-300">
+              <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
                 {card.description}
               </p>
             </motion.div>

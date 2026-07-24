@@ -196,7 +196,7 @@ export default function AiAssistantTab() {
       className="h-[calc(100vh-120px)] flex flex-col font-mono text-[var(--text-primary)] text-left select-none relative"
     >
       {/* Top HUD Stats Panel */}
-      <div className="glass-panel p-4 rounded-xl border-[var(--border-color)] flex items-center justify-between shrink-0 mb-4 bg-[#0B1220]/60">
+      <div className="glass-panel p-4 rounded-xl border-[var(--border-color)] flex items-center justify-between shrink-0 mb-4 bg-[var(--surface-card)]">
         <div className="flex items-center space-x-2">
           <MessageSquareCode className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
           <div>
@@ -274,7 +274,7 @@ export default function AiAssistantTab() {
                 
                 <div className={`p-4 rounded-xl border font-sans ${
                   isAi 
-                    ? 'bg-[#0B1220]/75 border-slate-850/80 text-slate-200' 
+                    ? 'bg-[var(--surface-sunken)] border-[var(--border-color)] text-[var(--text-primary)]'
                     : 'bg-blue-600/15 border-blue-500/30 text-[var(--text-primary)]'
                 }`}>
                   {isAi ? (
@@ -315,7 +315,7 @@ export default function AiAssistantTab() {
             <div className="p-2 rounded-lg border bg-blue-600/10 border-blue-500/30 text-cyan-600 dark:text-cyan-400 shrink-0">
               <Bot className="w-4.5 h-4.5 animate-bounce" />
             </div>
-            <div className="p-3.5 rounded-xl bg-[#0B1220]/80 border border-slate-850/80 text-[var(--text-secondary)] text-xs flex items-center space-x-2 font-mono">
+            <div className="p-3.5 rounded-xl bg-[var(--surface-sunken)] border border-[var(--border-color)] text-[var(--text-secondary)] text-xs flex items-center space-x-2 font-mono">
               <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-600 dark:text-cyan-400" />
               <span className="animate-pulse">Consulting codebase knowledge graph...</span>
             </div>

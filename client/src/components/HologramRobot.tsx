@@ -311,7 +311,7 @@ export default function HologramRobot({ scanStatus = 'idle', repoUrl = '' }: Hol
                 <button 
                   type="button"
                   onClick={() => setSelectedNode(label.text)}
-                  className="bg-[#0B1220]/95 border border-cyan-500/35 hover:border-cyan-400 text-[9px] font-mono font-bold tracking-wider px-2.5 py-1.5 rounded-lg text-cyan-600 dark:text-cyan-400 hover:text-[var(--text-primary)] shadow-[0_0_15px_rgba(34,211,238,0.25)] cursor-pointer flex items-center gap-1.5 transition-all active:scale-95 whitespace-nowrap"
+                  className="bg-[var(--surface-card,var(--bg-secondary))] border border-[var(--accent-secondary)]/35 hover:border-[var(--accent-secondary)] text-[9px] font-mono font-bold tracking-wider px-2.5 py-1.5 rounded-lg text-[var(--accent-secondary)] hover:text-[var(--text-primary)] shadow-sm cursor-pointer flex items-center gap-1.5 transition-all active:scale-95 whitespace-nowrap"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
                   {label.text}

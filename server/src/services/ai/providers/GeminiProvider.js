@@ -12,10 +12,30 @@ class GeminiProvider extends BaseProvider {
     return key;
   }
 
+  async _callGemini(key, modelName, prompts, retries = 2) {
+    const genAI = new GoogleGenerativeAI(key);
+    const model = genAI.getGenerativeModel({ model: modelName || 'gemini-2.0-flash' });
+    try {
+      const result = await model.generateContent(prompts);
+      return result.response.text().trim();
+    } catch (err) {
+      if (err.status === 429 && retries > 0) {
+        // Per-minute quota hit — wait 10 s then retry
+        console.log(`[Gemini] Rate limited, retrying in 10s... (${retries} retries left)`);
+        await new Promise(r => setTimeout(r, 10000));
+        return this._callGemini(key, modelName, prompts, retries - 1);
+      }
+      if (err.status === 429) {
+        const error = new Error('Gemini Quota Exceeded');
+        error.status = 429;
+        throw error;
+      }
+      throw err;
+    }
+  }
+
   async generateDetailedAnalysis(fileName, fileContent, overrideKey) {
     const key = this._getKey(overrideKey);
-    const genAI = new GoogleGenerativeAI(key);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const systemPrompt = `You are an experienced software engineer and system architect.
 Your task is to provide a highly detailed, comprehensive analysis of the provided source code file.
@@ -37,26 +57,11 @@ Avoid heavy jargon when possible, but remain technically accurate. Make it easil
 
     const userPrompt = `Please perform a detailed analysis on this file: ${fileName}\n\nContent:\n${fileContent}`;
 
-    try {
-      const result = await model.generateContent([
-        systemPrompt,
-        { text: userPrompt }
-      ]);
-      return result.response.text().trim();
-    } catch (err) {
-      if (err.status === 429) {
-        const error = new Error('Gemini Quota Exceeded');
-        error.status = 429;
-        throw error;
-      }
-      throw err;
-    }
+    return await this._callGemini(key, 'gemini-2.0-flash', [systemPrompt, { text: userPrompt }]);
   }
 
   async answerQuestion(question, analysisJson, overrideKey) {
     const key = this._getKey(overrideKey);
-    const genAI = new GoogleGenerativeAI(key);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const systemPrompt = `You are RepoPilot, a friendly code onboarding assistant. You help beginners understand a GitHub repository based ONLY on the verified analysis data provided below.
 
@@ -73,39 +78,24 @@ STRICT RULES:
 REPOSITORY ANALYSIS DATA:
 ${JSON.stringify(analysisJson, null, 2)}`;
 
-    try {
-      const result = await model.generateContent([
-        systemPrompt,
-        { text: `User Question: ${question}` }
-      ]);
-      const answer = result.response.text();
-      
-      const citations = [];
-      const citationRegex = /\[([^:]+):L(\d+)\]\(([^)]+)\)/g;
-      let match;
-      while ((match = citationRegex.exec(answer)) !== null) {
-        citations.push({
-          file: match[1],
-          line: parseInt(match[2], 10),
-          githubUrl: match[3]
-        });
-      }
+    const answer = await this._callGemini(key, 'gemini-2.0-flash', [systemPrompt, { text: `User Question: ${question}` }]);
 
-      return { answer, citations };
-    } catch (err) {
-      if (err.status === 429) {
-        const error = new Error('Gemini Quota Exceeded');
-        error.status = 429;
-        throw error;
-      }
-      throw err;
+    const citations = [];
+    const citationRegex = /\[([^:]+):L(\d+)\]\(([^)]+)\)/g;
+    let match;
+    while ((match = citationRegex.exec(answer)) !== null) {
+      citations.push({
+        file: match[1],
+        line: parseInt(match[2], 10),
+        githubUrl: match[3]
+      });
     }
+
+    return { answer, citations };
   }
 
   async generateExecutiveSummary(analysisJson, overrideKey) {
     const key = this._getKey(overrideKey);
-    const genAI = new GoogleGenerativeAI(key);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const systemPrompt = `You are an expert software architect.
 Your task is to write EXACTLY ONE concise executive summary of the provided repository analysis.
@@ -119,26 +109,11 @@ Focus on the architecture, primary stack, and overall purpose.`;
       maturity: analysisJson.summary.projectMaturity
     })}`;
 
-    try {
-      const result = await model.generateContent([
-        systemPrompt,
-        { text: userPrompt }
-      ]);
-      return result.response.text().trim();
-    } catch (err) {
-      if (err.status === 429) {
-        const error = new Error('Gemini Quota Exceeded');
-        error.status = 429;
-        throw error;
-      }
-      throw err;
-    }
+    return await this._callGemini(key, 'gemini-2.0-flash', [systemPrompt, { text: userPrompt }]);
   }
 
   async generateSecurityReview(analysisJson, overrideKey) {
     const key = this._getKey(overrideKey);
-    const genAI = new GoogleGenerativeAI(key);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const systemPrompt = `You are a Senior DevSecOps Architect.
 Your task is to write EXACTLY ONE concise security review of the provided repository based on its static analysis findings.
@@ -155,26 +130,11 @@ Provide a high-level summary paragraph. No formatting, no bullet points, just a 
       recommendations: analysisJson.securityRecommendations
     })}`;
 
-    try {
-      const result = await model.generateContent([
-        systemPrompt,
-        { text: userPrompt }
-      ]);
-      return result.response.text().trim();
-    } catch (err) {
-      if (err.status === 429) {
-        const error = new Error('Gemini Quota Exceeded');
-        error.status = 429;
-        throw error;
-      }
-      throw err;
-    }
+    return await this._callGemini(key, 'gemini-2.0-flash', [systemPrompt, { text: userPrompt }]);
   }
 
   async generateApiExplanation(route, overrideKey) {
     const key = this._getKey(overrideKey);
-    const genAI = new GoogleGenerativeAI(key);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const systemPrompt = `You are a Senior API Architect.
 Your task is to write EXACTLY ONE concise explanation of what this specific API endpoint does.
@@ -191,20 +151,7 @@ No formatting, no bullet points, just a single paragraph. Focus on the method, p
       auth: route.auth
     })}`;
 
-    try {
-      const result = await model.generateContent([
-        systemPrompt,
-        { text: userPrompt }
-      ]);
-      return result.response.text().trim();
-    } catch (err) {
-      if (err.status === 429) {
-        const error = new Error('Gemini Quota Exceeded');
-        error.status = 429;
-        throw error;
-      }
-      throw err;
-    }
+    return await this._callGemini(key, 'gemini-2.0-flash', [systemPrompt, { text: userPrompt }]);
   }
 }
 

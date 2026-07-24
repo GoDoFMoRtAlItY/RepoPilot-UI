@@ -44,20 +44,13 @@ export default function AiPreviewSection() {
   useEffect(() => {
     let active = true
     const runSimulation = async () => {
-      // Clear previous messages
       setMessages([])
-      
-      // Step 1: Wait, then add User message
       await new Promise(r => setTimeout(r, 1500))
       if (!active) return
       setMessages([conversationSteps[0]])
-
-      // Step 2: Show typing spinner
       await new Promise(r => setTimeout(r, 1200))
       if (!active) return
       setTyping(true)
-
-      // Step 3: Stream AI reply
       await new Promise(r => setTimeout(r, 1500))
       if (!active) return
       setTyping(false)
@@ -65,16 +58,8 @@ export default function AiPreviewSection() {
     }
 
     runSimulation()
-
-    // Loop the simulation every 12 seconds
-    const interval = setInterval(() => {
-      runSimulation()
-    }, 12000)
-
-    return () => {
-      active = false
-      clearInterval(interval)
-    }
+    const interval = setInterval(() => { runSimulation() }, 12000)
+    return () => { active = false; clearInterval(interval) }
   }, [])
 
   const handleCopy = () => {
@@ -84,13 +69,13 @@ export default function AiPreviewSection() {
   }
 
   return (
-    <section className="py-20 px-4 md:px-8 bg-[#05070A] relative overflow-hidden">
-      {/* Background gradients */}
-      <div className="absolute top-[40%] right-[-5%] w-[45%] h-[300px] bg-blue-500/[0.02] filter blur-[100px] pointer-events-none" />
+    <section className="py-20 px-4 md:px-8 bg-[var(--bg-primary)] relative overflow-hidden">
+      {/* Background accent bloom — adapts to theme */}
+      <div className="absolute top-[40%] right-[-5%] w-[45%] h-[300px] bg-[var(--accent-primary)] opacity-[0.03] filter blur-[100px] pointer-events-none" />
 
       <div className="max-w-4xl mx-auto w-full space-y-8 relative z-10 text-left">
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <h2 className="text-xs font-mono tracking-widest text-cyan-600 dark:text-cyan-400 uppercase flex items-center justify-center space-x-1.5">
+          <h2 className="text-xs font-mono tracking-widest text-[var(--accent-secondary)] uppercase flex items-center justify-center space-x-1.5">
             <Cpu className="w-3.5 h-3.5 animate-pulse" />
             <span>AI_ASSISTANT_PREVIEW</span>
           </h2>
@@ -103,24 +88,24 @@ export default function AiPreviewSection() {
         </div>
 
         {/* Console / IDE Frame mockup */}
-        <div className="glass-panel rounded-xl overflow-hidden border-[var(--border-color)] shadow-[0_20px_50px_rgba(0,0,0,0.5)] font-mono">
-          {/* Header bar */}
-          <div className="bg-[var(--bg-primary)] px-4 py-3 border-b border-slate-850 flex items-center justify-between">
+        <div className="glass-panel rounded-xl overflow-hidden shadow-[var(--shadow-lg,0_20px_50px_rgba(0,0,0,0.12))] font-mono">
+          {/* Header bar — macOS-style */}
+          <div className="bg-[var(--surface-sunken,var(--bg-secondary))] px-4 py-3 border-b border-[var(--border-color)] flex items-center justify-between">
             <div className="flex items-center space-x-2 text-xs">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
-              <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
-              <span className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
-              <span className="text-[var(--text-secondary)] text-[10px] pl-2">AI_PREVIEW.SH</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
+              <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
+              <span className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
+              <span className="text-[var(--text-tertiary)] text-[10px] pl-2">AI_PREVIEW.SH</span>
             </div>
-            <div className="text-[9px] text-[var(--text-secondary)]">PING: 10ms | PORT: 3000</div>
+            <div className="text-[9px] text-[var(--text-tertiary)]">PING: 10ms | PORT: 3000</div>
           </div>
 
           {/* Chat area */}
-          <div className="p-4 md:p-6 min-h-[340px] flex flex-col justify-end space-y-4 bg-[var(--bg-primary)] font-sans text-xs md:text-sm">
-            
+          <div className="p-4 md:p-6 min-h-[340px] flex flex-col justify-end space-y-4 bg-[var(--surface-card,var(--bg-primary))] font-sans text-xs md:text-sm">
+
             {messages.length === 0 && !typing && (
-              <div className="flex-1 flex flex-col items-center justify-center text-[var(--text-secondary)] text-xs gap-2 font-mono">
-                <Loader2 className="w-4 h-4 animate-spin text-cyan-600 dark:text-cyan-500" />
+              <div className="flex-1 flex flex-col items-center justify-center text-[var(--text-tertiary)] text-xs gap-2 font-mono">
+                <Loader2 className="w-4 h-4 animate-spin text-[var(--accent-secondary)]" />
                 <span>Initializing chat vector handshake...</span>
               </div>
             )}
@@ -138,38 +123,38 @@ export default function AiPreviewSection() {
                   >
                     {/* Avatar */}
                     <div className={`p-2 rounded-lg border shrink-0 ${
-                      isUser 
-                        ? 'bg-purple-500/10 border-purple-500/20 dark:border-purple-500/30 text-purple-600 dark:text-purple-400' 
-                        : 'bg-blue-500/10 border-blue-500/30 text-cyan-600 dark:text-cyan-400'
+                      isUser
+                        ? 'bg-purple-500/10 border-purple-400/20 text-purple-600'
+                        : 'bg-[var(--accent-secondary)]/10 border-[var(--accent-secondary)]/20 text-[var(--accent-secondary)]'
                     }`}>
                       {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                     </div>
 
-                    {/* Chat Bubble content */}
+                    {/* Chat Bubble */}
                     <div className="space-y-1">
-                      <div className={`text-[10px] text-[var(--text-secondary)] font-mono ${isUser ? 'text-right' : 'text-left'}`}>
+                      <div className={`text-[10px] text-[var(--text-tertiary)] font-mono ${isUser ? 'text-right' : 'text-left'}`}>
                         {isUser ? 'DEVELOPER' : 'REPOPILOT MENTOR'}
                       </div>
                       <div className={`p-3.5 rounded-xl border leading-relaxed ${
-                        isUser 
-                          ? 'bg-blue-600/10 border-blue-500/30 text-[var(--text-primary)]' 
-                          : 'bg-[#0B1220]/80 border-slate-850/80 text-slate-200 shadow-xl'
+                        isUser
+                          ? 'bg-[var(--accent-primary)]/8 border-[var(--accent-primary)]/15 text-[var(--text-primary)]'
+                          : 'bg-[var(--surface-sunken,var(--bg-secondary))] border-[var(--border-color)] text-[var(--text-primary)] shadow-sm'
                       }`}>
                         <p className="font-sans text-xs md:text-sm">{msg.text}</p>
 
-                        {/* Attachment code block */}
+                        {/* Code block */}
                         {msg.code && (
-                          <div className="mt-3 bg-[var(--bg-primary)] border border-slate-850 rounded-lg overflow-hidden font-mono text-[11px] text-left">
-                            <div className="bg-[var(--bg-secondary)] px-3 py-1 flex items-center justify-between border-b border-slate-900">
-                              <span className="text-[9px] text-[var(--text-secondary)] uppercase tracking-widest">javascript</span>
+                          <div className="mt-3 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg overflow-hidden font-mono text-[11px] text-left">
+                            <div className="bg-[var(--surface-sunken,var(--bg-secondary))] px-3 py-1 flex items-center justify-between border-b border-[var(--border-color)]">
+                              <span className="text-[9px] text-[var(--text-tertiary)] uppercase tracking-widest">javascript</span>
                               <button
                                 onClick={handleCopy}
-                                className="p-1 rounded hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-cyan-600 dark:text-cyan-400 cursor-pointer"
+                                className="p-1 rounded hover:bg-[var(--border-subtle,var(--bg-secondary))] text-[var(--text-tertiary)] hover:text-[var(--accent-primary)] cursor-pointer transition-colors"
                               >
-                                {copied ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
+                                {copied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
                               </button>
                             </div>
-                            <pre className="p-3 overflow-x-auto whitespace-pre leading-normal max-h-52 text-cyan-600 dark:text-cyan-400/90 font-medium select-all">
+                            <pre className="p-3 overflow-x-auto whitespace-pre leading-normal max-h-52 text-[var(--accent-primary)] font-medium select-all">
                               <code>{msg.code}</code>
                             </pre>
                           </div>
@@ -181,23 +166,22 @@ export default function AiPreviewSection() {
               })}
             </AnimatePresence>
 
-            {/* AI Typing loading simulator */}
+            {/* AI Typing indicator */}
             {typing && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="flex items-start gap-3 mr-auto"
               >
-                <div className="p-2 rounded-lg border bg-blue-500/10 border-blue-500/30 text-cyan-600 dark:text-cyan-400 shrink-0">
+                <div className="p-2 rounded-lg border bg-[var(--accent-secondary)]/10 border-[var(--accent-secondary)]/20 text-[var(--accent-secondary)] shrink-0">
                   <Bot className="w-4 h-4 animate-bounce" />
                 </div>
-                <div className="p-3 rounded-xl bg-[#0B1220]/80 border border-slate-850/80 text-[var(--text-secondary)] text-xs flex items-center space-x-2 font-mono">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-600 dark:text-cyan-400" />
+                <div className="p-3 rounded-xl bg-[var(--surface-sunken,var(--bg-secondary))] border border-[var(--border-color)] text-[var(--text-tertiary)] text-xs flex items-center space-x-2 font-mono">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[var(--accent-secondary)]" />
                   <span className="animate-pulse">Analyzing routes/auth.js structure...</span>
                 </div>
               </motion.div>
             )}
-
           </div>
         </div>
       </div>

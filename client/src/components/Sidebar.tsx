@@ -1,3 +1,4 @@
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
   BarChart3, 
   ListTodo, 
@@ -49,10 +50,10 @@ export default function Sidebar({
   const { isFocusMode } = useUIStore()
 
   const content = (
-    <div className={`h-full flex flex-col justify-between bg-transparent border-r border-white/5 py-4 font-sans select-none overflow-y-auto transition-all duration-300 ${isFocusMode ? 'px-2' : 'px-4'}`}>
+    <div className={`h-full flex flex-col justify-between bg-transparent border-r border-[var(--border-color)] py-4 font-sans select-none overflow-y-auto transition-all duration-300 ${isFocusMode ? 'px-2' : 'px-4'}`}>
       <div className="space-y-6">
         {/* LOGO */}
-        <div className={`flex items-center border-b border-white/5 pb-4 shrink-0 transition-all ${isFocusMode ? 'justify-center' : 'justify-between'}`}>
+        <div className={`flex items-center border-b border-[var(--border-color)] pb-4 shrink-0 transition-all ${isFocusMode ? 'justify-center' : 'justify-between'}`}>
           <div className="flex items-center space-x-2">
             <Compass className="w-6 h-6 opacity-80" />
             {!isFocusMode && (
@@ -98,8 +99,8 @@ export default function Sidebar({
                 }}
                 className={`w-full flex items-center rounded-lg text-sm transition-all cursor-pointer text-left ${isFocusMode ? 'justify-center p-3' : 'space-x-3 px-4 py-3'} ${
                   isActive
-                    ? 'bg-white/10 text-[var(--text-primary)] font-medium shadow-sm'
-                    : 'bg-transparent text-[var(--text-primary)]/50 hover:text-[var(--text-primary)] hover:bg-white/5'
+                    ? 'bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-medium shadow-sm'
+                    : 'bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover-bg)]'
                 }`}
                 title={isFocusMode ? item.name : undefined}
               >
@@ -112,7 +113,7 @@ export default function Sidebar({
       </div>
 
       {/* FOOTER ACTION */}
-      <div className="border-t border-white/5 pt-4 mt-auto shrink-0">
+      <div className="border-t border-[var(--border-color)] pt-4 mt-auto shrink-0">
         <button
           onClick={onBackToLanding}
           className={`w-full flex items-center rounded-lg text-sm text-red-400/80 hover:text-red-400 transition-all cursor-pointer ${isFocusMode ? 'justify-center p-3' : 'space-x-3 px-4 py-3 hover:bg-red-500/10'}`}
@@ -133,19 +134,31 @@ export default function Sidebar({
       </aside>
 
       {/* Mobile Drawer (visible when isOpen on smaller screens) */}
-      {isOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
-          {/* Overlay backdrop */}
-          <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={onClose}
-          />
-          {/* Menu sheet */}
-          <div className="relative w-64 h-full bg-[#0B1220] z-50">
-            {content}
+      <AnimatePresence>
+        {isOpen && (
+          <div className="lg:hidden fixed inset-0 z-50 flex">
+            {/* Overlay backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={onClose}
+            />
+            {/* Menu sheet */}
+            <motion.div 
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 250 }}
+              className="relative w-64 h-full bg-[var(--bg-primary)] z-50 shadow-2xl"
+            >
+              {content}
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </>
   )
 }

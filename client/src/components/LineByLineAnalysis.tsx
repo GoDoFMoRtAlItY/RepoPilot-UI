@@ -66,7 +66,7 @@ export default function LineByLineAnalysis() {
   }, [owner, repo, path, sha, aiKey])
 
   return (
-    <div className="flex-grow flex min-h-screen overflow-hidden relative z-10 flex-col bg-[#05070A] text-slate-100 font-sans">
+    <div className="flex-grow flex min-h-screen overflow-hidden relative z-10 flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans">
       <Navbar onToggleMobileMenu={() => {}} />
 
       <main className="flex-grow p-4 md:p-6 overflow-y-auto relative grid-bg">

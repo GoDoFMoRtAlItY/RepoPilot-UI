@@ -137,7 +137,7 @@ export default function ReadmeGeneratorTab() {
                 </button>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto p-6 bg-[#0B1220]/80">
+            <div className="flex-1 overflow-y-auto p-6 bg-[var(--surface-sunken,var(--bg-secondary))]">
               <pre className="text-xs md:text-sm text-[var(--text-primary)] whitespace-pre-wrap font-sans leading-relaxed">
                 {readmeContent}
               </pre>

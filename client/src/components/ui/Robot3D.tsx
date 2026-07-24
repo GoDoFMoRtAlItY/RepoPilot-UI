@@ -81,7 +81,7 @@ function SceneGroup() {
 export default function Robot3D() {
   return (
     <div className="w-full h-full pointer-events-none">
-      <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
+      <Canvas camera={{ position: [0, 0, 9], fov: 45 }}>
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1.5} />
         <pointLight position={[-10, -10, -5]} intensity={1} color="#8b5cf6" />

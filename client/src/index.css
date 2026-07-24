@@ -6,56 +6,87 @@
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
+/* ═══════════════════════════════════════════════════════
+   DARK MODE (Default) — Obsidian/Slate
+   ═══════════════════════════════════════════════════════ */
 :root {
-  /* DARK MODE (Default) - Obsidian/Slate */
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #121212;
-  --text-primary: #ededed;
+  --bg-primary:    #0a0a0a;
+  --bg-secondary:  #121212;
+  --text-primary:  #ededed;
   --text-secondary: #888888;
-  --border-color: rgba(255, 255, 255, 0.08);
-  --glass-bg: rgba(255, 255, 255, 0.02);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-hover-bg: rgba(255, 255, 255, 0.04);
+  --text-tertiary: #555555;
+  --border-color:  rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --border-strong: rgba(255, 255, 255, 0.14);
+
+  --glass-bg:           rgba(255, 255, 255, 0.02);
+  --glass-border:       rgba(255, 255, 255, 0.08);
+  --glass-hover-bg:     rgba(255, 255, 255, 0.04);
   --glass-hover-border: rgba(255, 255, 255, 0.2);
-  
-  --btn-bg: rgba(255, 255, 255, 0.03);
-  --btn-hover-bg: rgba(255, 255, 255, 0.06);
-  --btn-border: rgba(255, 255, 255, 0.1);
+
+  --btn-bg:           rgba(255, 255, 255, 0.03);
+  --btn-hover-bg:     rgba(255, 255, 255, 0.06);
+  --btn-border:       rgba(255, 255, 255, 0.1);
   --btn-hover-border: rgba(255, 255, 255, 0.2);
 
-  --accent-primary: #3B82F6; /* Nice blue */
-  --accent-secondary: #10B981; /* Emerald */
-  
-  --scrollbar-thumb: rgba(255, 255, 255, 0.1);
+  --accent-primary:   #3B82F6;
+  --accent-secondary: #10B981;
+
+  --scrollbar-thumb:       rgba(255, 255, 255, 0.1);
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
 }
 
+/* ═══════════════════════════════════════════════════════
+   LIGHT THEME — Premium SaaS Design System
+   Inspired by: Linear · Vercel · Stripe · Raycast · Framer
+   ═══════════════════════════════════════════════════════ */
 .light {
-  /* LIGHT MODE - Pastel Mountain Palette */
-  --bg-primary: #C7DBF7; /* Pastel light blue */
-  --bg-secondary: rgba(0, 0, 0, 0.08); /* Darker, recessed shade for neat text boxes */
-  --text-primary: #020617; /* Slate 950 - almost black */
-  --text-secondary: #334155; /* Slate 700 for high legibility */
-  --border-color: rgba(117, 112, 140, 0.25);
-  
-  --glass-bg: rgba(255, 255, 255, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.8);
-  --glass-hover-bg: rgba(255, 255, 255, 0.85);
-  --glass-hover-border: rgba(255, 255, 255, 1);
-  
-  --btn-bg: rgba(255, 255, 255, 0.5);
-  --btn-hover-bg: rgba(255, 255, 255, 0.7);
-  --btn-border: rgba(255, 255, 255, 0.7);
-  --btn-hover-border: rgba(255, 255, 255, 1);
-  
-  --accent-primary: #b35655; /* Darker Rosy Pink for text contrast */
-  --accent-secondary: #4A465B; /* Darker Muted Purple */
-  
-  --scrollbar-thumb: rgba(117, 112, 140, 0.3);
-  --scrollbar-thumb-hover: rgba(117, 112, 140, 0.5);
+  /* ── Surfaces ──────────────────────────────────────── */
+  --bg-primary:       #F5F7FA;          /* page background — warm neutral */
+  --bg-secondary:     #FFFFFF;          /* elevated cards, inputs */
+  --surface-page:     #F5F7FA;
+  --surface-card:     #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  --surface-sunken:   #EEF1F6;          /* code blocks, recessed areas */
+  --surface-overlay:  rgba(255, 255, 255, 0.90);
+
+  /* ── Text — WCAG AA compliant ──────────────────────── */
+  --text-primary:   #0D1117;            /* headings — near-black */
+  --text-secondary: #374151;            /* body — gray-700 */
+  --text-tertiary:  #6B7280;            /* captions, placeholders — gray-500 */
+  --text-on-accent: #FFFFFF;
+
+  /* ── Borders ──────────────────────────────────────── */
+  --border-color:  #E5E7EB;             /* default dividers — gray-200 */
+  --border-subtle: #F3F4F6;             /* very light separators — gray-100 */
+  --border-strong: #D1D5DB;             /* card borders, inputs — gray-300 */
+
+  /* ── Glass (surface-first; glass kept minimal) ──── */
+  --glass-bg:           rgba(255, 255, 255, 0.88);
+  --glass-border:       rgba(229, 231, 235, 0.95);
+  --glass-hover-bg:     #FFFFFF;
+  --glass-hover-border: rgba(91, 80, 232, 0.35);
+
+  /* ── Buttons ──────────────────────────────────────── */
+  --btn-bg:           #FFFFFF;
+  --btn-hover-bg:     #F9FAFB;
+  --btn-border:       #D1D5DB;
+  --btn-hover-border: #9CA3AF;
+
+  /* ── Brand Accents ────────────────────────────────── */
+  --accent-primary:       #5B50E8;      /* violet — brand */
+  --accent-primary-hover: #4338CA;
+  --accent-secondary:     #0891B2;      /* cyan-600 — readable on white */
+  --accent-success:       #059669;      /* emerald-600 */
+  --accent-warning:       #D97706;      /* amber-600 */
+  --accent-error:         #DC2626;      /* red-600 */
+
+  /* ── Scrollbar ────────────────────────────────────── */
+  --scrollbar-thumb:       rgba(156, 163, 175, 0.45);
+  --scrollbar-thumb-hover: rgba(91, 80, 232, 0.45);
 }
 
-/* Base resets & Custom styles */
+/* ── Base resets ──────────────────────────────────────── */
 html, body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
@@ -67,30 +98,24 @@ html, body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Lenis Scrollbar configurations */
+/* Lenis */
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
 .lenis.lenis-stopped { overflow: hidden; }
 .lenis.lenis-scrolling iframe { pointer-events: none; }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover);
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 
-/* Premium Glassmorphism Classes */
+/* ═══════════════════════════════════════════════════════
+   GLASS PANEL
+   Dark: frosted glass overlay
+   Light: clean white card with real shadow elevation
+   ═══════════════════════════════════════════════════════ */
 .glass-panel {
   background: var(--glass-bg);
   backdrop-filter: blur(16px);
@@ -99,34 +124,53 @@ html.lenis, html.lenis body { height: auto; }
   box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.15);
   transition: all 0.2s ease-in-out;
 }
-
 .light .glass-panel {
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: var(--surface-card);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid var(--border-color);
+  box-shadow:
+    0 1px 3px  rgba(0, 0, 0, 0.05),
+    0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 .glass-panel-hover:hover {
   border-color: var(--glass-hover-border);
   background: var(--glass-hover-bg);
 }
+.light .glass-panel-hover:hover {
+  border-color: rgba(91, 80, 232, 0.4);
+  box-shadow:
+    0 2px 8px  rgba(0, 0, 0, 0.06),
+    0 8px 28px rgba(91, 80, 232, 0.10);
+}
 
-/* Base button styles */
+/* ── Base Buttons ─────────────────────────────────────── */
 .base-btn {
   background: var(--btn-bg);
   border: 1px solid var(--btn-border);
   color: var(--text-primary);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
 }
 .base-btn:hover {
   background: var(--btn-hover-bg);
   border-color: var(--btn-hover-border);
 }
-
-/* React Flow override classes */
-.react-flow__node {
-  border-radius: 6px !important;
+.light .base-btn {
+  background: #FFFFFF;
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
+.light .base-btn:hover {
+  background: #F9FAFB;
+  border-color: #9CA3AF;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* ── React Flow ───────────────────────────────────────── */
+.react-flow__node { border-radius: 6px !important; }
 .react-flow__handle {
   width: 8px !important;
   height: 8px !important;
@@ -152,3 +196,200 @@ html.lenis, html.lenis body { height: auto; }
   background: var(--glass-hover-bg) !important;
   fill: var(--text-primary) !important;
 }
+
+/* ════════════════════════════════════════════════════════
+   LIGHT MODE — COMPONENT OVERRIDES
+   Fixes every hardcoded dark-only Tailwind class
+   across all pages and components
+   ════════════════════════════════════════════════════════ */
+
+/* ── Typography ──────────────────────────────────────── */
+.light .text-white,
+.light .text-white\/90,
+.light .text-white\/80 {
+  color: var(--text-primary) !important;
+}
+.light .text-white\/70,
+.light .text-white\/60,
+.light .text-white\/50,
+.light .text-white\/40 {
+  color: var(--text-tertiary) !important;
+}
+.light .text-slate-200 { color: var(--text-secondary) !important; }
+.light .text-slate-300,
+.light .text-slate-400,
+.light .text-slate-500 { color: var(--text-tertiary) !important; }
+.light .dark\:text-slate-300 { color: var(--text-secondary) !important; }
+.light .dark\:text-cyan-400  { color: var(--accent-secondary) !important; }
+
+/* ── Backgrounds ─────────────────────────────────────── */
+.light .bg-white\/\[0\.03\],
+.light .bg-white\/5         { background-color: rgba(91, 80, 232, 0.05) !important; }
+.light .bg-white\/10        { background-color: rgba(91, 80, 232, 0.08) !important; }
+
+/* Hardcoded dark page/card backgrounds */
+.light .bg-\[\#05070A\]     { background-color: var(--surface-page) !important; }
+.light .bg-\[\#0B1220\]     { background-color: var(--surface-card) !important; }
+.light .bg-\[\#0B1220\]\/80 { background-color: var(--surface-sunken) !important; }
+
+/* ── Borders ──────────────────────────────────────────── */
+.light .border-white\/5,
+.light .border-white\/10    { border-color: var(--border-color) !important; }
+.light .border-slate-850,
+.light .border-slate-850\/80,
+.light .border-slate-900    { border-color: var(--border-color) !important; }
+
+/* ── Sidebar nav items ───────────────────────────────── */
+.light .hover\:bg-white\/5:hover { background-color: rgba(91, 80, 232, 0.06) !important; }
+
+/* ── Gradient glow lines (FeatureCards) ──────────────── */
+.light .via-cyan-400 {
+  --tw-gradient-via: rgba(91, 80, 232, 0.4) !important;
+}
+
+/* ── Code / Pre blocks ───────────────────────────────── */
+.light pre code,
+.light pre { color: var(--accent-primary) !important; }
+
+/* ── Inputs & Textareas ──────────────────────────────── */
+.light input,
+.light textarea,
+.light select {
+  background: var(--surface-card) !important;
+}
+
+/* ── Dashboard Badges & Accents Overrides ───────────────────
+   Maps dark mode tailwind jewel tones to the new token system
+   without needing to refactor every dashboard component.
+──────────────────────────────────────────────────────────────── */
+.light .text-cyan-400,
+.light .text-cyan-500,
+.light .text-cyan-600 {
+  color: var(--accent-secondary) !important;
+}
+.light .bg-cyan-500\/10,
+.light .bg-cyan-500\/15,
+.light .bg-cyan-500\/20,
+.light .bg-cyan-900\/40 {
+  background-color: rgba(8, 145, 178, 0.1) !important;
+}
+.light .border-cyan-500\/20,
+.light .border-cyan-500\/25,
+.light .border-cyan-500\/30,
+.light .border-cyan-500\/40,
+.light .border-cyan-500\/50,
+.light .border-cyan-400\/50 {
+  border-color: rgba(8, 145, 178, 0.25) !important;
+}
+
+/* Violet / Purple / Indigo -> var(--accent-primary) */
+.light .text-purple-400,
+.light .text-purple-500,
+.light .text-purple-600,
+.light .text-indigo-400,
+.light .text-indigo-500,
+.light .text-indigo-600 {
+  color: var(--accent-primary) !important;
+}
+.light .bg-purple-500\/10,
+.light .bg-purple-500\/20,
+.light .bg-indigo-500\/10,
+.light .bg-indigo-500\/20 {
+  background-color: rgba(91, 80, 232, 0.1) !important;
+}
+.light .border-purple-500\/20,
+.light .border-purple-500\/25,
+.light .border-purple-500\/30,
+.light .border-purple-500\/40,
+.light .border-indigo-500\/20,
+.light .border-indigo-500\/30,
+.light .border-indigo-500\/40 {
+  border-color: rgba(91, 80, 232, 0.25) !important;
+}
+
+/* Emerald -> var(--accent-success) */
+.light .text-emerald-400,
+.light .text-emerald-500,
+.light .text-emerald-600 {
+  color: var(--accent-success) !important;
+}
+.light .bg-emerald-500\/5,
+.light .bg-emerald-500\/20 {
+  background-color: rgba(5, 150, 105, 0.1) !important;
+}
+.light .border-emerald-500\/30,
+.light .border-emerald-500\/40 {
+  border-color: rgba(5, 150, 105, 0.25) !important;
+}
+
+/* Amber -> var(--accent-warning) */
+.light .text-amber-400,
+.light .text-amber-500,
+.light .text-amber-600 {
+  color: var(--accent-warning) !important;
+}
+.light .bg-amber-500\/10 {
+  background-color: rgba(217, 119, 6, 0.1) !important;
+}
+.light .border-amber-500\/15,
+.light .border-amber-500\/25 {
+  border-color: rgba(217, 119, 6, 0.25) !important;
+}
+
+/* Rose -> var(--accent-error) */
+.light .text-rose-400,
+.light .text-rose-500,
+.light .text-rose-600 {
+  color: var(--accent-error) !important;
+}
+.light .bg-rose-500\/10,
+.light .bg-rose-500\/20,
+.light .bg-rose-500\/30 {
+  background-color: rgba(220, 38, 38, 0.1) !important;
+}
+.light .border-rose-500\/20,
+.light .border-rose-500\/25,
+.light .border-rose-500\/30 {
+  border-color: rgba(220, 38, 38, 0.25) !important;
+}
+
+/* Also map blue to secondary */
+.light .text-blue-400,
+.light .text-blue-500,
+.light .text-blue-600 {
+  color: var(--accent-secondary) !important;
+}
+.light .bg-blue-500\/10,
+.light .bg-blue-500\/20,
+.light .bg-blue-600\/10,
+.light .bg-blue-600\/15 {
+  background-color: rgba(8, 145, 178, 0.1) !important;
+}
+.light .border-blue-500\/20,
+.light .border-blue-500\/30,
+.light .border-blue-500\/35,
+.light .border-blue-500\/40,
+.light .border-blue-500\/50 {
+  border-color: rgba(8, 145, 178, 0.25) !important;
+}
+.light input,
+.light textarea,
+.light select {
+  background-color: var(--surface-card) !important;
+  border-color: var(--border-strong) !important;
+  color: var(--text-primary) !important;
+}
+.light input::placeholder,
+.light textarea::placeholder { color: var(--text-tertiary) !important; }
+.light input:focus,
+.light textarea:focus {
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 0 0 3px rgba(91, 80, 232, 0.12) !important;
+  outline: none !important;
+}
+
+/* ── Hover text fixes ────────────────────────────────── */
+.light .hover\:text-white:hover { color: var(--text-primary) !important; }
+
+/* ── Skeleton shimmer ────────────────────────────────── */
+.light .skeleton-box { background: rgba(156, 163, 175, 0.15) !important; }

@@ -8,7 +8,11 @@ import {
   GitCommit,
   FlameKindling,
   Cpu,
-  Boxes
+  Boxes,
+  Lightbulb,
+  Sparkles,
+  TrendingUp,
+  ExternalLink
 } from 'lucide-react'
 import { 
   ResponsiveContainer, 
@@ -91,6 +95,112 @@ export default function OverviewTab() {
     ];
     return { name: api.name || api.package, type: api.category || 'Dependency', color: colors[i % colors.length] };
   });
+
+  // --- Tech Stack Suggestion Engine ---
+  // Maps detected technologies to suggested complementary technologies
+  const techSuggestionMap: Record<string, { name: string; reason: string; tags: string[]; priority: number }[]> = {
+    'express': [
+      { name: 'NestJS', reason: 'Enterprise-grade Node.js framework with built-in TypeScript support, DI, and modular architecture — great next step from Express', tags: ['Backend', 'TypeScript'], priority: 3 },
+      { name: 'Fastify', reason: 'High-performance alternative to Express with schema-based validation and 2x faster throughput', tags: ['Backend', 'Performance'], priority: 2 },
+      { name: 'GraphQL', reason: 'Flexible query language that pairs well with Express for building efficient, typed APIs', tags: ['API', 'Query Language'], priority: 2 },
+    ],
+    'react': [
+      { name: 'Next.js', reason: 'Full-stack React framework with SSR, API routes, and file-based routing used by most production React apps', tags: ['Full-Stack', 'SSR'], priority: 3 },
+      { name: 'React Query / TanStack Query', reason: 'Powerful data-fetching and caching library that eliminates boilerplate in React apps', tags: ['State Management', 'Data Fetching'], priority: 3 },
+      { name: 'Zustand / Jotai', reason: 'Lightweight state management alternatives to Redux — simpler mental model, smaller bundle', tags: ['State Management'], priority: 1 },
+    ],
+    'typescript': [
+      { name: 'Zod', reason: 'Runtime schema validation that pairs perfectly with TypeScript for end-to-end type safety', tags: ['Validation', 'Type Safety'], priority: 3 },
+      { name: 'tRPC', reason: 'End-to-end typesafe APIs without code generation — connect your TS frontend and backend seamlessly', tags: ['API', 'Full-Stack'], priority: 2 },
+    ],
+    'tailwindcss': [
+      { name: 'Radix UI', reason: 'Unstyled, accessible component primitives that combine perfectly with Tailwind for custom design systems', tags: ['UI', 'Accessibility'], priority: 2 },
+      { name: 'Framer Motion', reason: 'Production-ready animation library for React that brings interfaces to life', tags: ['Animation', 'UX'], priority: 2 },
+    ],
+    'vite': [
+      { name: 'Vitest', reason: 'Blazing-fast unit testing framework built on Vite — shares config, supports ESM natively', tags: ['Testing', 'DX'], priority: 3 },
+      { name: 'Playwright', reason: 'Modern end-to-end testing framework by Microsoft — cross-browser, reliable, widely adopted', tags: ['Testing', 'E2E'], priority: 2 },
+    ],
+    'mongodb': [
+      { name: 'PostgreSQL', reason: 'Industry-standard relational database — learning SQL unlocks most enterprise and startup stacks', tags: ['Database', 'SQL'], priority: 3 },
+      { name: 'Prisma', reason: 'Next-generation ORM with auto-generated types and migrations — works with any SQL database', tags: ['ORM', 'Database'], priority: 3 },
+      { name: 'Redis', reason: 'In-memory data store for caching, sessions, and real-time features — essential for scaling', tags: ['Caching', 'Performance'], priority: 2 },
+    ],
+    'mongoose': [
+      { name: 'Prisma', reason: 'Modern ORM with excellent TypeScript integration and support for PostgreSQL, MySQL, and MongoDB', tags: ['ORM', 'Database'], priority: 3 },
+      { name: 'PostgreSQL', reason: 'Relational database knowledge is essential — most production systems use SQL under the hood', tags: ['Database', 'SQL'], priority: 3 },
+    ],
+    'axios': [
+      { name: 'SWR', reason: 'React hook for data fetching with built-in caching, revalidation, and focus tracking', tags: ['Data Fetching', 'React'], priority: 2 },
+      { name: 'tRPC', reason: 'Type-safe API calls without REST boilerplate when using TypeScript on both ends', tags: ['API', 'TypeScript'], priority: 2 },
+    ],
+    'cors': [
+      { name: 'Auth.js (NextAuth)', reason: 'Authentication framework that handles OAuth, JWT, sessions — essential for secured APIs', tags: ['Auth', 'Security'], priority: 3 },
+      { name: 'Passport.js', reason: 'Flexible authentication middleware with 500+ strategies for Express apps', tags: ['Auth', 'Middleware'], priority: 2 },
+    ],
+    'dotenv': [
+      { name: 'Docker', reason: 'Containerization ensures consistent environments across dev/staging/prod — industry standard', tags: ['DevOps', 'Deployment'], priority: 3 },
+      { name: 'GitHub Actions', reason: 'CI/CD pipelines automate testing and deployment — a must-know for modern development', tags: ['CI/CD', 'DevOps'], priority: 3 },
+    ],
+    'socket.io': [
+      { name: 'WebRTC', reason: 'Peer-to-peer communication for video, audio, and data channels — builds on real-time skills', tags: ['Real-time', 'P2P'], priority: 2 },
+    ],
+    'jest': [
+      { name: 'Vitest', reason: 'Faster Jest alternative that shares Vite config and supports ESM natively', tags: ['Testing', 'DX'], priority: 2 },
+      { name: 'Cypress / Playwright', reason: 'E2E testing complements unit testing for comprehensive test coverage', tags: ['Testing', 'E2E'], priority: 2 },
+    ],
+    'redux': [
+      { name: 'Zustand', reason: 'Simpler state management with less boilerplate — growing fast in the React ecosystem', tags: ['State Management', 'React'], priority: 2 },
+    ],
+    'firebase': [
+      { name: 'Supabase', reason: 'Open-source Firebase alternative with PostgreSQL, auth, and real-time — more portable skills', tags: ['BaaS', 'Database'], priority: 2 },
+    ],
+    'jsonwebtoken': [
+      { name: 'Auth.js (NextAuth)', reason: 'Higher-level auth framework that handles JWT, sessions, and OAuth providers out of the box', tags: ['Auth', 'Security'], priority: 2 },
+    ],
+    'helmet': [
+      { name: 'OWASP Top 10', reason: 'Understanding web security fundamentals makes you invaluable on any team', tags: ['Security', 'Knowledge'], priority: 3 },
+      { name: 'Rate Limiting (express-rate-limit)', reason: 'Protect APIs from abuse — essential security practice for production apps', tags: ['Security', 'API'], priority: 2 },
+    ],
+  };
+
+  // Build suggestions from detected tech stack
+  const detectedTechNames = new Set(
+    [
+      ...analysis.apis.map(a => (a.name || a.package || '').toLowerCase()),
+      ...(analysis.summary.primaryTechStack || []).map(t => t.toLowerCase())
+    ]
+  );
+
+  const suggestionsMap = new Map<string, { name: string; reason: string; tags: string[]; priority: number; triggeredBy: string[] }>();
+
+  detectedTechNames.forEach(tech => {
+    const key = tech.replace(/[^a-z0-9.-]/g, '');
+    const suggestions = techSuggestionMap[key] || [];
+    suggestions.forEach(s => {
+      // Don't suggest something already in the stack
+      if (detectedTechNames.has(s.name.toLowerCase())) return;
+      const existing = suggestionsMap.get(s.name);
+      if (existing) {
+        existing.triggeredBy.push(tech);
+        existing.priority = Math.max(existing.priority, s.priority);
+      } else {
+        suggestionsMap.set(s.name, { ...s, triggeredBy: [tech] });
+      }
+    });
+  });
+
+  const techSuggestions = Array.from(suggestionsMap.values())
+    .sort((a, b) => b.priority - a.priority)
+    .slice(0, 8);
+
+  const priorityColors: Record<number, { border: string; bg: string; badge: string; text: string }> = {
+    3: { border: 'border-emerald-500/40', bg: 'bg-emerald-500/5', badge: 'bg-emerald-500/20 text-emerald-300', text: 'text-emerald-400' },
+    2: { border: 'border-blue-500/40', bg: 'bg-blue-500/5', badge: 'bg-blue-500/20 text-blue-300', text: 'text-blue-400' },
+    1: { border: 'border-slate-500/40', bg: 'bg-slate-500/5', badge: 'bg-slate-500/20 text-slate-300', text: 'text-slate-400' },
+  };
+
+  const priorityLabels: Record<number, string> = { 3: 'HIGH IMPACT', 2: 'RECOMMENDED', 1: 'NICE TO KNOW' };
 
   return (
     <motion.div
@@ -230,6 +340,111 @@ export default function OverviewTab() {
           )}
         </div>
       </div>
+
+      {/* Tech Stack Suggestions */}
+      {techSuggestions.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="glass-panel p-5 rounded-xl space-y-5 relative overflow-hidden"
+        >
+          {/* Ambient background glow */}
+          <div className="absolute -top-20 -right-20 w-72 h-72 bg-gradient-radial from-emerald-500/8 via-transparent to-transparent rounded-full pointer-events-none blur-3xl" />
+          <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-gradient-radial from-blue-500/6 via-transparent to-transparent rounded-full pointer-events-none blur-3xl" />
+
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3 relative z-10">
+            <div className="flex items-center space-x-2">
+              <div className="p-1.5 rounded-md bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30">
+                <Lightbulb className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              <div>
+                <span className="font-semibold text-sm text-[var(--text-primary)] font-sans">Tech Stack Suggestions</span>
+                <p className="text-[10px] text-[var(--text-secondary)] mt-0.5">Based on your current stack — technologies that will boost your skills across more projects</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 animate-pulse" />
+              <span className="text-[9px] text-[var(--text-tertiary)] uppercase tracking-wider">AI_RECOMMENDED</span>
+            </div>
+          </div>
+
+          {/* Suggestion Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 relative z-10">
+            {techSuggestions.map((suggestion, i) => {
+              const colors = priorityColors[suggestion.priority] || priorityColors[1];
+              return (
+                <motion.div
+                  key={suggestion.name}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: i * 0.06 }}
+                  className={`group p-4 rounded-lg border ${colors.border} ${colors.bg} hover:bg-[var(--glass-hover-bg)] transition-all duration-300 cursor-default relative overflow-hidden`}
+                >
+                  {/* Hover glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--text-primary)]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                  <div className="relative z-10 space-y-2.5">
+                    {/* Top row: Name + Priority Badge */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center space-x-2 min-w-0">
+                        <TrendingUp className={`w-4 h-4 flex-shrink-0 ${colors.text}`} />
+                        <span className="font-sans font-bold text-sm text-[var(--text-primary)] truncate">{suggestion.name}</span>
+                      </div>
+                      <span className={`text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full flex-shrink-0 ${colors.badge}`}>
+                        {priorityLabels[suggestion.priority]}
+                      </span>
+                    </div>
+
+                    {/* Reason */}
+                    <p className="text-xs text-[var(--text-secondary)] font-sans leading-relaxed">
+                      {suggestion.reason}
+                    </p>
+
+                    {/* Bottom row: Tags + Triggered By + YouTube Tutorial Link */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-[var(--border-color)] mt-1">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {suggestion.tags.map(tag => (
+                          <span key={tag} className="text-[9px] px-1.5 py-0.5 rounded bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-color)] font-mono">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex items-center space-x-2 flex-shrink-0">
+                        <span className="text-[9px] text-[var(--text-tertiary)] font-mono truncate max-w-[90px]" title={`Because you use: ${suggestion.triggeredBy.join(', ')}`}>
+                          via {suggestion.triggeredBy[0]}
+                        </span>
+                        <a
+                          href={`https://www.youtube.com/results?search_query=${encodeURIComponent(suggestion.name + ' tutorial for beginners')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center space-x-1 px-2 py-0.5 rounded bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[9px] font-sans font-semibold transition-all hover:scale-105"
+                          title={`Watch ${suggestion.name} tutorial on YouTube`}
+                        >
+                          <svg className="w-3 h-3 text-rose-500 fill-current shrink-0" viewBox="0 0 24 24">
+                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                          </svg>
+                          <span>Learn</span>
+                          <ExternalLink className="w-2.5 h-2.5 text-rose-400 opacity-70 shrink-0" />
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* Footer insight */}
+          <div className="flex items-center space-x-2 pt-2 border-t border-[var(--border-color)] relative z-10">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+            <p className="text-[10px] text-[var(--text-secondary)] font-sans">
+              <span className="text-cyan-600 dark:text-cyan-400 font-semibold">{techSuggestions.filter(s => s.priority === 3).length} high-impact</span> suggestions identified from {detectedTechNames.size} detected technologies — prioritized by cross-project relevance.
+            </p>
+          </div>
+        </motion.div>
+      )}
     </motion.div>
   )
 }
