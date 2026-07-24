@@ -6,8 +6,12 @@ import {
   Wand2, 
   Loader2, 
   Check, 
-  FileCode2 
+  FileCode2,
+  Eye,
+  Code
 } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { useRepoStore } from '../store/useRepoStore'
 import { generateReadme } from '../lib/api'
 
@@ -16,6 +20,7 @@ export default function ReadmeGeneratorTab() {
   const [readmeContent, setReadmeContent] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [viewMode, setViewMode] = useState<'preview' | 'raw'>('preview')
 
   const handleGenerate = async () => {
     if (!analysis?.meta) return
@@ -25,7 +30,7 @@ export default function ReadmeGeneratorTab() {
       setReadmeContent(response.readme)
     } catch (err) {
       console.error('Failed to generate readme', err)
-      setReadmeContent('# Error generating README\n\nPlease try again.')
+      setReadmeContent('Error generating README. Please try again.')
     } finally {
       setIsGenerating(false)
     }
@@ -73,7 +78,7 @@ export default function ReadmeGeneratorTab() {
             {aiKey && <span className="text-[10px] bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 px-2 py-0.5 rounded uppercase border border-cyan-500/30">Gemini Powered</span>}
           </h2>
           <p className="text-[var(--text-secondary)] text-xs md:text-sm font-sans max-w-xl">
-            Automatically generate a comprehensive, professional README based on the static analysis of your architecture, routes, APIs, and environment variables.
+            Automatically generate a clean, human-written README based on the static analysis of your architecture, routes, APIs, and environment variables.
           </p>
         </div>
         <div className="relative z-10 shrink-0">
@@ -116,10 +121,35 @@ export default function ReadmeGeneratorTab() {
         ) : (
           <>
             <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-color)] bg-[var(--bg-secondary)] shrink-0">
-              <div className="flex items-center space-x-2">
-                <FileText className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-                <span className="text-xs font-bold text-[var(--text-primary)]">README.md</span>
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2">
+                  <FileText className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+                  <span className="text-xs font-bold text-[var(--text-primary)]">README.md</span>
+                </div>
+
+                {/* View Mode Toggle */}
+                <div className="flex items-center bg-[var(--bg-primary)] p-0.5 rounded-lg border border-[var(--border-color)] text-[10px]">
+                  <button
+                    onClick={() => setViewMode('preview')}
+                    className={`flex items-center space-x-1 px-2 py-1 rounded transition-colors ${
+                      viewMode === 'preview' ? 'bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 font-bold' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                    }`}
+                  >
+                    <Eye className="w-3 h-3" />
+                    <span>PREVIEW</span>
+                  </button>
+                  <button
+                    onClick={() => setViewMode('raw')}
+                    className={`flex items-center space-x-1 px-2 py-1 rounded transition-colors ${
+                      viewMode === 'raw' ? 'bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 font-bold' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                    }`}
+                  >
+                    <Code className="w-3 h-3" />
+                    <span>RAW MARKDOWN</span>
+                  </button>
+                </div>
               </div>
+
               <div className="flex items-center space-x-2">
                 <button
                   onClick={handleCopy}
@@ -137,10 +167,53 @@ export default function ReadmeGeneratorTab() {
                 </button>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto p-6 bg-[var(--surface-sunken,var(--bg-secondary))]">
-              <pre className="text-xs md:text-sm text-[var(--text-primary)] whitespace-pre-wrap font-sans leading-relaxed">
-                {readmeContent}
-              </pre>
+
+            <div className="flex-1 overflow-y-auto p-6 md:p-8 bg-[var(--surface-sunken,var(--bg-secondary))]">
+              {viewMode === 'preview' ? (
+                <div className="max-w-4xl mx-auto space-y-4 font-sans text-[var(--text-primary)] text-sm leading-relaxed text-left">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      h1: ({ children }) => <h1 className="text-2xl font-bold text-[var(--text-primary)] border-b border-[var(--border-color)] pb-2 mt-4 mb-3 font-sans tracking-tight">{children}</h1>,
+                      h2: ({ children }) => <h2 className="text-lg font-bold text-cyan-600 dark:text-cyan-300 border-b border-[var(--border-color)] pb-1.5 mt-6 mb-3 font-sans tracking-tight">{children}</h2>,
+                      h3: ({ children }) => <h3 className="text-base font-semibold text-[var(--text-primary)] mt-4 mb-2 font-sans">{children}</h3>,
+                      p: ({ children }) => <p className="text-[var(--text-secondary)] text-sm leading-relaxed mb-3">{children}</p>,
+                      ul: ({ children }) => <ul className="list-disc list-inside space-y-1 text-[var(--text-secondary)] text-sm mb-4 ml-2">{children}</ul>,
+                      ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 text-[var(--text-secondary)] text-sm mb-4 ml-2">{children}</ol>,
+                      li: ({ children }) => <li className="text-[var(--text-secondary)] text-sm leading-relaxed">{children}</li>,
+                      code({ className, children, ...props }) {
+                        const match = /language-(\w+)/.exec(className || '')
+                        if (match || String(children).includes('\n')) {
+                          return (
+                            <pre className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg p-4 font-mono text-xs text-cyan-600 dark:text-cyan-300 overflow-x-auto my-4">
+                              <code>{children}</code>
+                            </pre>
+                          )
+                        }
+                        return (
+                          <code className="px-1.5 py-0.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded text-cyan-600 dark:text-cyan-400 text-xs font-mono" {...props}>
+                            {children}
+                          </code>
+                        )
+                      },
+                      table: ({ children }) => (
+                        <div className="overflow-x-auto my-4 rounded-lg border border-[var(--border-color)]">
+                          <table className="w-full text-xs font-mono">{children}</table>
+                        </div>
+                      ),
+                      thead: ({ children }) => <thead className="bg-[var(--bg-secondary)] text-[var(--text-secondary)] font-bold">{children}</thead>,
+                      th: ({ children }) => <th className="px-3.5 py-2.5 text-left border-b border-[var(--border-color)]">{children}</th>,
+                      td: ({ children }) => <td className="px-3.5 py-2 border-b border-[var(--border-color)] text-[var(--text-secondary)]">{children}</td>,
+                    }}
+                  >
+                    {readmeContent}
+                  </ReactMarkdown>
+                </div>
+              ) : (
+                <pre className="text-xs md:text-sm text-[var(--text-primary)] whitespace-pre-wrap font-mono leading-relaxed max-w-4xl mx-auto">
+                  {readmeContent}
+                </pre>
+              )}
             </div>
           </>
         )}
