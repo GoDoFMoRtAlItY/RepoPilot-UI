@@ -17,8 +17,15 @@ const app = express();
 app.use(helmet());
 app.use(compression());
 app.use(morgan('dev'));
+const allowedOrigins = ['http://localhost:5173'];
+if (process.env.CORS_ORIGIN) {
+  allowedOrigins.push(...process.env.CORS_ORIGIN.split(',').map(o => o.trim()));
+}
+
 app.use(cors({
-  origin: ['http://localhost:5173', process.env.CORS_ORIGIN].filter(Boolean)
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-AI-Key', 'Accept']
 }));
 app.use(express.json());
 
