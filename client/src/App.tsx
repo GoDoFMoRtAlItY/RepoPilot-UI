@@ -5,6 +5,7 @@ import { useRepoStore } from './store/useRepoStore'
 import { useUIStore } from './store/useUIStore'
 import HeroSection from './components/HeroSection'
 import FeatureShowcase from './components/FeatureShowcase'
+import FeatureCards from './components/FeatureCards'
 import AiPreviewSection from './components/AiPreviewSection'
 import Sidebar from './components/Sidebar'
 import Navbar from './components/Navbar'
@@ -101,6 +102,7 @@ function LandingPage() {
       </header>
 
       <HeroSection onAnalyzeRepo={handleAnalyzeRepoUrl} />
+      <FeatureCards />
       <AiPreviewSection />
       <FeatureShowcase />
 
