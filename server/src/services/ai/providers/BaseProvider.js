@@ -48,6 +48,14 @@ class BaseProvider {
   async generateApiExplanation(route, overrideKey) {
     throw new Error('generateApiExplanation not implemented in ' + this.name);
   }
+
+  async generateReadme(analysisJson, overrideKey) {
+    throw new Error('generateReadme not implemented in ' + this.name);
+  }
+
+  async generateFileDescription(fileName, compressedContext, overrideKey) {
+    throw new Error('generateFileDescription not implemented in ' + this.name);
+  }
 }
 
 module.exports = BaseProvider;

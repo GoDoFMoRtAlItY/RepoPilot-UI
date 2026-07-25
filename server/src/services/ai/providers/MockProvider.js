@@ -24,7 +24,12 @@ class MockProvider extends BaseProvider {
     }
     walkthrough += `*(Note: This is a dynamically generated fallback analysis because the AI providers (OpenRouter/Gemini) are currently rate-limited or out of credits. Normal AI functions will resume when rate limits reset.)*`;
 
-    return `## 📝 Summary\n${summary}\n\n## 🎯 Responsibilities\n- Initialize and manage dependencies for the module.\n- Execute core logic associated with ${fileName}.\n- Provide reusable structures for other components in the system.\n\n## 🛠️ Key Functions & Classes\n${functionsList}\n\n## 🔍 Code Walkthrough (Line-by-Line)\n${walkthrough}`;
+    return `## Summary\n${summary}\n\n## Responsibilities\n- Initialize and manage dependencies for the module.\n- Execute core logic associated with ${fileName}.\n- Provide reusable structures for other components in the system.\n\n## Key Functions & Classes\n${functionsList}\n\n## Code Walkthrough (Line-by-Line)\n${walkthrough}`;
+  }
+
+  async generateFileDescription(fileName, compressedContext, overrideKey) {
+    const name = fileName.split('/').pop().replace(/\.[^/.]+$/, '');
+    return `Core project module that manages application logic and structures for ${name}.`;
   }
 
   async answerQuestion(question, analysisJson, overrideKey) {
@@ -44,6 +49,11 @@ class MockProvider extends BaseProvider {
 
   async generateApiExplanation(route, overrideKey) {
     return "*(Mock AI Fallback)* API explanation unavailable due to AI rate limits.";
+  }
+
+  async generateReadme(analysisJson, overrideKey) {
+    const { generateFallbackReadme } = require('../../aiReadme');
+    return generateFallbackReadme(analysisJson);
   }
 }
 
