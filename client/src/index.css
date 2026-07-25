@@ -265,3 +265,43 @@ html.lenis, html.lenis body { height: auto; }
 
 /* ── Skeleton shimmer ────────────────────────────────── */
 .light .skeleton-box { background: rgba(100, 116, 139, 0.15) !important; }
+
+/* ── React Flow Custom Controls & Buttons ───────────── */
+.react-flow__controls {
+  background-color: #0F172A !important;
+  border: 1px solid rgba(34, 211, 238, 0.4) !important;
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.25) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  margin: 16px !important;
+}
+
+.react-flow__controls-button {
+  background-color: #0F172A !important;
+  border-bottom: 1px solid rgba(34, 211, 238, 0.2) !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.react-flow__controls-button svg {
+  fill: #22D3EE !important;
+  max-width: 14px !important;
+  max-height: 14px !important;
+}
+
+.react-flow__controls-button:hover {
+  background-color: rgba(34, 211, 238, 0.2) !important;
+}
+
+.react-flow__controls-button:hover svg {
+  fill: #FFFFFF !important;
+  transform: scale(1.1);
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom: none !important;
+}

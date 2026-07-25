@@ -124,7 +124,7 @@ async function analyzeRepo(owner, repo, filesWithContent, meta, onUpdate) {
 
     // 7. Graph Builder
     try {
-      graph = buildGraph(entryPoint, routes, envVars, apis, fileRoles) || graph;
+      graph = buildGraph(entryPoint, routes, envVars, apis, fileRoles, filesWithContent) || graph;
     } catch (e) {
       console.warn('buildGraph failed:', e.message);
     }

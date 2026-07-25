@@ -97,22 +97,23 @@ type CustomNodeType = Node<CustomNodeData, 'hudNode'>
 function HudNodeComponent({ data }: NodeProps<CustomNodeType>) {
   const Icon = data.icon
   const colors = data.roleColors
+  const isRoot = data.layer === 0 || data.type === 'entry'
 
   return (
-    <div className={`glass-panel p-3.5 rounded-lg ${colors.border} w-56 select-none text-left relative overflow-hidden ${colors.bg} ${colors.glow}`}>
+    <div className={`glass-panel p-3.5 rounded-lg ${isRoot ? 'border-2 border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.35)]' : colors.border} w-64 select-none text-left relative overflow-hidden ${colors.bg} ${colors.glow}`}>
       <div className={`absolute top-0 left-0 w-2.5 h-full ${colors.accent}`} />
       <div className="pl-2.5 space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-[8px] text-[var(--text-secondary)] font-mono tracking-widest truncate">{data.type.toUpperCase()}</span>
-          <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] bg-green-500/10 border border-green-500/30 text-green-400 font-bold font-mono ml-2`}>
-            {data.status}
+          <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] ${isRoot ? 'bg-blue-500/20 border-blue-500/40 text-blue-300' : 'bg-green-500/10 border-green-500/30 text-green-400'} font-bold font-mono ml-2`}>
+            {isRoot ? 'ROOT' : data.status}
           </span>
         </div>
-        <div className="flex items-center space-x-2">
-          <div className="p-1.5 rounded bg-[var(--bg-primary)] border border-[var(--border-color)] shrink-0">
+        <div className="flex items-start space-x-2 min-w-0">
+          <div className="p-1.5 rounded bg-[var(--bg-primary)] border border-[var(--border-color)] shrink-0 mt-0.5">
             <Icon className={`w-4 h-4 ${colors.text}`} />
           </div>
-          <span className="text-[var(--text-primary)] font-sans font-bold text-xs tracking-wide truncate">{data.label}</span>
+          <span className="text-[var(--text-primary)] font-sans font-bold text-xs tracking-wide line-clamp-2 leading-tight [word-break:break-word]">{data.label}</span>
         </div>
       </div>
       
@@ -128,10 +129,10 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   dagreGraph.setDefaultEdgeLabel(() => ({}))
 
   const isHorizontal = direction === 'LR'
-  dagreGraph.setGraph({ rankdir: direction, ranksep: 100, nodesep: 80, edgesep: 30 })
+  dagreGraph.setGraph({ rankdir: direction, ranksep: 120, nodesep: 90, edgesep: 40 })
 
   nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: 240, height: 80 })
+    dagreGraph.setNode(node.id, { width: 270, height: 95 })
   })
 
   edges.forEach((edge) => {
@@ -146,8 +147,8 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
     node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom
 
     node.position = {
-      x: nodeWithPosition.x - 240 / 2,
-      y: nodeWithPosition.y - 80 / 2,
+      x: nodeWithPosition.x - 270 / 2,
+      y: nodeWithPosition.y - 95 / 2,
     }
 
     return node
@@ -175,27 +176,85 @@ function inferEdgeLabel(sourceType: string, targetType: string, explicitLabel?: 
   }
 }
 
-// Edge color based on relationship
+// Edge color based on relationship - ultra high contrast neon palettes for dark mode visibility
 function getEdgeColor(label: string): string {
-  if (label.includes('middleware') || label.includes('validates')) return '#f97316'
-  if (label.includes('queries') || label.includes('reads') || label.includes('writes')) return '#a855f7'
-  if (label.includes('calls')) return '#22d3ee'
-  if (label.includes('registers')) return '#3b82f6'
-  if (label.includes('configured')) return '#eab308'
-  return '#3B82F6'
+  if (label.includes('middleware') || label.includes('validates')) return '#FF6B00' // Blazing Neon Orange
+  if (label.includes('queries') || label.includes('reads') || label.includes('writes')) return '#FF007A' // Hot Neon Pink
+  if (label.includes('calls')) return '#00FF55' // Cyber Lime Green
+  if (label.includes('registers') || label.includes('mounts') || label.includes('initializes')) return '#FFE600' // Electric Yellow
+  if (label.includes('configured')) return '#FFD700' // Cyber Gold
+  return '#00FFCC' // Bright Teal / Lime-Cyan default
 }
 
 export default function ArchitectureTab() {
   const { analysis } = useRepoStore()
   const [selectedNode, setSelectedNode] = useState<CustomNodeData | null>(null)
   const [layoutDirection, setLayoutDirection] = useState<'TB' | 'LR'>('TB')
+  const [viewMode, setViewMode] = useState<'simple' | 'detailed'>('simple')
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
 
   useEffect(() => {
     if (analysis && analysis.graph) {
-      const rfNodes: Node[] = analysis.graph.nodes.map(n => {
+      // Step 1: Client-side filtering based on priority and view mode
+      // Simple mode shows only core skeleton (Priority >= 4), Detailed mode shows everything (Priority >= 1)
+      const minPriority = viewMode === 'simple' ? 4 : 1
+      
+      // Helper to infer priority if not explicitly provided by backend (for legacy/cached scans)
+      const getPriority = (n: any) => {
+        if (n.priority) return n.priority
+        if (n.metadata && n.metadata.priority) return n.metadata.priority
+        const type = (n.type || '').toLowerCase()
+        const label = (n.label || '').toUpperCase()
+        if (type === 'entry') return 5
+        if (type === 'route' || type === 'controller' || type === 'middleware') return 4
+        if (type === 'service' || type === 'model') return 3
+        if (type === 'envvar' || type === 'api' || type === 'config' || type === 'util' || type === 'utility') return 2
+        if (label === 'PORT' || label.includes('_KEY') || label.includes('_SECRET') || label.includes('CORS_') || label.includes('_URL') || label.includes('NODE_ENV')) return 1
+        return 3
+      }
+
+      let filteredRawNodes = analysis.graph.nodes.filter(n => {
+        const p = getPriority(n)
+        return p >= minPriority
+      })
+
+      // If simple mode filtered out too much (e.g. no Priority >= 4 nodes exist in this repo), fallback to top 6 nodes
+      if (viewMode === 'simple' && filteredRawNodes.length === 0) {
+        filteredRawNodes = analysis.graph.nodes.slice().sort((a, b) => getPriority(b) - getPriority(a)).slice(0, 6)
+      }
+
+      // Sort by priority descending and cap at 8 in simple mode, 80 in detailed mode
+      const maxNodes = viewMode === 'simple' ? 8 : 80
+      if (filteredRawNodes.length > maxNodes) {
+        filteredRawNodes = filteredRawNodes
+          .sort((a, b) => {
+            return getPriority(b) - getPriority(a)
+          })
+          .slice(0, maxNodes)
+      }
+
+      const validNodeIds = new Set(filteredRawNodes.map(n => n.id))
+
+      // Filter edges where both source and target exist
+      const filteredRawEdges = analysis.graph.edges.filter(e => 
+        validNodeIds.has(e.source) && validNodeIds.has(e.target)
+      )
+
+      // Further filter out orphan nodes (nodes with 0 edges, except entry point and routes)
+      const connectedIds = new Set<string>()
+      filteredRawEdges.forEach(e => {
+        connectedIds.add(e.source)
+        connectedIds.add(e.target)
+      })
+
+      const finalRawNodes = filteredRawNodes.filter(n => {
+        if (n.type === 'entry' || n.type === 'route') return true
+        return connectedIds.has(n.id)
+      })
+
+      const rfNodes: Node[] = finalRawNodes.map(n => {
         const nodeType = n.type.toLowerCase()
         const colors = ROLE_COLORS[nodeType] || ROLE_COLORS['default']
         const icon = getNodeIcon(nodeType)
@@ -225,9 +284,9 @@ export default function ArchitectureTab() {
 
       // Build a type lookup for edge labeling
       const nodeTypeMap: Record<string, string> = {}
-      analysis.graph.nodes.forEach(n => { nodeTypeMap[n.id] = n.type.toLowerCase() })
+      finalRawNodes.forEach(n => { nodeTypeMap[n.id] = n.type.toLowerCase() })
 
-      const rfEdges: Edge[] = analysis.graph.edges.map(e => {
+      const rfEdges: Edge[] = filteredRawEdges.map(e => {
         const sourceType = nodeTypeMap[e.source] || 'unknown'
         const targetType = nodeTypeMap[e.target] || 'unknown'
         const label = inferEdgeLabel(sourceType, targetType, e.label)
@@ -238,11 +297,17 @@ export default function ArchitectureTab() {
           source: e.source,
           target: e.target,
           animated: true,
-          style: { stroke: color, strokeWidth: 1.5 },
+          style: { 
+            stroke: color, 
+            strokeWidth: 3.5, 
+            opacity: 1,
+            filter: `drop-shadow(0px 0px 8px ${color}) drop-shadow(0px 0px 2px #FFFFFF)` 
+          },
           label,
-          labelStyle: { fill: '#94A3B8', fontSize: 9, fontWeight: 'bold' },
-          labelBgStyle: { fill: '#0B1220', fillOpacity: 0.9 },
-          labelBgPadding: [6, 4] as [number, number]
+          labelStyle: { fill: '#FFFFFF', fontSize: 10, fontWeight: 800, letterSpacing: '0.05em' },
+          labelBgStyle: { fill: '#0A1324', fillOpacity: 0.95, stroke: color, strokeWidth: 1.5 },
+          labelBgPadding: [6, 4] as [number, number],
+          labelBgBorderRadius: 4
         }
       })
 
@@ -255,7 +320,7 @@ export default function ArchitectureTab() {
       setNodes(layoutedNodes)
       setEdges(layoutedEdges)
     }
-  }, [analysis, layoutDirection, setNodes, setEdges])
+  }, [analysis, layoutDirection, viewMode, setNodes, setEdges])
 
   // Memoize custom nodeType dictionary
   const nodeTypes = useMemo(() => ({
@@ -298,8 +363,18 @@ export default function ArchitectureTab() {
             </p>
           </div>
           
-          {/* Layout toggle */}
-          <div className="pointer-events-auto flex items-center space-x-2">
+          {/* Layout & View toggles */}
+          <div className="pointer-events-auto flex items-center space-x-2 flex-wrap gap-y-2">
+            <button
+              onClick={() => setViewMode(viewMode === 'simple' ? 'detailed' : 'simple')}
+              className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
+                viewMode === 'simple' 
+                  ? 'bg-purple-500/15 border-purple-500/40 text-purple-400' 
+                  : 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400'
+              }`}
+            >
+              {viewMode === 'simple' ? '⚡ Simple View' : '🔍 Detailed View'}
+            </button>
             <button
               onClick={() => setLayoutDirection('TB')}
               className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
@@ -348,7 +423,7 @@ export default function ArchitectureTab() {
           maxZoom={2}
         >
           <Background color="#1E293B" gap={20} size={1} />
-          <Controls showInteractive={false} />
+          <Controls position="top-right" showInteractive={false} className="!bg-[#0B1220] !border !border-cyan-500/40 !shadow-[0_0_15px_rgba(34,211,238,0.3)] !rounded-xl !overflow-hidden !m-4" />
           <MiniMap
             nodeColor={(node: any) => {
               const colors = node.data?.roleColors
@@ -381,18 +456,18 @@ export default function ArchitectureTab() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 320, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="w-80 h-full glass-panel rounded-xl p-5 border-l border-[var(--border-color)] bg-[var(--surface-card)] flex flex-col justify-between absolute right-0 z-30 lg:relative lg:right-auto text-left shadow-2xl"
+            className="w-96 h-full glass-panel rounded-xl p-5 border-l border-[var(--border-color)] bg-[var(--surface-card)] flex flex-col justify-between absolute right-0 z-30 lg:relative lg:right-auto text-left shadow-2xl overflow-y-auto"
           >
             <div className="space-y-6">
               {/* Header */}
-              <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
-                <div className="flex items-center space-x-2">
-                  <selectedNode.icon className={`w-5 h-5 ${(selectedNode.roleColors as any)?.text || 'text-cyan-600 dark:text-cyan-400'} shrink-0`} />
-                  <span className="font-bold text-[var(--text-primary)] tracking-tight text-sm font-sans truncate">{selectedNode.label}</span>
+              <div className="flex items-start justify-between border-b border-[var(--border-color)] pb-3 gap-3">
+                <div className="flex items-start space-x-2.5 min-w-0 flex-1">
+                  <selectedNode.icon className={`w-5 h-5 ${(selectedNode.roleColors as any)?.text || 'text-cyan-600 dark:text-cyan-400'} shrink-0 mt-0.5`} />
+                  <span className="font-bold text-[var(--text-primary)] tracking-tight text-sm font-sans break-words break-all leading-snug">{selectedNode.label}</span>
                 </div>
                 <button 
                   onClick={() => setSelectedNode(null)}
-                  className="p-1 rounded bg-[var(--bg-primary)] hover:bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer shrink-0 ml-2"
+                  className="p-1 rounded bg-[var(--bg-primary)] hover:bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer shrink-0"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -401,7 +476,7 @@ export default function ArchitectureTab() {
               {/* Description */}
               <div className="space-y-1.5 font-sans">
                 <span className="text-[9px] text-[var(--text-secondary)] font-mono tracking-widest uppercase">MODULE DESCRIPTION</span>
-                <p className="text-[var(--text-primary)] text-xs leading-relaxed">
+                <p className="text-[var(--text-primary)] text-xs leading-relaxed break-words">
                   {selectedNode.details}
                 </p>
                 {selectedNode.githubUrl && (
@@ -420,11 +495,11 @@ export default function ArchitectureTab() {
               {/* Detailed Specs list */}
               <div className="space-y-3 font-mono">
                 <span className="text-[9px] text-[var(--text-secondary)] tracking-widest uppercase">SPECIFICATION MATRIX</span>
-                <div className="bg-[var(--bg-primary)] border border-slate-850 p-3 rounded-lg space-y-2 text-[11px] overflow-hidden break-all">
+                <div className="bg-[var(--bg-primary)] border border-slate-850 p-3 rounded-lg space-y-2 text-[11px] overflow-hidden [word-break:break-word]">
                   {Object.entries(selectedNode.specifications).map(([key, val]) => (
                     <div key={key} className="flex flex-col border-b border-slate-900 pb-1.5 last:border-b-0 last:pb-0">
                       <span className="text-[var(--text-secondary)] mb-0.5">{key}:</span>
-                      <span className="text-cyan-600 dark:text-cyan-400 font-semibold">{val as string}</span>
+                      <span className="text-cyan-600 dark:text-cyan-400 font-semibold [word-break:break-word] leading-relaxed">{val as string}</span>
                     </div>
                   ))}
                 </div>
