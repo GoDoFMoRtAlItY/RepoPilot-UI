@@ -73,13 +73,6 @@ export default function LineByLineAnalysis() {
         <div className="absolute inset-0 scanlines opacity-5 pointer-events-none" />
 
         <div className="max-w-4xl mx-auto space-y-6 relative z-10">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center space-x-2 text-[var(--text-secondary)] hover:text-cyan-600 dark:text-cyan-400 text-xs font-mono transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>BACK TO EXPLORER</span>
-          </button>
 
           <div className="glass-panel p-6 rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] space-y-4">
             <div className="flex items-center space-x-3 border-b border-[var(--border-color)] pb-4">
