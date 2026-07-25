@@ -25,10 +25,13 @@ import { Compass, Terminal, ShieldAlert, Sun, Moon } from 'lucide-react'
 import Lenis from 'lenis'
 import InteractiveBackground from './components/ui/InteractiveBackground'
 import LoginPage from './components/LoginPage'
+import ProfilePage from './components/ProfilePage'
+import { useAuth } from './hooks/useAuth'
 
 function LandingPage() {
   const navigate = useNavigate()
   const { theme, toggleTheme } = useUIStore()
+  const { user } = useAuth()
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -86,12 +89,35 @@ function LandingPage() {
           <button onClick={toggleTheme} className="p-1.5 rounded-full hover:bg-[var(--glass-hover-bg)] transition-all cursor-pointer">
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
-          <button
-            onClick={() => navigate('/login')}
-            className="base-btn px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-mono tracking-wider cursor-pointer"
-          >
-            LOGIN
-          </button>
+          {user ? (
+            <button
+              onClick={() => navigate('/profile')}
+              title={user.displayName || user.email || 'View Profile'}
+              className="flex items-center space-x-2 p-1 md:px-2.5 md:py-1 rounded-xl bg-[var(--bg-primary)]/50 hover:bg-[var(--bg-primary)] border border-[var(--border-color)] transition-all cursor-pointer"
+            >
+              {user.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt="Profile"
+                  className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-[var(--accent-primary)]"
+                />
+              ) : (
+                <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-gradient-to-br from-[var(--accent-primary)] to-purple-500 text-white font-mono font-bold text-[9px] md:text-[10px] flex items-center justify-center shrink-0">
+                  {(user.displayName || user.email || 'RP').slice(0, 2).toUpperCase()}
+                </div>
+              )}
+              <span className="hidden md:inline font-mono text-[10px] text-[var(--text-primary)] font-medium max-w-[80px] truncate">
+                {user.displayName?.split(' ')[0] || user.email?.split('@')[0]}
+              </span>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              className="base-btn px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-mono tracking-wider cursor-pointer"
+            >
+              LOGIN
+            </button>
+          )}
           <button
             onClick={() => navigate('/repo/gothinkster/node-express-realworld-example-app')}
             className="px-3 py-1.5 md:px-4 md:py-2 bg-[var(--accent-primary)] hover:opacity-90 rounded-lg text-[10px] md:text-xs font-mono tracking-wider text-white transition-all cursor-pointer flex items-center"
@@ -256,6 +282,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/repo/:owner/:repo" element={<DashboardPage />} />
             <Route path="/repo/:owner/:repo/analyze" element={<LineByLineAnalysis />} />
             <Route path="*" element={<Navigate to="/" replace />} />
