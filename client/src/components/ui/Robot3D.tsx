@@ -2,20 +2,21 @@ import React, { useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Sphere, MeshDistortMaterial } from '@react-three/drei'
 import * as THREE from 'three'
+import { useUIStore } from '../../store/useUIStore'
 
-function AnimatedCore() {
+function AnimatedCore({ isLight }: { isLight: boolean }) {
   const meshRef = useRef<THREE.Mesh>(null)
 
   useFrame((state) => {
     if (!meshRef.current) return
-    meshRef.current.rotation.x = state.clock.getElapsedTime() * 0.18
-    meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.25
+    meshRef.current.rotation.x = state.clock.getElapsedTime() * 0.2
+    meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.3
   })
 
   return (
     <Sphere ref={meshRef} args={[1, 64, 64]} scale={1.2}>
       <MeshDistortMaterial
-        color="#7c3aed"
+        color={isLight ? "#a855f7" : "#8b5cf6"}
         attach="material"
         distort={0.35}
         speed={2.2}
@@ -26,56 +27,39 @@ function AnimatedCore() {
   )
 }
 
-function OrbitingRings() {
+function OrbitingRings({ isLight }: { isLight: boolean }) {
   const ringsRef = useRef<THREE.Group>(null)
 
   useFrame((state) => {
     if (!ringsRef.current) return
-    const t = state.clock.getElapsedTime()
-    ringsRef.current.rotation.z = t * 0.18
-    ringsRef.current.rotation.x = Math.sin(t * 0.22) * 0.25
-    ringsRef.current.rotation.y = t * 0.12
+    ringsRef.current.rotation.z = state.clock.getElapsedTime() * 0.15
+    ringsRef.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.2) * 0.2
+    ringsRef.current.rotation.y = state.clock.getElapsedTime() * 0.1
   })
+
+  const ringColors = isLight
+    ? { ring1: "#38bdf8", ring2: "#f472b6", ring3: "#60a5fa" }
+    : { ring1: "#22d3ee", ring2: "#a855f7", ring3: "#06b6d4" }
 
   return (
     <group ref={ringsRef}>
-      {/* Blue Ring */}
-      <mesh rotation={[Math.PI / 2.2, 0.2, 0]}>
-        <torusGeometry args={[2.3, 0.028, 32, 160]} />
-        <meshStandardMaterial
-          color="#3b82f6"
-          emissive="#3b82f6"
-          emissiveIntensity={1.8}
-          roughness={0.1}
-        />
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[2.2, 0.025, 16, 100]} />
+        <meshStandardMaterial color={ringColors.ring1} emissive={ringColors.ring1} emissiveIntensity={1.6} />
       </mesh>
-
-      {/* Prominent Smooth Pink Orbital Loop */}
-      <mesh rotation={[0.4, Math.PI / 3.2, -0.2]}>
-        <torusGeometry args={[2.75, 0.032, 32, 180]} />
-        <meshStandardMaterial
-          color="#ec4899"
-          emissive="#ec4899"
-          emissiveIntensity={2.2}
-          roughness={0.1}
-        />
+      <mesh rotation={[0, Math.PI / 4, 0]}>
+        <torusGeometry args={[2.6, 0.025, 16, 100]} />
+        <meshStandardMaterial color={ringColors.ring2} emissive={ringColors.ring2} emissiveIntensity={1.6} />
       </mesh>
-
-      {/* Prominent Smooth Green Orbital Loop */}
-      <mesh rotation={[-Math.PI / 3, Math.PI / 2.5, 0.4]}>
-        <torusGeometry args={[3.2, 0.034, 32, 200]} />
-        <meshStandardMaterial
-          color="#10b981"
-          emissive="#10b981"
-          emissiveIntensity={2.4}
-          roughness={0.1}
-        />
+      <mesh rotation={[Math.PI / 3, Math.PI / 3, 0]}>
+        <torusGeometry args={[3.0, 0.025, 16, 100]} />
+        <meshStandardMaterial color={ringColors.ring3} emissive={ringColors.ring3} emissiveIntensity={1.6} />
       </mesh>
     </group>
   )
 }
 
-function SceneGroup() {
+function SceneGroup({ isLight }: { isLight: boolean }) {
   const groupRef = useRef<THREE.Group>(null)
 
   useFrame((state) => {
@@ -88,21 +72,25 @@ function SceneGroup() {
 
   return (
     <group ref={groupRef}>
-      <AnimatedCore />
-      <OrbitingRings />
+      <AnimatedCore isLight={isLight} />
+      <OrbitingRings isLight={isLight} />
     </group>
   )
 }
 
 export default function Robot3D() {
+  const { theme } = useUIStore()
+  const isLight = theme === 'light'
+
   return (
     <div className="w-full h-full pointer-events-none">
       <Canvas camera={{ position: [0, 0, 9], fov: 45 }}>
-        <ambientLight intensity={0.7} />
-        <directionalLight position={[10, 10, 5]} intensity={2.0} />
-        <pointLight position={[-10, -10, -5]} intensity={1.5} color="#ec4899" />
-        <pointLight position={[0, 10, -5]} intensity={1.5} color="#10b981" />
-        <SceneGroup />
+        <ambientLight intensity={isLight ? 0.9 : 0.6} />
+        <directionalLight position={[10, 10, 5]} intensity={isLight ? 2.2 : 1.8} />
+        <pointLight position={[-10, -10, -5]} intensity={2.0} color={isLight ? "#f472b6" : "#a855f7"} />
+        <pointLight position={[0, 10, -5]} intensity={2.0} color={isLight ? "#38bdf8" : "#22d3ee"} />
+        
+        <SceneGroup isLight={isLight} />
       </Canvas>
     </div>
   )

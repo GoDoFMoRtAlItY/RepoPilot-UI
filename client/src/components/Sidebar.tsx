@@ -50,22 +50,24 @@ export default function Sidebar({
   const { isFocusMode } = useUIStore()
 
   const content = (
-    <div className={`h-full flex flex-col justify-between bg-[var(--bg-primary)]/60 backdrop-blur-xl border-r border-[var(--border-color)] py-4 font-sans select-none overflow-y-auto transition-all duration-300 ${isFocusMode ? 'px-2' : 'px-4'}`}>
-      <div className="space-y-6">
+    <div className={`h-full flex flex-col justify-between bg-[var(--bg-primary)]/90 backdrop-blur-xl border-r border-[var(--border-color)] py-4 font-sans select-none overflow-y-auto transition-all duration-300 ${isFocusMode ? 'px-2' : 'px-4'}`}>
+      <div className="space-y-5">
         {/* LOGO */}
-        <div className={`flex items-center border-b border-[var(--border-color)] pb-4 shrink-0 transition-all ${isFocusMode ? 'justify-center' : 'justify-between'}`}>
-          <div className="flex items-center space-x-2">
-            <Compass className="w-6 h-6 opacity-80" />
+        <div className={`flex items-center border-b border-[var(--border-color)] pb-3.5 shrink-0 transition-all ${isFocusMode ? 'justify-center' : 'justify-between'}`}>
+          <div className="flex items-center space-x-2.5">
+            <div className="p-1 rounded-full border border-[var(--border-color)] bg-[var(--bg-secondary)]/50 shrink-0">
+              <Compass className="w-4 h-4 text-[#0284c7] dark:text-white" />
+            </div>
             {!isFocusMode && (
-              <span className="font-extrabold text-[var(--text-primary)] text-lg tracking-wider">
-                REPO<span className="text-[var(--text-primary)]/60">PILOT</span>
+              <span className="font-extrabold text-sm tracking-widest text-[var(--text-primary)] uppercase">
+                REPO<span className="text-[#0284c7] dark:text-white font-extrabold">PILOT</span>
               </span>
             )}
           </div>
           {onClose && (
             <button 
               onClick={onClose}
-              className="lg:hidden p-1 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              className="lg:hidden p-1 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] hover:text-[#0284c7] cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -74,20 +76,20 @@ export default function Sidebar({
 
         {/* HUD System Spec */}
         {!isFocusMode && (
-          <div className="glass-panel p-2.5 rounded text-[10px] text-[var(--text-primary)]/50 space-y-1 shrink-0 font-mono">
-            <div className="flex justify-between">
-              <span>SECTOR:</span>
-              <span className="text-[var(--text-primary)]/80">MAIN_HUB</span>
+          <div className="glass-panel p-2.5 rounded-lg font-mono text-[10px] space-y-1 shrink-0 border border-[var(--border-color)]">
+            <div className="flex justify-between items-center">
+              <span className="text-[var(--text-tertiary)] font-semibold tracking-wider">SECTOR:</span>
+              <span className="text-[var(--text-primary)] font-bold tracking-wide">MAIN_HUB</span>
             </div>
-            <div className="flex justify-between">
-              <span>SYS_SYS:</span>
-              <span className="text-[var(--text-primary)]/80">ONLINE</span>
+            <div className="flex justify-between items-center">
+              <span className="text-[var(--text-tertiary)] font-semibold tracking-wider">SYS_STATUS:</span>
+              <span className="text-emerald-600 dark:text-slate-200 font-bold tracking-wide">ONLINE</span>
             </div>
           </div>
         )}
 
         {/* NAVIGATION LINKS */}
-        <nav className="flex flex-col gap-1.5 pt-2 pb-4">
+        <nav className="flex flex-col gap-1 pt-1 pb-4">
           {menuItems.map((item) => {
             const isActive = activeTab === item.name
             return (
@@ -97,14 +99,14 @@ export default function Sidebar({
                   onSelectTab(item.name)
                   if (onClose) onClose()
                 }}
-                className={`w-full flex items-center rounded-lg text-sm transition-all cursor-pointer text-left ${isFocusMode ? 'justify-center p-3' : 'space-x-3 px-4 py-3'} ${
+                className={`w-full flex items-center rounded-lg text-xs md:text-sm transition-all duration-150 cursor-pointer text-left group ${isFocusMode ? 'justify-center p-2.5' : 'space-x-3 px-3 py-2.5'} ${
                   isActive
-                    ? 'bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-medium shadow-sm'
-                    : 'bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover-bg)]'
+                    ? 'bg-sky-100/90 dark:bg-[#24294d] text-[#0284c7] dark:text-[#a5b4fc] font-semibold border border-sky-200 dark:border-indigo-500/30 shadow-sm'
+                    : 'bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover-bg)] font-medium border border-transparent'
                 }`}
                 title={isFocusMode ? item.name : undefined}
               >
-                <item.icon className={`w-4 h-4 shrink-0 ${isActive ? 'opacity-100' : 'opacity-70'}`} />
+                <item.icon className={`w-4 h-4 shrink-0 transition-colors duration-150 ${isActive ? 'text-[#0284c7] dark:text-[#a5b4fc] opacity-100' : 'text-[var(--text-tertiary)] opacity-90 group-hover:text-[var(--text-primary)]'}`} />
                 {!isFocusMode && <span className="tracking-wide truncate">{item.name}</span>}
               </button>
             )
@@ -113,13 +115,13 @@ export default function Sidebar({
       </div>
 
       {/* FOOTER ACTION */}
-      <div className="border-t border-[var(--border-color)] pt-4 mt-auto shrink-0">
+      <div className="border-t border-[var(--border-color)] pt-3.5 mt-auto shrink-0">
         <button
           onClick={onBackToLanding}
-          className={`w-full flex items-center rounded-lg text-sm text-red-400/80 hover:text-red-400 transition-all cursor-pointer ${isFocusMode ? 'justify-center p-3' : 'space-x-3 px-4 py-3 hover:bg-red-500/10'}`}
+          className={`w-full flex items-center rounded-lg text-xs md:text-sm text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 font-semibold transition-all duration-150 cursor-pointer hover:bg-rose-500/10 ${isFocusMode ? 'justify-center p-2.5' : 'space-x-3 px-3 py-2.5'}`}
           title={isFocusMode ? "Exit" : undefined}
         >
-          <LogOut className="w-4 h-4 shrink-0" />
+          <LogOut className="w-4 h-4 shrink-0 text-rose-500 dark:text-rose-400" />
           {!isFocusMode && <span className="truncate">Exit Command Hub</span>}
         </button>
       </div>

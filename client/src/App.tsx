@@ -75,26 +75,26 @@ function LandingPage() {
       transition={{ duration: 0.4 }}
       className="flex-grow flex flex-col relative z-10"
     >
-      <header className="absolute top-0 w-full z-30 px-4 md:px-6 py-4 flex items-center justify-between pointer-events-none">
-        <div className="flex items-center space-x-2 glass-panel px-4 py-2.5 rounded-2xl pointer-events-auto shadow-md border border-white/80 dark:border-white/40 bg-white/85 dark:bg-white/90 backdrop-blur-xl">
-          <Compass className="w-5 h-5 text-slate-800 dark:text-slate-800" />
-          <span className="font-black text-slate-900 dark:text-slate-900 text-base tracking-wider">
-            REPO<span className="text-slate-600 dark:text-slate-600 font-bold">PILOT</span>
+      <header className="absolute top-0 w-full z-30 px-4 md:px-6 py-4 flex items-start justify-between pointer-events-none">
+        <div className="flex items-center space-x-2 glass-panel px-4 py-2.5 rounded-2xl pointer-events-auto">
+          <Compass className="w-5 h-5 opacity-80" />
+          <span className="font-extrabold text-[var(--text-primary)] text-md tracking-wider">
+            REPO<span className="opacity-60">PILOT</span>
           </span>
         </div>
-        <div className="flex items-center space-x-2 md:space-x-3 glass-panel px-3 py-2 rounded-2xl pointer-events-auto shadow-md border border-white/80 dark:border-white/40 bg-white/85 dark:bg-white/90 backdrop-blur-xl">
-          <button onClick={toggleTheme} className="p-1.5 rounded-full hover:bg-slate-200/60 dark:hover:bg-slate-200/60 text-slate-800 dark:text-slate-800 transition-all cursor-pointer">
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-slate-800 dark:text-slate-800" /> : <Moon className="w-4 h-4 text-slate-800 dark:text-slate-800" />}
+        <div className="flex items-center space-x-2 md:space-x-3 glass-panel px-3 py-2 rounded-2xl pointer-events-auto">
+          <button onClick={toggleTheme} className="p-1.5 rounded-full hover:bg-[var(--glass-hover-bg)] transition-all cursor-pointer">
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
           <button
             onClick={() => navigate('/login')}
-            className="px-3.5 py-1.5 md:px-4 md:py-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 dark:text-slate-800 rounded-xl text-[10px] md:text-xs font-mono font-bold tracking-wider cursor-pointer shadow-sm transition-all"
+            className="base-btn px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-mono tracking-wider cursor-pointer"
           >
             LOGIN
           </button>
           <button
             onClick={() => navigate('/repo/gothinkster/node-express-realworld-example-app')}
-            className="px-3.5 py-1.5 md:px-4 md:py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[10px] md:text-xs font-mono font-bold tracking-wider transition-all cursor-pointer flex items-center shadow-md border border-slate-700"
+            className="px-3 py-1.5 md:px-4 md:py-2 bg-[var(--accent-primary)] hover:opacity-90 rounded-lg text-[10px] md:text-xs font-mono tracking-wider text-white transition-all cursor-pointer flex items-center"
           >
             <span className="hidden sm:inline mr-1">COMMAND</span>HUB
           </button>

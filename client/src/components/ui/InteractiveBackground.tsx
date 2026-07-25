@@ -31,61 +31,108 @@ export default function InteractiveBackground({ children }: { children: React.Re
   return (
     <div className="relative min-h-screen w-full bg-[var(--bg-primary)] overflow-hidden text-[var(--text-primary)] transition-colors duration-500">
 
-      {/* ── LIGHT MODE background — premium warm neutral ── */}
+      {/* ── LIGHT MODE background — Soft Pink & Sky Blue Aurora Borealis Glow ── */}
       {isLight && (
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          {/* Subtle warm gradient — barely perceptible */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#F5F7FA] via-[#F0F4FF] to-[#F5F7FA]" />
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+          <div className="absolute inset-0 bg-[#F8FAFC]" />
 
-          {/* Very subtle violet accent bloom — top-right */}
-          <div
-            className="absolute top-0 right-0 w-[600px] h-[400px] pointer-events-none"
+          {/* Subtly Centered Aurora Glow behind Orbits — Soft Pink & Sky Blue */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] pointer-events-none z-0">
+            {/* Blob 1: Soft Pink Glow Layer */}
+            <motion.div
+              animate={{
+                scale: [1, 1.12, 0.95, 1],
+                rotate: [0, 90, 180, 360],
+                opacity: [0.35, 0.45, 0.35]
+              }}
+              transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute inset-0 rounded-full blur-[80px]"
+              style={{
+                background: 'radial-gradient(circle at 40% 40%, rgba(244, 114, 182, 0.45) 0%, rgba(236, 72, 153, 0.25) 45%, transparent 70%)',
+              }}
+            />
+            {/* Blob 2: Sky Blue Glow Layer */}
+            <motion.div
+              animate={{
+                scale: [1.1, 0.95, 1.15, 1.1],
+                rotate: [360, 270, 90, 0],
+                opacity: [0.30, 0.42, 0.30]
+              }}
+              transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute inset-0 rounded-full blur-[80px]"
+              style={{
+                background: 'radial-gradient(circle at 60% 60%, rgba(56, 189, 248, 0.45) 0%, rgba(96, 165, 250, 0.25) 45%, transparent 70%)',
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ── DARK MODE background — Violet & Turquoise Aurora Borealis Glow ── */}
+      {!isLight && (
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+          {/* Deep dark space base */}
+          <div className="absolute inset-0 bg-[#0b0f19]" />
+
+          {/* Subtly Centered Aurora Glow behind Orbits — Violet & Turquoise */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] pointer-events-none z-0">
+            {/* Blob 1: Deep Violet Glow Core */}
+            <motion.div
+              animate={{
+                scale: [1, 1.12, 0.95, 1],
+                rotate: [0, 120, 240, 360],
+                opacity: [0.35, 0.45, 0.35]
+              }}
+              transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute inset-0 rounded-full blur-[85px]"
+              style={{
+                background: 'radial-gradient(circle at 40% 35%, rgba(139, 92, 246, 0.40) 0%, rgba(168, 85, 247, 0.22) 50%, transparent 75%)',
+              }}
+            />
+            {/* Blob 2: Turquoise Glow Wave */}
+            <motion.div
+              animate={{
+                scale: [1.1, 0.92, 1.12],
+                rotate: [360, 180, 0],
+                opacity: [0.30, 0.42, 0.30]
+              }}
+              transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute inset-0 rounded-full blur-[85px]"
+              style={{
+                background: 'radial-gradient(circle at 60% 65%, rgba(6, 182, 212, 0.40) 0%, rgba(34, 211, 238, 0.22) 50%, transparent 75%)',
+              }}
+            />
+          </div>
+
+          {/* Interactive Mouse Spotlight */}
+          <motion.div
+            className="pointer-events-none fixed inset-0 z-0 opacity-30"
             style={{
-              background: 'radial-gradient(ellipse at top right, rgba(91, 80, 232, 0.07) 0%, transparent 70%)',
-            }}
-          />
-          {/* Subtle cyan bloom — bottom-left */}
-          <div
-            className="absolute bottom-0 left-0 w-[500px] h-[350px] pointer-events-none"
-            style={{
-              background: 'radial-gradient(ellipse at bottom left, rgba(8, 145, 178, 0.05) 0%, transparent 70%)',
+              background: 'radial-gradient(400px circle at 0px 0px, rgba(139, 92, 246, 0.12), transparent 65%)',
+              x: springX,
+              y: springY,
+              marginLeft: '-200px',
+              marginTop: '-200px',
             }}
           />
         </div>
       )}
 
-      {/* ── DARK MODE background — Interactive spotlight ── */}
-      {!isLight && (
-        <motion.div
-          className="pointer-events-none fixed inset-0 z-0 opacity-40"
-          style={{
-            background: 'radial-gradient(500px circle at 0px 0px, rgba(255, 255, 255, 0.04), transparent 50%)',
-            x: springX,
-            y: springY,
-            marginLeft: '-250px',
-            marginTop: '-250px',
-          }}
-        />
-      )}
-
-      {/* ── Grid texture — more visible in both modes ── */}
+      {/* ── Grid texture ── */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
           backgroundImage: isLight
-            ? 'linear-gradient(to right, #0000001a 1px, transparent 1px), linear-gradient(to bottom, #0000001a 1px, transparent 1px)'
-            : 'linear-gradient(to right, #80808020 1px, transparent 1px), linear-gradient(to bottom, #80808020 1px, transparent 1px)',
-          backgroundSize: '28px 28px',
+            ? 'linear-gradient(to right, #00000010 1px, transparent 1px), linear-gradient(to bottom, #00000010 1px, transparent 1px)'
+            : 'linear-gradient(to right, #ffffff0c 1px, transparent 1px), linear-gradient(to bottom, #ffffff0c 1px, transparent 1px)',
+          backgroundSize: '32px 32px',
           opacity: 1,
         }}
       />
 
-      {/* ── Global 3D Robot layer ────────────────────────
-          Dark: mix-blend-normal at 70% opacity
-          Light: mix-blend-multiply at 12% — barely decorative
-      ── */}
+      {/* ── Global 3D Robot / Orbits layer ── */}
       <div
-        className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none scale-90 md:scale-100"
+        className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none scale-95 md:scale-105"
         style={{
           opacity: 1,
           mixBlendMode: 'normal',
@@ -97,7 +144,7 @@ export default function InteractiveBackground({ children }: { children: React.Re
       </div>
 
       {/* ── Main Content ──────────────────────────────── */}
-      <div className="relative h-full w-full">
+      <div className="relative h-full w-full z-10">
         {children}
       </div>
     </div>

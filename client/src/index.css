@@ -8,83 +8,82 @@
 }
 
 /* ═══════════════════════════════════════════════════════
-   DARK MODE (Default) — Obsidian/Slate
+   DARK MODE (Default) — Obsidian / Deep Space
    ═══════════════════════════════════════════════════════ */
 :root {
-  --bg-primary:    #25242e;
-  --bg-secondary:  #32303c;
-  --text-primary:  #ededed;
-  --text-secondary: #a3a1b3;
-  --text-tertiary: #7a778c;
-  --border-color:  rgba(255, 255, 255, 0.08);
-  --border-subtle: rgba(255, 255, 255, 0.04);
-  --border-strong: rgba(255, 255, 255, 0.14);
+  --bg-primary:    #0b0f19;
+  --bg-secondary:  #151b2b;
+  --text-primary:  #ffffff;
+  --text-secondary: #e2e8f0;   /* ultra high-contrast slate-200 for maximum readability */
+  --text-tertiary:  #cbd5e1;   /* high-contrast slate-300 */
+  --border-color:  rgba(255, 255, 255, 0.18);
+  --border-subtle: rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.30);
 
-  --glass-bg:           rgba(50, 48, 60, 0.65);
-  --glass-border:       rgba(255, 255, 255, 0.1);
-  --glass-hover-bg:     rgba(65, 63, 75, 0.75);
-  --glass-hover-border: rgba(255, 255, 255, 0.2);
+  --glass-bg:           linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(21, 27, 43, 0.65) 50%, rgba(15, 23, 42, 0.80) 100%);
+  --glass-border:       rgba(255, 255, 255, 0.28);
+  --glass-hover-bg:     linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(30, 41, 64, 0.75) 100%);
+  --glass-hover-border: rgba(255, 255, 255, 0.45);
 
-  --btn-bg:           rgba(255, 255, 255, 0.03);
-  --btn-hover-bg:     rgba(255, 255, 255, 0.06);
-  --btn-border:       rgba(255, 255, 255, 0.1);
-  --btn-hover-border: rgba(255, 255, 255, 0.2);
+  --btn-bg:           rgba(255, 255, 255, 0.08);
+  --btn-hover-bg:     rgba(255, 255, 255, 0.15);
+  --btn-border:       rgba(255, 255, 255, 0.25);
+  --btn-hover-border: rgba(255, 255, 255, 0.45);
 
-  --accent-primary:   #3B82F6;
-  --accent-secondary: #10B981;
+  --accent-primary:   #8b5cf6;  /* violet */
+  --accent-secondary: #06b6d4;  /* turquoise / cyan */
 
-  --scrollbar-thumb:       rgba(255, 255, 255, 0.1);
-  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
+  --scrollbar-thumb:       rgba(255, 255, 255, 0.25);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.45);
 }
 
 /* ═══════════════════════════════════════════════════════
-   LIGHT THEME — Premium SaaS Design System
-   Inspired by: Linear · Vercel · Stripe · Raycast · Framer
+   LIGHT THEME — High Contrast Premium SaaS
    ═══════════════════════════════════════════════════════ */
 .light {
   /* ── Surfaces ──────────────────────────────────────── */
-  --bg-primary:       #F5F7FA;          /* page background — warm neutral */
+  --bg-primary:       #F8FAFC;          /* page background */
   --bg-secondary:     #FFFFFF;          /* elevated cards, inputs */
-  --surface-page:     #F5F7FA;
+  --surface-page:     #F8FAFC;
   --surface-card:     #FFFFFF;
   --surface-elevated: #FFFFFF;
-  --surface-sunken:   #EEF1F6;          /* code blocks, recessed areas */
-  --surface-overlay:  rgba(255, 255, 255, 0.90);
+  --surface-sunken:   #F1F5F9;
+  --surface-overlay:  rgba(255, 255, 255, 0.95);
 
-  /* ── Text — WCAG AA compliant ──────────────────────── */
-  --text-primary:   #0D1117;            /* headings — near-black */
-  --text-secondary: #374151;            /* body — gray-700 */
-  --text-tertiary:  #6B7280;            /* captions, placeholders — gray-500 */
+  /* ── High Contrast Text ───────────────────────────── */
+  --text-primary:   #0f172a;            /* slate-900 */
+  --text-secondary: #0f172a;            /* slate-900 — crisp bold contrast */
+  --text-tertiary:  #334155;            /* slate-700 */
   --text-on-accent: #FFFFFF;
 
   /* ── Borders ──────────────────────────────────────── */
-  --border-color:  #E5E7EB;             /* default dividers — gray-200 */
-  --border-subtle: #F3F4F6;             /* very light separators — gray-100 */
-  --border-strong: #D1D5DB;             /* card borders, inputs — gray-300 */
+  --border-color:  #CBD5E1;             /* slate-300 */
+  --border-subtle: #E2E8F0;             /* slate-200 */
+  --border-strong: #64748B;             /* slate-500 */
 
-  /* ── Glass (surface-first; glass kept minimal) ──── */
-  --glass-bg:           rgba(255, 255, 255, 0.65);
-  --glass-border:       rgba(229, 231, 235, 0.95);
-  --glass-hover-bg:     #FFFFFF;
-  --glass-hover-border: rgba(91, 80, 232, 0.35);
+  /* ── Glass ────────────────────────────────────────── */
+  --glass-bg:           linear-gradient(135deg, rgba(255, 255, 255, 0.90) 0%, rgba(255, 255, 255, 0.65) 50%, rgba(255, 255, 255, 0.82) 100%);
+  --glass-border:       rgba(255, 255, 255, 0.95);
+  --glass-hover-bg:     linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.85) 100%);
+  --glass-hover-border: rgba(99, 102, 241, 0.60);
 
   /* ── Buttons ──────────────────────────────────────── */
   --btn-bg:           #FFFFFF;
-  --btn-hover-bg:     #F9FAFB;
-  --btn-border:       #D1D5DB;
-  --btn-hover-border: #9CA3AF;
+  --btn-hover-bg:     #F1F5F9;
+  --btn-border:       #CBD5E1;
+  --btn-hover-border: #475569;
 
   /* ── Brand Accents ────────────────────────────────── */
-  --accent-primary:       #5B50E8;      /* violet — brand */
-  --accent-primary-hover: #4338CA;
-  --accent-secondary:     #0891B2;      /* cyan-600 — readable on white */
-  --accent-success:       #059669;      /* emerald-600 */
-  --accent-warning:       #D97706;      /* amber-600 */
-  --accent-error:         #DC2626;      /* red-600 */
+  --accent-primary:       #6366f1;      /* indigo / violet */
+  --accent-primary-hover: #4f46e5;
+  --accent-secondary:     #0284c7;      /* sky blue */
+  --accent-success:       #059669;
+  --accent-warning:       #D97706;
+  --accent-error:         #DC2626;
 
   /* ── Scrollbar ────────────────────────────────────── */
-  --scrollbar-thumb:       rgba(156, 163, 175, 0.45);
-  --scrollbar-thumb-hover: rgba(91, 80, 232, 0.45);
+  --scrollbar-thumb:       rgba(100, 116, 139, 0.45);
+  --scrollbar-thumb-hover: rgba(99, 102, 241, 0.60);
 }
 
 /* ── Base resets ──────────────────────────────────────── */
@@ -113,47 +112,47 @@ html.lenis, html.lenis body { height: auto; }
 ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 
 /* ═══════════════════════════════════════════════════════
-   GLASS PANEL — REAL FROSTED GLASS EFFECT
-   Deep backdrop blur, specular top reflection, double borders,
-   and ambient light shadows across all pages
+   PROMINENT REAL GLASSMORPHISM PANEL (Dark & Light)
    ═══════════════════════════════════════════════════════ */
 .glass-panel {
-  background: rgba(32, 30, 42, 0.70);
-  backdrop-filter: blur(32px) saturate(180%);
-  -webkit-backdrop-filter: blur(32px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: 
-    0 8px 32px 0 rgba(0, 0, 0, 0.35),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.25),
-    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.2);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.light .glass-panel {
-  background: rgba(255, 255, 255, 0.80);
-  backdrop-filter: blur(28px) saturate(190%);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: var(--glass-bg);
+  backdrop-filter: blur(32px) saturate(200%);
+  -webkit-backdrop-filter: blur(32px) saturate(200%);
+  border: 1px solid var(--glass-border);
   box-shadow:
-    0 8px 32px 0 rgba(31, 38, 135, 0.08),
-    0 1px 2px 0 rgba(0, 0, 0, 0.04),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.03);
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.35),
+    0 20px 48px -10px rgba(0, 0, 0, 0.50);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.light .glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(32px) saturate(200%);
+  -webkit-backdrop-filter: blur(32px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow:
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.05),
+    0 20px 48px -10px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
 .glass-panel-hover:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-  background: rgba(45, 42, 58, 0.80);
-  box-shadow: 
-    0 12px 40px 0 rgba(0, 0, 0, 0.45),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.35);
-}
-.light .glass-panel-hover:hover {
-  border-color: rgba(91, 80, 232, 0.45);
-  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--glass-hover-border);
+  background: var(--glass-hover-bg);
   box-shadow:
-    0 12px 36px 0 rgba(91, 80, 232, 0.12),
-    0 2px 6px 0 rgba(0, 0, 0, 0.04),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 1);
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.50),
+    0 24px 54px -8px rgba(0, 0, 0, 0.60);
+}
+
+.light .glass-panel-hover:hover {
+  border-color: rgba(255, 255, 255, 1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.88) 100%);
+  box-shadow:
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 1),
+    0 24px 50px -8px rgba(0, 0, 0, 0.09),
+    0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 /* ── Base Buttons ─────────────────────────────────────── */
@@ -175,8 +174,8 @@ html.lenis, html.lenis body { height: auto; }
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 .light .base-btn:hover {
-  background: #F9FAFB;
-  border-color: #9CA3AF;
+  background: #F8FAFC;
+  border-color: #64748B;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
@@ -196,7 +195,7 @@ html.lenis, html.lenis body { height: auto; }
   background: var(--bg-secondary) !important;
   border: 1px solid var(--border-color) !important;
   border-radius: 6px !important;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
 }
 .react-flow__controls-button {
   background: transparent !important;
@@ -209,9 +208,7 @@ html.lenis, html.lenis body { height: auto; }
 }
 
 /* ════════════════════════════════════════════════════════
-   LIGHT MODE — COMPONENT OVERRIDES
-   Fixes every hardcoded dark-only Tailwind class
-   across all pages and components
+   LIGHT MODE — HIGH CONTRAST & ACCENT OVERRIDES
    ════════════════════════════════════════════════════════ */
 
 /* ── Typography ──────────────────────────────────────── */
@@ -224,10 +221,10 @@ html.lenis, html.lenis body { height: auto; }
 .light .text-white\/60,
 .light .text-white\/50,
 .light .text-white\/40 {
-  color: var(--text-tertiary) !important;
+  color: var(--text-secondary) !important;
 }
-.light .text-slate-200 { color: var(--text-secondary) !important; }
-.light .text-slate-300,
+.light .text-slate-200,
+.light .text-slate-300 { color: var(--text-secondary) !important; }
 .light .text-slate-400,
 .light .text-slate-500 { color: var(--text-tertiary) !important; }
 .light .dark\:text-slate-300 { color: var(--text-secondary) !important; }
@@ -235,10 +232,9 @@ html.lenis, html.lenis body { height: auto; }
 
 /* ── Backgrounds ─────────────────────────────────────── */
 .light .bg-white\/\[0\.03\],
-.light .bg-white\/5         { background-color: rgba(91, 80, 232, 0.05) !important; }
-.light .bg-white\/10        { background-color: rgba(91, 80, 232, 0.08) !important; }
+.light .bg-white\/5         { background-color: rgba(99, 102, 241, 0.05) !important; }
+.light .bg-white\/10        { background-color: rgba(99, 102, 241, 0.08) !important; }
 
-/* Hardcoded dark page/card backgrounds */
 .light .bg-\[\#05070A\]     { background-color: var(--surface-page) !important; }
 .light .bg-\[\#0B1220\]     { background-color: var(--surface-card) !important; }
 .light .bg-\[\#0B1220\]\/80 { background-color: var(--surface-sunken) !important; }
@@ -250,143 +246,11 @@ html.lenis, html.lenis body { height: auto; }
 .light .border-slate-850\/80,
 .light .border-slate-900    { border-color: var(--border-color) !important; }
 
-/* ── Sidebar nav items ───────────────────────────────── */
-.light .hover\:bg-white\/5:hover { background-color: rgba(91, 80, 232, 0.06) !important; }
-
-/* ── Gradient glow lines (FeatureCards) ──────────────── */
-.light .via-cyan-400 {
-  --tw-gradient-via: rgba(91, 80, 232, 0.4) !important;
-}
-
-/* ── Code / Pre blocks ───────────────────────────────── */
-.light pre code,
-.light pre { color: var(--accent-primary) !important; }
-
 /* ── Inputs & Textareas ──────────────────────────────── */
 .light input,
 .light textarea,
 .light select {
   background: var(--surface-card) !important;
-}
-
-/* ── Dashboard Badges & Accents Overrides ───────────────────
-   Maps dark mode tailwind jewel tones to the new token system
-   without needing to refactor every dashboard component.
-──────────────────────────────────────────────────────────────── */
-.light .text-cyan-400,
-.light .text-cyan-500,
-.light .text-cyan-600 {
-  color: var(--accent-secondary) !important;
-}
-.light .bg-cyan-500\/10,
-.light .bg-cyan-500\/15,
-.light .bg-cyan-500\/20,
-.light .bg-cyan-900\/40 {
-  background-color: rgba(8, 145, 178, 0.1) !important;
-}
-.light .border-cyan-500\/20,
-.light .border-cyan-500\/25,
-.light .border-cyan-500\/30,
-.light .border-cyan-500\/40,
-.light .border-cyan-500\/50,
-.light .border-cyan-400\/50 {
-  border-color: rgba(8, 145, 178, 0.25) !important;
-}
-
-/* Violet / Purple / Indigo -> var(--accent-primary) */
-.light .text-purple-400,
-.light .text-purple-500,
-.light .text-purple-600,
-.light .text-indigo-400,
-.light .text-indigo-500,
-.light .text-indigo-600 {
-  color: var(--accent-primary) !important;
-}
-.light .bg-purple-500\/10,
-.light .bg-purple-500\/20,
-.light .bg-indigo-500\/10,
-.light .bg-indigo-500\/20 {
-  background-color: rgba(91, 80, 232, 0.1) !important;
-}
-.light .border-purple-500\/20,
-.light .border-purple-500\/25,
-.light .border-purple-500\/30,
-.light .border-purple-500\/40,
-.light .border-indigo-500\/20,
-.light .border-indigo-500\/30,
-.light .border-indigo-500\/40 {
-  border-color: rgba(91, 80, 232, 0.25) !important;
-}
-
-/* Emerald -> var(--accent-success) */
-.light .text-emerald-400,
-.light .text-emerald-500,
-.light .text-emerald-600 {
-  color: var(--accent-success) !important;
-}
-.light .bg-emerald-500\/5,
-.light .bg-emerald-500\/20 {
-  background-color: rgba(5, 150, 105, 0.1) !important;
-}
-.light .border-emerald-500\/30,
-.light .border-emerald-500\/40 {
-  border-color: rgba(5, 150, 105, 0.25) !important;
-}
-
-/* Amber -> var(--accent-warning) */
-.light .text-amber-400,
-.light .text-amber-500,
-.light .text-amber-600 {
-  color: var(--accent-warning) !important;
-}
-.light .bg-amber-500\/10 {
-  background-color: rgba(217, 119, 6, 0.1) !important;
-}
-.light .border-amber-500\/15,
-.light .border-amber-500\/25 {
-  border-color: rgba(217, 119, 6, 0.25) !important;
-}
-
-/* Rose -> var(--accent-error) */
-.light .text-rose-400,
-.light .text-rose-500,
-.light .text-rose-600 {
-  color: var(--accent-error) !important;
-}
-.light .bg-rose-500\/10,
-.light .bg-rose-500\/20,
-.light .bg-rose-500\/30 {
-  background-color: rgba(220, 38, 38, 0.1) !important;
-}
-.light .border-rose-500\/20,
-.light .border-rose-500\/25,
-.light .border-rose-500\/30 {
-  border-color: rgba(220, 38, 38, 0.25) !important;
-}
-
-/* Also map blue to secondary */
-.light .text-blue-400,
-.light .text-blue-500,
-.light .text-blue-600 {
-  color: var(--accent-secondary) !important;
-}
-.light .bg-blue-500\/10,
-.light .bg-blue-500\/20,
-.light .bg-blue-600\/10,
-.light .bg-blue-600\/15 {
-  background-color: rgba(8, 145, 178, 0.1) !important;
-}
-.light .border-blue-500\/20,
-.light .border-blue-500\/30,
-.light .border-blue-500\/35,
-.light .border-blue-500\/40,
-.light .border-blue-500\/50 {
-  border-color: rgba(8, 145, 178, 0.25) !important;
-}
-.light input,
-.light textarea,
-.light select {
-  background-color: var(--surface-card) !important;
   border-color: var(--border-strong) !important;
   color: var(--text-primary) !important;
 }
@@ -395,12 +259,9 @@ html.lenis, html.lenis body { height: auto; }
 .light input:focus,
 .light textarea:focus {
   border-color: var(--accent-primary) !important;
-  box-shadow: 0 0 0 3px rgba(91, 80, 232, 0.12) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
   outline: none !important;
 }
 
-/* ── Hover text fixes ────────────────────────────────── */
-.light .hover\:text-white:hover { color: var(--text-primary) !important; }
-
 /* ── Skeleton shimmer ────────────────────────────────── */
-.light .skeleton-box { background: rgba(156, 163, 175, 0.15) !important; }
+.light .skeleton-box { background: rgba(100, 116, 139, 0.15) !important; }
