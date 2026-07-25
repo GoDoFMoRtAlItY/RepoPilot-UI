@@ -10,18 +10,18 @@
    DARK MODE (Default) — Obsidian/Slate
    ═══════════════════════════════════════════════════════ */
 :root {
-  --bg-primary:    #0a0a0a;
-  --bg-secondary:  #121212;
+  --bg-primary:    #25242e;
+  --bg-secondary:  #32303c;
   --text-primary:  #ededed;
-  --text-secondary: #888888;
-  --text-tertiary: #555555;
+  --text-secondary: #a3a1b3;
+  --text-tertiary: #7a778c;
   --border-color:  rgba(255, 255, 255, 0.08);
   --border-subtle: rgba(255, 255, 255, 0.04);
   --border-strong: rgba(255, 255, 255, 0.14);
 
-  --glass-bg:           rgba(255, 255, 255, 0.02);
-  --glass-border:       rgba(255, 255, 255, 0.08);
-  --glass-hover-bg:     rgba(255, 255, 255, 0.04);
+  --glass-bg:           rgba(50, 48, 60, 0.65);
+  --glass-border:       rgba(255, 255, 255, 0.1);
+  --glass-hover-bg:     rgba(65, 63, 75, 0.75);
   --glass-hover-border: rgba(255, 255, 255, 0.2);
 
   --btn-bg:           rgba(255, 255, 255, 0.03);
@@ -62,7 +62,7 @@
   --border-strong: #D1D5DB;             /* card borders, inputs — gray-300 */
 
   /* ── Glass (surface-first; glass kept minimal) ──── */
-  --glass-bg:           rgba(255, 255, 255, 0.88);
+  --glass-bg:           rgba(255, 255, 255, 0.65);
   --glass-border:       rgba(229, 231, 235, 0.95);
   --glass-hover-bg:     #FFFFFF;
   --glass-hover-border: rgba(91, 80, 232, 0.35);
@@ -118,16 +118,13 @@ html.lenis, html.lenis body { height: auto; }
    ═══════════════════════════════════════════════════════ */
 .glass-panel {
   background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(48px);
+  -webkit-backdrop-filter: blur(48px);
   border: 1px solid var(--glass-border);
   box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.15);
   transition: all 0.2s ease-in-out;
 }
 .light .glass-panel {
-  background: var(--surface-card);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
   border: 1px solid var(--border-color);
   box-shadow:
     0 1px 3px  rgba(0, 0, 0, 0.05),

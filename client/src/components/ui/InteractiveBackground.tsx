@@ -68,13 +68,15 @@ export default function InteractiveBackground({ children }: { children: React.Re
         />
       )}
 
-      {/* ── Grid texture — barely visible in both modes ── */}
+      {/* ── Grid texture — more visible in both modes ── */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
-          backgroundImage: 'linear-gradient(to right, #80808009 1px, transparent 1px), linear-gradient(to bottom, #80808009 1px, transparent 1px)',
+          backgroundImage: isLight
+            ? 'linear-gradient(to right, #0000001a 1px, transparent 1px), linear-gradient(to bottom, #0000001a 1px, transparent 1px)'
+            : 'linear-gradient(to right, #80808020 1px, transparent 1px), linear-gradient(to bottom, #80808020 1px, transparent 1px)',
           backgroundSize: '28px 28px',
-          opacity: isLight ? 0.6 : 1,
+          opacity: 1,
         }}
       />
 
@@ -85,8 +87,8 @@ export default function InteractiveBackground({ children }: { children: React.Re
       <div
         className="fixed inset-0 flex items-center justify-center z-0 pointer-events-none scale-90 md:scale-100"
         style={{
-          opacity: isLight ? (isDashboard ? 0.3 : 0.12) : 0.70,
-          mixBlendMode: isLight ? 'multiply' : 'normal',
+          opacity: 1,
+          mixBlendMode: 'normal',
         }}
       >
         <div className="w-[1000px] h-[1000px] max-w-full">
@@ -95,7 +97,7 @@ export default function InteractiveBackground({ children }: { children: React.Re
       </div>
 
       {/* ── Main Content ──────────────────────────────── */}
-      <div className="relative z-10 h-full w-full">
+      <div className="relative h-full w-full">
         {children}
       </div>
     </div>

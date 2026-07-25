@@ -63,13 +63,13 @@ export default function HeroSection({ onAnalyzeRepo }: HeroSectionProps) {
         </h1>
       </div>
 
-      <div className="w-full max-w-7xl relative z-10 flex flex-col items-center justify-center h-full min-h-[600px]">
+      <div className="w-full max-w-7xl relative flex flex-col items-center justify-center h-full min-h-[600px]">
         
         {/* 3D Core Layer (Now provided by Global InteractiveBackground) */}
-        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none" />
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none" />
 
         {/* Foreground Content Layer — Single Centered Vertical Column */}
-        <div className="relative z-20 flex flex-col items-center justify-center w-full pointer-events-none">
+        <div className="relative flex flex-col items-center justify-center w-full pointer-events-none">
           
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -91,13 +91,13 @@ export default function HeroSection({ onAnalyzeRepo }: HeroSectionProps) {
             </motion.div>
 
             {/* 2. Main Headline */}
-            <div className="text-center space-y-4 pointer-events-auto">
-              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-[var(--text-primary)] px-4">
+            <div className="text-center space-y-4 pointer-events-auto glass-panel px-8 py-8 rounded-3xl mx-4 shadow-2xl">
+              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-[var(--text-primary)]">
                 Master Your Codebase
               </h2>
 
               {/* 3. Subheadline — high contrast */}
-              <p className="text-base sm:text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto font-light px-4">
+              <p className="text-base sm:text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto font-light">
                 We don't just read code — we <span className="text-[var(--text-primary)] font-medium">understand</span> it.
               </p>
             </div>

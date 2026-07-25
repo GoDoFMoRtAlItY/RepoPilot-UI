@@ -50,7 +50,7 @@ export default function Sidebar({
   const { isFocusMode } = useUIStore()
 
   const content = (
-    <div className={`h-full flex flex-col justify-between bg-transparent border-r border-[var(--border-color)] py-4 font-sans select-none overflow-y-auto transition-all duration-300 ${isFocusMode ? 'px-2' : 'px-4'}`}>
+    <div className={`h-full flex flex-col justify-between bg-[var(--bg-primary)]/60 backdrop-blur-xl border-r border-[var(--border-color)] py-4 font-sans select-none overflow-y-auto transition-all duration-300 ${isFocusMode ? 'px-2' : 'px-4'}`}>
       <div className="space-y-6">
         {/* LOGO */}
         <div className={`flex items-center border-b border-[var(--border-color)] pb-4 shrink-0 transition-all ${isFocusMode ? 'justify-center' : 'justify-between'}`}>

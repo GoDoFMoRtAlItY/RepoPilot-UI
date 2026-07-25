@@ -44,7 +44,198 @@ const mapToExplorerFiles = (files: any[]): ExplorerFile[] => {
   })
 }
 
+// File type icons
+const getFileIcon = (fileName: string) => {
+  const ext = fileName.split('.').pop()?.toLowerCase()
+  switch (ext) {
+    case 'ts':
+    case 'tsx':
+      return <FileCode className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 animate-pulse" />
+    case 'js':
+    case 'jsx':
+      return <FileCode className="w-5 h-5 text-yellow-400 shrink-0" />
+    case 'json':
+      return <FileCode className="w-5 h-5 text-purple-600 dark:text-purple-400 shrink-0" />
+    case 'md':
+      return <FileCode className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+    default:
+      return <FileCode className="w-5 h-5 text-[var(--text-secondary)] shrink-0" />
+  }
+}
 
+interface FolderNodeProps {
+  node: any;
+  level?: number;
+  expandedFile: string | null;
+  setExpandedFile: (path: string | null) => void;
+  owner: string;
+  repoName: string;
+  defaultBranch: string;
+}
+
+// Recursive Folder Component
+const FolderNode = ({ node, level = 0, expandedFile, setExpandedFile, owner, repoName, defaultBranch }: FolderNodeProps) => {
+  const [isOpen, setIsOpen] = useState(true)
+
+  // Sort children: folders first, then files
+  const childrenNodes = Object.values(node.children || {}).sort((a: any, b: any) => {
+    if (a.type === 'folder' && b.type === 'file') return -1
+    if (a.type === 'file' && b.type === 'folder') return 1
+    return a.name.localeCompare(b.name)
+  })
+
+  const folderFiles = childrenNodes.filter((c: any) => c.type === 'file')
+  const folderFolders = childrenNodes.filter((c: any) => c.type === 'folder')
+
+  if (node.name === 'Root') {
+    return (
+      <div className="space-y-4">
+        {childrenNodes.map((child: any) => (
+          child.type === 'folder' 
+            ? <FolderNode 
+                key={child.path} 
+                node={child} 
+                level={0} 
+                expandedFile={expandedFile}
+                setExpandedFile={setExpandedFile}
+                owner={owner}
+                repoName={repoName}
+                defaultBranch={defaultBranch}
+              /> 
+            : null // files at absolute root are already in 📄 Root Files
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <div className={`space-y-3.5 ${level > 0 ? 'ml-6 border-l border-[var(--border-color)] pl-4' : ''}`}>
+      <div 
+        className="flex items-center space-x-2 text-[var(--text-secondary)] border-b border-slate-900 pb-2 cursor-pointer hover:text-cyan-600 dark:text-cyan-400 transition-colors"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <FolderOpen className="w-4.5 h-4.5 text-cyan-600 dark:text-cyan-400/80" />
+        <span className="text-sm font-bold text-slate-200 tracking-wide font-sans">{node.name}</span>
+        {isOpen ? <ChevronUp className="w-4 h-4 ml-auto" /> : <ChevronDown className="w-4 h-4 ml-auto" />}
+      </div>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="space-y-4 pt-2">
+              {/* Render subfolders recursively */}
+              {folderFolders.map((subFolder: any) => (
+                <FolderNode 
+                  key={subFolder.path} 
+                  node={subFolder} 
+                  level={level + 1}
+                  expandedFile={expandedFile}
+                  setExpandedFile={setExpandedFile}
+                  owner={owner}
+                  repoName={repoName}
+                  defaultBranch={defaultBranch}
+                />
+              ))}
+              
+              {/* Render files in a 2-column grid */}
+              {folderFiles.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                  {folderFiles.map((child: any) => {
+                    const file = child.fileData
+                    const isExpanded = expandedFile === file.path;
+                    
+                    return (
+                      <div
+                        key={file.path}
+                        onClick={() => setExpandedFile(isExpanded ? null : file.path)}
+                        className={`glass-panel p-4.5 rounded-xl transition-all duration-300 cursor-pointer flex flex-col justify-between border-slate-850 hover:border-[var(--border-color)] bg-[var(--bg-primary)] hover:bg-[var(--bg-secondary)] hover:shadow-[0_0_15px_rgba(6,182,212,0.02)] ${
+                          isExpanded ? 'border-cyan-500/30 ring-1 ring-cyan-500/10' : ''
+                        }`}
+                      >
+                        <div className="space-y-2.5">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center space-x-2.5 min-w-0">
+                              {getFileIcon(file.fileName)}
+                              <span className="text-[var(--text-primary)] text-xs font-bold truncate tracking-wide">{file.fileName}</span>
+                            </div>
+                            <div className="flex items-center space-x-1.5 shrink-0">
+                              <span className="text-[9px] text-[var(--text-secondary)] uppercase font-mono tracking-wider bg-[var(--bg-secondary)] border border-slate-850 px-1.5 py-0.5 rounded">
+                                {(file.size / 1024).toFixed(1)} KB
+                              </span>
+                              {isExpanded ? (
+                                <ChevronUp className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
+                              ) : (
+                                <ChevronDown className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="text-[10px] text-[var(--text-secondary)] truncate font-mono">
+                            {file.path}
+                          </div>
+
+                          <div className="text-xs text-[var(--text-secondary)] font-sans leading-relaxed min-h-[32px]">
+                            {file.loading ? (
+                              <div className="space-y-1.5 animate-pulse">
+                                <div className="h-3 bg-[var(--bg-secondary)]/80 rounded w-full" />
+                                <div className="h-3 bg-[var(--bg-secondary)]/80 rounded w-2/3 mt-2" />
+                                <span className="text-cyan-600 dark:text-cyan-500/70 text-[10px] mt-1 block">Generating AI explanation...</span>
+                              </div>
+                            ) : (
+                              file.error ? "AI explanation could not be generated for this file." : file.description
+                            )}
+                          </div>
+                        </div>
+
+                        <AnimatePresence>
+                          {isExpanded && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden mt-3.5 pt-3.5 border-t border-slate-900 font-sans text-xs text-[var(--text-secondary)]"
+                            >
+                              <div className="space-y-2.5">
+                                <div className="flex flex-col gap-2">
+                                  <a
+                                    href={`https://github.com/${owner}/${repoName}/blob/${defaultBranch}/${file.path}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full py-2 bg-[var(--bg-secondary)] hover:bg-slate-850 text-center border border-[var(--border-color)] hover:border-cyan-500/30 text-[10px] font-bold text-[var(--text-primary)] hover:text-[var(--text-primary)] rounded transition-all block tracking-wider"
+                                  >
+                                    VIEW SOURCE ON GITHUB
+                                  </a>
+                                  <a
+                                    href={`/repo/${owner}/${repoName}/analyze?path=${encodeURIComponent(file.path)}&sha=${file.sha}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full py-2 bg-cyan-950/30 hover:bg-cyan-900/40 text-center border border-cyan-800/50 hover:border-cyan-500/80 text-[10px] font-bold text-cyan-300 hover:text-cyan-100 rounded transition-all block tracking-wider"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    DETAILED ANALYSIS
+                                  </a>
+                                </div>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
 
 export default function ImportantFilesTab() {
   const { analysis } = useRepoStore()
@@ -172,170 +363,6 @@ export default function ImportantFilesTab() {
     return root
   }, [filteredFiles])
 
-  // File type icons
-  const getFileIcon = (fileName: string) => {
-    const ext = fileName.split('.').pop()?.toLowerCase()
-    switch (ext) {
-      case 'ts':
-      case 'tsx':
-        return <FileCode className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 animate-pulse" />
-      case 'js':
-      case 'jsx':
-        return <FileCode className="w-5 h-5 text-yellow-400 shrink-0" />
-      case 'json':
-        return <FileCode className="w-5 h-5 text-purple-600 dark:text-purple-400 shrink-0" />
-      case 'md':
-        return <FileCode className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-      default:
-        return <FileCode className="w-5 h-5 text-[var(--text-secondary)] shrink-0" />
-    }
-  }
-
-  // Recursive Folder Component
-  const FolderNode = ({ node, level = 0 }: { node: any, level?: number }) => {
-    const [isOpen, setIsOpen] = useState(true)
-
-    // Sort children: folders first, then files
-    const childrenNodes = Object.values(node.children || {}).sort((a: any, b: any) => {
-      if (a.type === 'folder' && b.type === 'file') return -1
-      if (a.type === 'file' && b.type === 'folder') return 1
-      return a.name.localeCompare(b.name)
-    })
-
-    const folderFiles = childrenNodes.filter((c: any) => c.type === 'file')
-    const folderFolders = childrenNodes.filter((c: any) => c.type === 'folder')
-
-    if (node.name === 'Root') {
-      return (
-        <div className="space-y-4">
-          {childrenNodes.map((child: any) => (
-            child.type === 'folder' 
-              ? <FolderNode key={child.path} node={child} level={0} /> 
-              : null // files at absolute root are already in 📄 Root Files
-          ))}
-        </div>
-      )
-    }
-
-    return (
-      <div className={`space-y-3.5 ${level > 0 ? 'ml-6 border-l border-[var(--border-color)] pl-4' : ''}`}>
-        <div 
-          className="flex items-center space-x-2 text-[var(--text-secondary)] border-b border-slate-900 pb-2 cursor-pointer hover:text-cyan-600 dark:text-cyan-400 transition-colors"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <FolderOpen className="w-4.5 h-4.5 text-cyan-600 dark:text-cyan-400/80" />
-          <span className="text-sm font-bold text-slate-200 tracking-wide font-sans">{node.name}</span>
-          {isOpen ? <ChevronUp className="w-4 h-4 ml-auto" /> : <ChevronDown className="w-4 h-4 ml-auto" />}
-        </div>
-
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="space-y-4 pt-2">
-                {/* Render subfolders recursively */}
-                {folderFolders.map((subFolder: any) => (
-                  <FolderNode key={subFolder.path} node={subFolder} level={level + 1} />
-                ))}
-                
-                {/* Render files in a 2-column grid */}
-                {folderFiles.length > 0 && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                    {folderFiles.map((child: any) => {
-                      const file = child.fileData
-                      const isExpanded = expandedFile === file.path;
-                      
-                      return (
-                        <div
-                          key={file.path}
-                          onClick={() => setExpandedFile(isExpanded ? null : file.path)}
-                          className={`glass-panel p-4.5 rounded-xl transition-all duration-300 cursor-pointer flex flex-col justify-between border-slate-850 hover:border-[var(--border-color)] bg-[var(--bg-primary)] hover:bg-[var(--bg-secondary)] hover:shadow-[0_0_15px_rgba(6,182,212,0.02)] ${
-                            isExpanded ? 'border-cyan-500/30 ring-1 ring-cyan-500/10' : ''
-                          }`}
-                        >
-                          <div className="space-y-2.5">
-                            <div className="flex items-center justify-between gap-3">
-                              <div className="flex items-center space-x-2.5 min-w-0">
-                                {getFileIcon(file.fileName)}
-                                <span className="text-[var(--text-primary)] text-xs font-bold truncate tracking-wide">{file.fileName}</span>
-                              </div>
-                              <div className="flex items-center space-x-1.5 shrink-0">
-                                <span className="text-[9px] text-[var(--text-secondary)] uppercase font-mono tracking-wider bg-[var(--bg-secondary)] border border-slate-850 px-1.5 py-0.5 rounded">
-                                  {(file.size / 1024).toFixed(1)} KB
-                                </span>
-                                {isExpanded ? (
-                                  <ChevronUp className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
-                                ) : (
-                                  <ChevronDown className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
-                                )}
-                              </div>
-                            </div>
-
-                            <div className="text-[10px] text-[var(--text-secondary)] truncate font-mono">
-                              {file.path}
-                            </div>
-
-                            <div className="text-xs text-[var(--text-secondary)] font-sans leading-relaxed min-h-[32px]">
-                              {file.loading ? (
-                                <div className="space-y-1.5 animate-pulse">
-                                  <div className="h-3 bg-[var(--bg-secondary)]/80 rounded w-full" />
-                                  <div className="h-3 bg-[var(--bg-secondary)]/80 rounded w-2/3 mt-2" />
-                                  <span className="text-cyan-600 dark:text-cyan-500/70 text-[10px] mt-1 block">Generating AI explanation...</span>
-                                </div>
-                              ) : (
-                                file.error ? "AI explanation could not be generated for this file." : file.description
-                              )}
-                            </div>
-                          </div>
-
-                          <AnimatePresence>
-                            {isExpanded && (
-                              <motion.div
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: 'auto', opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                className="overflow-hidden mt-3.5 pt-3.5 border-t border-slate-900 font-sans text-xs text-[var(--text-secondary)]"
-                              >
-                                <div className="space-y-2.5">
-                                  <div className="flex flex-col gap-2">
-                                    <a
-                                      href={`https://github.com/${owner}/${repoName}/blob/${defaultBranch}/${file.path}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="w-full py-2 bg-[var(--bg-secondary)] hover:bg-slate-850 text-center border border-[var(--border-color)] hover:border-cyan-500/30 text-[10px] font-bold text-[var(--text-primary)] hover:text-[var(--text-primary)] rounded transition-all block tracking-wider"
-                                    >
-                                      VIEW SOURCE ON GITHUB
-                                    </a>
-                                    <a
-                                      href={`/repo/${owner}/${repoName}/analyze?path=${encodeURIComponent(file.path)}&sha=${file.sha}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="w-full py-2 bg-cyan-950/30 hover:bg-cyan-900/40 text-center border border-cyan-800/50 hover:border-cyan-500/80 text-[10px] font-bold text-cyan-300 hover:text-cyan-100 rounded transition-all block tracking-wider"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      DETAILED ANALYSIS
-                                    </a>
-                                  </div>
-                                </div>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    )
-  }
 
   return (
     <motion.div
@@ -443,7 +470,14 @@ export default function ImportantFilesTab() {
 
           {/* Tree Rendering */}
           <div className="space-y-8">
-            <FolderNode node={fileTree} />
+            <FolderNode 
+              node={fileTree} 
+              expandedFile={expandedFile}
+              setExpandedFile={setExpandedFile}
+              owner={owner}
+              repoName={repoName}
+              defaultBranch={defaultBranch}
+            />
           </div>
 
           {filteredFiles.length === 0 && (
