@@ -62,29 +62,49 @@ class OpenRouterProvider extends BaseProvider {
   }
 
   async generateDetailedAnalysis(fileName, fileContent, overrideKey) {
-    const systemPrompt = `You are a pragmatic senior software engineer writing an onboarding code walkthrough for a teammate.
+    const systemPrompt = `You are a helpful, clear, and highly descriptive coding assistant writing a beginner-friendly code walkthrough.
 
 TONE & STYLE RULES:
-- Write in a natural, direct developer voice.
-- AVOID robotic intros ("This file is responsible for...", "In summary"), corporate fluff, or AI buzzwords ("seamlessly", "leverages", "crucial asset", "delve").
-- ABSOLUTELY NO EMOJIS or decorative symbols in headers or text.
-- Keep explanations clear, practical, and easy to read.
+- Write in a clear, descriptive, and beginner-friendly tone. Avoid overly dense jargon where simple explanations work better.
+- Explain the code in a way that someone new to the codebase or framework can easily understand.
+- Use the exact emojis in the section headers as specified below.
+- Be thorough and structured.
 
 Output in Markdown with these exact sections:
 
-## Summary
-(Provide a brief 1-2 sentence overview of what this file does in natural developer terms)
+## 📄 Summary
+A clear, highly descriptive 2-4 sentence paragraph explaining what this file does, what it integrates with, and what the UI or logic includes. Make it easy to understand for a beginner.
 
-## Responsibilities
-(List the core responsibilities this file handles in the codebase)
+---
 
-## Key Functions & Classes
-(Identify main functions, components, or classes and briefly explain what each does)
+## 🎯 Responsibilities
+A numbered list of the file's core responsibilities. Each item should have a **bold title** followed by a colon and a clear description. Example format:
+1. **Display Active Deliveries**: Fetches and shows the active food delivery tasks.
+2. **Location Verification**: Validates the user's proximity to the organization's location.
+Cover every major responsibility the file handles in descriptive terms.
 
-## Code Walkthrough (Line-by-Line)
-(Break down key logic blocks with code snippets and practical explanations)`;
+## 🛠️ Key Functions & Classes
+A numbered list of every significant function, class, component, state object, or method defined in the file. For each one:
+- Use the exact function/class name in bold or backticks (e.g. **\`functionName()\`** or **\`ClassName\` (State<Widget>)**)
+- Follow with a dash and a descriptive explanation of its purpose
+- For complex functions, add indented sub-bullets listing the specific steps or operations it performs in beginner-friendly language
 
-    const userPrompt = `Please perform a detailed analysis on this file: ${fileName}\n\nContent:\n${fileContent}`;
+Example format:
+1. **\`_AddFoodState\` (State<AddFood>)**
+   - Manages the screen's state, including form inputs, loading status, and confetti animation.
+
+2. **\`_addFood()\`**
+   - Core logic for processing donations:
+     - Validates user authentication and form inputs.
+     - Retrieves the user's location.
+     - Stores data in the database (using a batch write for atomic operations).
+     - Updates the user's count.
+     - Sends notifications.
+     - Displays success/error messages and triggers confetti.
+
+Be thorough — list ALL significant functions, hooks, handlers, state variables, and classes, explaining their inner workings clearly.`;
+
+    const userPrompt = `Analyze this file in detail in a beginner-friendly way: ${fileName}\n\nFull source code:\n${fileContent}`;
 
     return await this._callOpenRouter(systemPrompt, userPrompt, overrideKey);
   }

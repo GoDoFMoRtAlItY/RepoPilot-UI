@@ -139,7 +139,7 @@ router.post('/analyze-line-by-line', async (req, res) => {
     });
   }
 
-  const cacheKey = `detailed:${owner}:${repo}:${sha}:${path}`;
+  const cacheKey = `detailed-v2:${owner}:${repo}:${sha}:${path}`;
   if (cache.has(cacheKey)) {
     return res.json({ path, analysis: cache.get(cacheKey) });
   }
@@ -167,9 +167,15 @@ router.post('/analyze-line-by-line', async (req, res) => {
       });
     }
 
+    // Format content with explicit line numbers so the AI model can analyze line-by-line precisely
+    const lineNumberedContent = decodedContent
+      .split('\n')
+      .map((line, index) => `${index + 1}: ${line}`)
+      .join('\n');
+
     // Route through ProviderManager
     const ProviderManager = require('../services/ai/ProviderManager');
-    const result = await ProviderManager.execute('generateDetailedAnalysis', path.split('/').pop(), decodedContent, userAiKey);
+    const result = await ProviderManager.execute('generateDetailedAnalysis', path.split('/').pop(), lineNumberedContent, userAiKey);
 
     if (result.success) {
       cache.set(cacheKey, result.data);

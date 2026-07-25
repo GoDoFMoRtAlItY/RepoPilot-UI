@@ -114,10 +114,7 @@ async function fetchAllFiles(owner, repo) {
   });
 
   // Limit to prevent rate limits and timeouts on large repositories
-  const MAX_FILES_TO_FETCH = 150;
-  if (parseableFiles.length > MAX_FILES_TO_FETCH) {
-    parseableFiles = parseableFiles.slice(0, MAX_FILES_TO_FETCH);
-  }
+  // (Removed max files limit as per user request to fetch everything)
 
   // Fetch contents in parallel (batching to avoid rate limits if too many)
   const filesWithContent = [];
