@@ -18,6 +18,8 @@ import remarkGfm from 'remark-gfm'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { useRepoStore } from '../store/useRepoStore'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 
 // Markdown renderer component for AI responses
 function MarkdownRenderer({ content }: { content: string }) {
@@ -104,12 +106,23 @@ function MarkdownRenderer({ content }: { content: string }) {
 
 export default function AiAssistantTab() {
   const { chatMessages, sendChatMessage, aiKey, setAiKey, isAnalyzing, analysis } = useRepoStore()
+  const { user } = useAuth()
+  const navigate = useNavigate()
   const [inputText, setInputText] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   
   const [tempKey, setTempKey] = useState('')
   
   const chatEndRef = useRef<HTMLDivElement>(null)
+
+  const requireAuth = (callback?: () => void) => {
+    if (!user) {
+      navigate('/login', { state: { warning: 'Without sign-in, you cannot access the AI Assistant.' } })
+      return false
+    }
+    if (callback) callback()
+    return true
+  }
 
   // Dynamic suggested questions based on the analyzed repo
   const suggestedQuestions = [
@@ -128,6 +141,7 @@ export default function AiAssistantTab() {
 
   const handleSend = async (e?: React.FormEvent) => {
     if (e) e.preventDefault()
+    if (!requireAuth()) return
     if (!inputText.trim()) return
 
     const userText = inputText
@@ -138,6 +152,7 @@ export default function AiAssistantTab() {
   }
 
   const handleSelectSuggestion = async (q: string) => {
+    if (!requireAuth()) return
     setIsTyping(true)
     await sendChatMessage(q)
     setIsTyping(false)
@@ -205,8 +220,8 @@ export default function AiAssistantTab() {
         </div>
         <div className="flex items-center space-x-3">
           <button
-            onClick={exportChat}
-            className="flex items-center space-x-1.5 text-[9px] text-[var(--text-secondary)] hover:text-cyan-600 dark:text-cyan-400 transition-colors uppercase border border-[var(--border-color)] hover:border-cyan-500/40 rounded-lg px-2.5 py-1.5 bg-[var(--bg-primary)] hover:bg-[var(--bg-secondary)]"
+            onClick={() => requireAuth(exportChat)}
+            className="flex items-center space-x-1.5 text-[9px] text-[var(--text-secondary)] hover:text-cyan-600 dark:text-cyan-400 transition-colors uppercase border border-[var(--border-color)] hover:border-cyan-500/40 rounded-lg px-2.5 py-1.5 bg-[var(--bg-primary)] hover:bg-[var(--bg-secondary)] cursor-pointer"
             title="Export chat as markdown"
           >
             <Download className="w-3 h-3" />
@@ -214,17 +229,19 @@ export default function AiAssistantTab() {
           </button>
           <button 
             onClick={() => {
-              const key = window.prompt('Enter your Google Gemini API Key (Starts with AIzaSy...):');
-              if (key) setAiKey(key);
+              requireAuth(() => {
+                const key = window.prompt('Enter your Google Gemini API Key (Starts with AIzaSy...):');
+                if (key) setAiKey(key);
+              });
             }} 
-            className="text-[9px] text-[var(--text-secondary)] hover:text-cyan-600 dark:text-cyan-400 transition-colors uppercase border border-[var(--border-color)] hover:border-cyan-400/50 rounded-lg px-2.5 py-1.5 bg-[var(--bg-primary)]"
+            className="text-[9px] text-[var(--text-secondary)] hover:text-cyan-600 dark:text-cyan-400 transition-colors uppercase border border-[var(--border-color)] hover:border-cyan-400/50 rounded-lg px-2.5 py-1.5 bg-[var(--bg-primary)] cursor-pointer"
           >
             Update API Key
           </button>
           {aiKey && (
             <button 
-              onClick={() => setAiKey('')} 
-              className="text-[9px] text-[var(--text-secondary)] hover:text-red-400 transition-colors uppercase border-b border-[var(--border-color)] hover:border-red-400/50 pb-0.5"
+              onClick={() => requireAuth(() => setAiKey(''))} 
+              className="text-[9px] text-[var(--text-secondary)] hover:text-red-400 transition-colors uppercase border-b border-[var(--border-color)] hover:border-red-400/50 pb-0.5 cursor-pointer"
             >
               Clear Key
             </button>
@@ -351,13 +368,21 @@ export default function AiAssistantTab() {
         <input
           type="text"
           value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
+          onChange={(e) => {
+            if (!requireAuth()) return;
+            setInputText(e.target.value);
+          }}
+          onFocus={() => requireAuth()}
+          onClick={() => requireAuth()}
           placeholder={isAnalyzing ? "Waiting for analysis..." : "Ask about files, architecture, database schemas, authentication flows..."}
           disabled={isTyping || isAnalyzing}
           className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] hover:border-slate-750 focus:border-cyan-400 rounded-xl pl-4 pr-14 py-3 text-xs md:text-sm text-slate-200 placeholder-slate-500 transition-all font-mono outline-none shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <button
           type="submit"
+          onClick={(e) => {
+            if (!requireAuth()) e.preventDefault();
+          }}
           disabled={isTyping || isAnalyzing || !inputText.trim()}
           className="absolute right-2.5 p-2 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 rounded-lg text-[var(--text-primary)] transition-all cursor-pointer active:scale-95 shadow-[0_0_10px_rgba(34,211,238,0.2)] disabled:opacity-50 disabled:cursor-not-allowed"
         >

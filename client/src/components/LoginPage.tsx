@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Compass, Terminal, Mail, ArrowRight, Lock, User, AlertCircle, CheckCircle2, ArrowLeft } from 'lucide-react'
 import {
   auth,
@@ -35,6 +35,16 @@ const GoogleIcon = () => (
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const [warning, setWarning] = useState<string | null>(location.state?.warning || null)
+
+  useEffect(() => {
+    if (warning) {
+      const timer = setTimeout(() => setWarning(null), 6000)
+      return () => clearTimeout(timer)
+    }
+  }, [warning])
+
   const [isSignUp, setIsSignUp] = useState(false)
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -177,6 +187,18 @@ export default function LoginPage() {
           </div>
 
           <AnimatePresence mode="wait">
+            {warning && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="w-full mb-6 p-3.5 bg-amber-500/15 dark:bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start space-x-2.5 text-amber-600 dark:text-amber-400 font-semibold dark:font-normal text-xs text-left shadow-[0_0_20px_rgba(245,158,11,0.15)]"
+              >
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-amber-500" />
+                <span>{warning}</span>
+              </motion.div>
+            )}
+
             {error && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
