@@ -108,7 +108,7 @@ router.get('/:owner/:repo/summary', async (req, res) => {
 
     // Call AI provider to generate summary
     const ProviderManager = require('../services/ai/ProviderManager');
-    const aiResponse = await ProviderManager.execute('generateExecutiveSummary', analysis);
+    const aiResponse = await ProviderManager.execute('generateExecutiveSummary', analysis, req.headers['x-ai-key']);
     
     if (aiResponse.success && aiResponse.data) {
       analysis.summary.aiExecutiveSummary = aiResponse.data;
@@ -148,7 +148,7 @@ router.get('/:owner/:repo/security-review', async (req, res) => {
 
     // Call AI provider to generate summary
     const ProviderManager = require('../services/ai/ProviderManager');
-    const aiResponse = await ProviderManager.execute('generateSecurityReview', analysis);
+    const aiResponse = await ProviderManager.execute('generateSecurityReview', analysis, req.headers['x-ai-key']);
     
     if (aiResponse.success && aiResponse.data) {
       analysis.aiSecurityReview = aiResponse.data;
@@ -199,7 +199,7 @@ router.post('/:owner/:repo/api-explanation', async (req, res) => {
 
     // Call AI provider to generate summary
     const ProviderManager = require('../services/ai/ProviderManager');
-    const aiResponse = await ProviderManager.execute('generateApiExplanation', route);
+    const aiResponse = await ProviderManager.execute('generateApiExplanation', route, req.headers['x-ai-key']);
     
     if (aiResponse.success && aiResponse.data) {
       route.aiExplanation = aiResponse.data;

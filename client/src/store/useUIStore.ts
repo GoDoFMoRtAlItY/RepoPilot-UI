@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 type Theme = 'light' | 'dark'
 
@@ -11,11 +12,19 @@ interface UIState {
   setTheme: (theme: Theme) => void
 }
 
-export const useUIStore = create<UIState>((set) => ({
-  isFocusMode: false,
-  theme: 'dark',
-  toggleFocusMode: () => set((state) => ({ isFocusMode: !state.isFocusMode })),
-  setFocusMode: (isFocusMode) => set({ isFocusMode }),
-  toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
-  setTheme: (theme) => set({ theme }),
-}))
+export const useUIStore = create<UIState>()(
+  persist(
+    (set) => ({
+      isFocusMode: false,
+      theme: 'dark',
+      toggleFocusMode: () => set((state) => ({ isFocusMode: !state.isFocusMode })),
+      setFocusMode: (isFocusMode) => set({ isFocusMode }),
+      toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
+      setTheme: (theme) => set({ theme }),
+    }),
+    {
+      name: 'repopilot-ui-storage',
+      partialize: (state) => ({ theme: state.theme, isFocusMode: state.isFocusMode }),
+    }
+  )
+)

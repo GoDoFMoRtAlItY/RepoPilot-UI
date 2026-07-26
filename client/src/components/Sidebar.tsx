@@ -122,7 +122,7 @@ export default function Sidebar({
           title={isFocusMode ? "Exit" : undefined}
         >
           <LogOut className="w-4 h-4 shrink-0 text-rose-500 dark:text-rose-400" />
-          {!isFocusMode && <span className="truncate">Exit Command Hub</span>}
+          {!isFocusMode && <span className="truncate">Back to Landing Page</span>}
         </button>
       </div>
     </div>

@@ -118,12 +118,6 @@ function LandingPage() {
               LOGIN
             </button>
           )}
-          <button
-            onClick={() => navigate('/repo/gothinkster/node-express-realworld-example-app')}
-            className="px-3 py-1.5 md:px-4 md:py-2 bg-[var(--accent-primary)] hover:opacity-90 rounded-lg text-[10px] md:text-xs font-mono tracking-wider text-white transition-all cursor-pointer flex items-center"
-          >
-            <span className="hidden sm:inline mr-1">COMMAND</span>HUB
-          </button>
         </div>
       </header>
 
@@ -272,7 +266,7 @@ export default function App() {
               <div className="border-t border-white/10 pt-4 flex items-center justify-between text-[10px] text-white/50">
                 <span className="flex items-center">
                   <ShieldAlert className="w-3.5 h-3.5 mr-1.5 opacity-80" />
-                  INITIALIZING HUB...
+                  INITIALIZING DASHBOARD...
                 </span>
                 <span className="font-bold uppercase opacity-80">BOOTING</span>
               </div>

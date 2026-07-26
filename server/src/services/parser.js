@@ -324,8 +324,11 @@ async function analyzeRepo(owner, repo, filesWithContent, meta, onUpdate) {
     // We intentionally don't await this so it runs in the background
     // and streams updates as they finish
     aiPromise = (async () => {
-      const activeLimit = 3; // Keep concurrency low
-      const targetFiles = allFilesMetadata.filter(f => f.role !== 'other' && f.role !== 'unknown' && f.content && f.content.length < 15000);
+      const activeLimit = 2; // Keep concurrency low to avoid bursting rate limits
+      // Limit to top 5 architectural files to preserve free-tier RPM quota for executive summaries & chat
+      const targetFiles = allFilesMetadata
+        .filter(f => f.role !== 'other' && f.role !== 'unknown' && f.content && f.content.length < 15000)
+        .slice(0, 5);
       
       let index = 0;
       let active = 0;
@@ -353,6 +356,8 @@ async function analyzeRepo(owner, repo, filesWithContent, meta, onUpdate) {
 
         active--;
         if (index < targetFiles.length) {
+          // 1-second delay between requests to protect free tier rate limits (15 RPM)
+          await new Promise(resolve => setTimeout(resolve, 1000));
           await processNext();
         }
       };

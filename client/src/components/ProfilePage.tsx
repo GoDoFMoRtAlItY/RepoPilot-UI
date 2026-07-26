@@ -28,7 +28,7 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen w-full flex items-center justify-center p-4">
         <div className="glass-panel max-w-md w-full p-8 rounded-2xl text-center space-y-6">
-          <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
+          <div className="w-12 h-12 rounded-full bg-amber-500/15 dark:bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-600 dark:text-amber-400">
             <UserIcon className="w-6 h-6" />
           </div>
           <div className="space-y-2">
@@ -148,7 +148,7 @@ export default function ProfilePage() {
                       className="px-3 py-1 bg-[var(--bg-primary)] border border-[var(--border-color)] focus:border-[var(--accent-primary)] rounded-lg text-sm text-[var(--text-primary)] outline-none"
                       autoFocus
                     />
-                    <button type="submit" className="p-1.5 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 rounded-lg transition-colors cursor-pointer">
+                    <button type="submit" className="p-1.5 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/30 rounded-lg transition-colors cursor-pointer">
                       <Check className="w-4 h-4" />
                     </button>
                   </form>
@@ -170,7 +170,7 @@ export default function ProfilePage() {
                   </div>
                 )}
                 {updateSuccess && (
-                  <span className="text-[10px] text-emerald-400 font-mono block mt-1">Profile name updated successfully!</span>
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-semibold dark:font-normal block mt-1">Profile name updated successfully!</span>
                 )}
               </div>
             </div>
@@ -181,11 +181,11 @@ export default function ProfilePage() {
             </div>
 
             <div className="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-2">
-              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-mono bg-purple-500/10 text-purple-300 border border-purple-500/20">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-[var(--badge-purple-bg)] text-[var(--badge-purple-text)] border border-[var(--badge-purple-border)]">
                 <Shield className="w-3 h-3 mr-1 opacity-80" />
                 PILOT TIER: PRO
               </span>
-              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-mono bg-blue-500/10 text-blue-300 border border-blue-500/20">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-[var(--badge-blue-bg)] text-[var(--badge-blue-text)] border border-[var(--badge-blue-border)]">
                 <Calendar className="w-3 h-3 mr-1 opacity-80" />
                 JOINED: {createdAtDate}
               </span>
@@ -222,7 +222,7 @@ export default function ProfilePage() {
           <button
             onClick={handleSignOut}
             disabled={isLoggingOut}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-medium bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-all cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-semibold dark:font-medium bg-red-500/15 dark:bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30 transition-all cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50"
           >
             <LogOut className="w-4 h-4" />
             <span>{isLoggingOut ? 'Signing out...' : 'Sign Out'}</span>

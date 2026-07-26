@@ -66,16 +66,16 @@ export default function ReadmeGeneratorTab() {
   const getMethodBadgeClass = (method: string) => {
     switch (method.toUpperCase()) {
       case 'GET':
-        return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+        return 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30'
       case 'POST':
-        return 'bg-blue-500/15 text-blue-400 border-blue-500/30'
+        return 'bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/30'
       case 'PUT':
       case 'PATCH':
-        return 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+        return 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30'
       case 'DELETE':
-        return 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+        return 'bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-500/30'
       default:
-        return 'bg-purple-500/15 text-purple-400 border-purple-500/30'
+        return 'bg-purple-500/15 text-purple-700 dark:text-purple-400 border-purple-500/30'
     }
   }
 
@@ -210,19 +210,19 @@ export default function ReadmeGeneratorTab() {
                 /* Beautifully Designed View (No # or * symbols) */
                 <div className="space-y-8 max-w-5xl mx-auto font-sans text-left">
                   {/* 1. Project Title & Banner */}
-                  <div className="p-8 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900/90 to-purple-950/30 border border-[var(--border-color)] relative overflow-hidden shadow-xl">
+                  <div className="p-8 rounded-2xl bg-gradient-to-br from-slate-100 via-white to-purple-50 dark:from-slate-900 dark:via-slate-900/90 dark:to-purple-950/30 border border-[var(--border-color)] relative overflow-hidden shadow-xl">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
                     <div className="relative z-10 space-y-4">
-                      <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-semibold">
+                      <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/15 dark:bg-cyan-500/10 border border-cyan-500/30 text-cyan-700 dark:text-cyan-400 text-xs font-mono font-semibold">
                         <Sparkles className="w-3.5 h-3.5" />
                         <span>{projectType}</span>
-                        <span className="text-slate-600">•</span>
+                        <span className="text-slate-400 dark:text-slate-600">•</span>
                         <span>{archType}</span>
                       </div>
-                      <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-300 to-purple-400 tracking-tight">
+                      <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 dark:from-cyan-400 dark:via-blue-300 dark:to-purple-400 tracking-tight">
                         {repoName}
                       </h1>
-                      <p className="text-base md:text-lg text-slate-300 font-medium leading-relaxed max-w-3xl border-l-4 border-cyan-500 pl-4 py-1 bg-cyan-950/20 rounded-r-lg">
+                      <p className="text-base md:text-lg text-slate-700 dark:text-slate-300 font-medium leading-relaxed max-w-3xl border-l-4 border-cyan-500 pl-4 py-1 bg-cyan-500/10 dark:bg-cyan-950/20 rounded-r-lg">
                         {analysis?.summary?.oneLiner || `${repoName} is a high-performance ${projectType.toLowerCase()} built with ${stackList.join(', ')}.`}
                       </p>
                     </div>
@@ -238,40 +238,40 @@ export default function ReadmeGeneratorTab() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* What the Repository is For */}
                       <div className="p-5 rounded-xl bg-[var(--bg-secondary)] border border-cyan-500/20 hover:border-cyan-500/40 transition-all space-y-2">
-                        <div className="text-xs font-bold text-cyan-400 uppercase tracking-wider font-mono">
+                        <div className="text-xs font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider font-mono">
                           What the Repository is For
                         </div>
-                        <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+                        <p className="text-xs md:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                           This repository provides the core codebase for {repoName}. It gives maintainers and developers an organized environment to build, test, and deploy software features effectively.
                         </p>
                       </div>
 
                       {/* What It Is */}
                       <div className="p-5 rounded-xl bg-[var(--bg-secondary)] border border-purple-500/20 hover:border-purple-500/40 transition-all space-y-2">
-                        <div className="text-xs font-bold text-purple-400 uppercase tracking-wider font-mono">
+                        <div className="text-xs font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider font-mono">
                           What It Is
                         </div>
-                        <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+                        <p className="text-xs md:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                           {repoName} is structured as a {projectType.toLowerCase()} utilizing a {archType.toLowerCase()}. It combines backend logic, client interfaces, data models, and API utilities using {stackList.join(', ')}.
                         </p>
                       </div>
 
                       {/* How It Works */}
                       <div className="p-5 rounded-xl bg-[var(--bg-secondary)] border border-blue-500/20 hover:border-blue-500/40 transition-all space-y-2">
-                        <div className="text-xs font-bold text-blue-400 uppercase tracking-wider font-mono">
+                        <div className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider font-mono">
                           How It Works
                         </div>
-                        <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
-                          Execution initiates at <code className="bg-slate-800 text-cyan-300 px-1.5 py-0.5 rounded font-mono text-[11px]">{entryFile}</code>. Requests pass through middleware layers for validation and routing across {routes.length || 'multiple'} mapped endpoints.
+                        <p className="text-xs md:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                          Execution initiates at <code className="bg-slate-100 dark:bg-slate-800 text-cyan-700 dark:text-cyan-300 px-1.5 py-0.5 rounded font-mono text-[11px]">{entryFile}</code>. Requests pass through middleware layers for validation and routing across {routes.length || 'multiple'} mapped endpoints.
                         </p>
                       </div>
 
                       {/* How It Is Used */}
                       <div className="p-5 rounded-xl bg-[var(--bg-secondary)] border border-emerald-500/20 hover:border-emerald-500/40 transition-all space-y-2">
-                        <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider font-mono">
+                        <div className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider font-mono">
                           How It Is Used
                         </div>
-                        <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+                        <p className="text-xs md:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                           Developers can clone the project, configure local environment variables, install dependencies, and launch dev or production servers as a standalone service or integrated pipeline.
                         </p>
                       </div>
@@ -284,19 +284,19 @@ export default function ReadmeGeneratorTab() {
                       <Terminal className="w-5 h-5 text-emerald-400" />
                       <span>Quick Start Commands</span>
                     </h2>
-                    <div className="p-5 rounded-xl bg-slate-950 border border-[var(--border-color)] space-y-3 font-mono">
+                    <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-[var(--border-color)] space-y-3 font-mono">
                       {setupSteps.length > 0 ? (
                         setupSteps.map((step, i) => (
                           <div key={i} className="space-y-1">
-                            <div className="text-xs text-slate-400 font-sans font-medium"># {step.title}</div>
-                            <div className="bg-slate-900 p-3 rounded-lg text-xs text-cyan-300 font-mono border border-slate-850">
+                            <div className="text-xs text-slate-600 dark:text-slate-400 font-sans font-medium"># {step.title}</div>
+                            <div className="bg-white dark:bg-slate-900 p-3 rounded-lg text-xs text-cyan-700 dark:text-cyan-300 font-mono border border-slate-200 dark:border-slate-850">
                               {step.command}
                             </div>
                           </div>
                         ))
                       ) : (
-                        <div className="bg-slate-900 p-4 rounded-lg text-xs text-cyan-300 font-mono border border-slate-850 space-y-2">
-                          <div className="text-slate-400 font-sans"># Install dependencies & start server</div>
+                        <div className="bg-white dark:bg-slate-900 p-4 rounded-lg text-xs text-cyan-700 dark:text-cyan-300 font-mono border border-slate-200 dark:border-slate-850 space-y-2">
+                          <div className="text-slate-600 dark:text-slate-400 font-sans"># Install dependencies & start server</div>
                           <div>npm install</div>
                           <div>npm run dev</div>
                         </div>
@@ -314,7 +314,7 @@ export default function ReadmeGeneratorTab() {
                       <div className="rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--bg-secondary)] shadow-sm">
                         <table className="w-full text-left border-collapse text-xs md:text-sm">
                           <thead>
-                            <tr className="bg-slate-900/80 border-b border-[var(--border-color)] text-slate-300 font-mono">
+                            <tr className="bg-slate-100 dark:bg-slate-900/80 border-b border-[var(--border-color)] text-slate-700 dark:text-slate-300 font-mono">
                               <th className="py-3 px-4 font-bold">Key Name</th>
                               <th className="py-3 px-4 font-bold">Required</th>
                               <th className="py-3 px-4 font-bold">Default Value</th>
@@ -322,22 +322,22 @@ export default function ReadmeGeneratorTab() {
                           </thead>
                           <tbody className="divide-y divide-[var(--border-color)] font-mono">
                             {envVars.map((ev, idx) => (
-                              <tr key={idx} className="hover:bg-slate-800/40 transition-colors">
-                                <td className="py-3 px-4 font-bold text-amber-300">{ev.name}</td>
+                              <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                                <td className="py-3 px-4 font-bold text-amber-700 dark:text-amber-300">{ev.name}</td>
                                 <td className="py-3 px-4">
                                   {ev.required ? (
-                                    <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30">
+                                    <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30">
                                       <CheckCircle2 className="w-3 h-3" />
                                       <span>Yes</span>
                                     </span>
                                   ) : (
-                                    <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/15 text-slate-400 border border-slate-500/30">
+                                    <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/15 text-slate-700 dark:text-slate-400 border border-slate-500/30">
                                       <XCircle className="w-3 h-3" />
                                       <span>No</span>
                                     </span>
                                   )}
                                 </td>
-                                <td className="py-3 px-4 text-slate-400">{ev.defaultValue || '-'}</td>
+                                <td className="py-3 px-4 text-slate-700 dark:text-slate-400">{ev.defaultValue || '-'}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -356,7 +356,7 @@ export default function ReadmeGeneratorTab() {
                       <div className="rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--bg-secondary)] shadow-sm">
                         <table className="w-full text-left border-collapse text-xs md:text-sm">
                           <thead>
-                            <tr className="bg-slate-900/80 border-b border-[var(--border-color)] text-slate-300 font-mono">
+                            <tr className="bg-slate-100 dark:bg-slate-900/80 border-b border-[var(--border-color)] text-slate-700 dark:text-slate-300 font-mono">
                               <th className="py-3 px-4 font-bold">Method</th>
                               <th className="py-3 px-4 font-bold">Endpoint Path</th>
                               <th className="py-3 px-4 font-bold">Source File</th>
@@ -364,20 +364,20 @@ export default function ReadmeGeneratorTab() {
                           </thead>
                           <tbody className="divide-y divide-[var(--border-color)] font-mono">
                             {routes.slice(0, 12).map((rt, idx) => (
-                              <tr key={idx} className="hover:bg-slate-800/40 transition-colors">
+                              <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
                                 <td className="py-3 px-4">
                                   <span className={`inline-block px-2.5 py-0.5 rounded text-[10px] font-extrabold uppercase border ${getMethodBadgeClass(rt.method)}`}>
                                     {rt.method}
                                   </span>
                                 </td>
-                                <td className="py-3 px-4 font-bold text-cyan-300">{rt.path}</td>
-                                <td className="py-3 px-4 text-slate-400 text-xs">{rt.file}</td>
+                                <td className="py-3 px-4 font-bold text-cyan-700 dark:text-cyan-300">{rt.path}</td>
+                                <td className="py-3 px-4 text-slate-700 dark:text-slate-400 text-xs">{rt.file}</td>
                               </tr>
                             ))}
                           </tbody>
                         </table>
                         {routes.length > 12 && (
-                          <div className="p-3 bg-slate-900/50 text-center text-xs text-slate-400 font-sans border-t border-[var(--border-color)]">
+                          <div className="p-3 bg-slate-50 dark:bg-slate-900/50 text-center text-xs text-slate-600 dark:text-slate-400 font-sans border-t border-[var(--border-color)]">
                             +{routes.length - 12} additional endpoints configured in backend
                           </div>
                         )}
@@ -394,7 +394,7 @@ export default function ReadmeGeneratorTab() {
                       </h2>
                       <div className="flex flex-wrap gap-2">
                         {apis.map((api, idx) => (
-                          <span key={idx} className="px-3 py-1.5 rounded-lg bg-slate-900 border border-[var(--border-color)] text-xs font-mono text-purple-300 flex items-center space-x-1.5 shadow-sm">
+                          <span key={idx} className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-[var(--border-color)] text-xs font-mono text-purple-700 dark:text-purple-300 flex items-center space-x-1.5 shadow-sm">
                             <span className="text-slate-500 font-sans text-[10px] uppercase font-bold">{api.category || 'Package'}:</span>
                             <span className="font-bold">{api.name}</span>
                           </span>

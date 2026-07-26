@@ -138,7 +138,7 @@ export default function InteractiveBackground({ children }: { children: React.Re
           mixBlendMode: 'normal',
         }}
       >
-        <div className="w-[1000px] h-[1000px] max-w-full">
+        <div className="w-full max-w-[1000px] aspect-square flex items-center justify-center">
           <Robot3D />
         </div>
       </div>

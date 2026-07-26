@@ -38,8 +38,7 @@ STRICT FORMATTING & TONE RULES:
   // 1. Try OpenRouter if configured or key provided
   if (openRouterKey) {
     try {
-      const rawModel = process.env.OPENROUTER_MODEL || 'qwen/qwen3-30b-a3b';
-      const model = rawModel.replace(':free', '');
+      const model = process.env.OPENROUTER_MODEL || 'google/gemini-2.0-flash-lite-preview-02-05:free';
       const response = await axios.post(
         'https://openrouter.ai/api/v1/chat/completions',
         {

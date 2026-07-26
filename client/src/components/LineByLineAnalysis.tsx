@@ -91,7 +91,7 @@ export default function LineByLineAnalysis() {
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -5 }}
-                  className="text-sm text-cyan-300 font-mono"
+                  className="text-sm text-cyan-700 dark:text-cyan-300 font-mono font-semibold dark:font-normal"
                 >
                   {loadingTexts[loadingTextIndex]}
                 </motion.p>
@@ -113,7 +113,7 @@ export default function LineByLineAnalysis() {
             )}
 
             {analysis && !loading && !error && (
-              <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-[var(--bg-secondary)] prose-pre:border prose-pre:border-[var(--border-color)]">
+              <div className="analysis-prose prose dark:prose-invert prose-sm max-w-none prose-pre:bg-[var(--bg-secondary)] prose-pre:border prose-pre:border-[var(--border-color)]">
                 <ReactMarkdown>{analysis}</ReactMarkdown>
               </div>
             )}

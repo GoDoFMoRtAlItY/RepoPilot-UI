@@ -21,7 +21,8 @@ export default function Navbar({ onToggleMobileMenu }: NavbarProps) {
     analyzedRepo, 
     analyzeRepo,
     isAnalyzing,
-    error
+    error,
+    aiKey
   } = useRepoStore()
 
   const { isFocusMode, toggleFocusMode, theme, toggleTheme } = useUIStore()
@@ -94,7 +95,7 @@ export default function Navbar({ onToggleMobileMenu }: NavbarProps) {
             <span>PING: <span className="text-[var(--text-primary)]">12ms</span></span>
           </div>
           <div>
-            <span>INTELLIGENCE: <span className="text-[var(--text-primary)]">OPENROUTER</span></span>
+            <span>INTELLIGENCE: <span className="text-[var(--text-primary)]">{aiKey ? (aiKey.startsWith('AIza') ? 'GEMINI (USER)' : 'OPENROUTER (USER)') : 'HYBRID AI'}</span></span>
           </div>
         </div>
 
