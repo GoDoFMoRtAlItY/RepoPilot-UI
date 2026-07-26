@@ -23,9 +23,9 @@ export default function RepositorySnapshot() {
       <div className="glass-panel p-6 rounded-xl border border-[var(--border-color)] relative overflow-hidden">
         {/* Ambient background glow */}
         <div className="absolute top-0 right-0 w-[500px] h-full bg-gradient-to-l from-indigo-500/10 via-purple-500/5 to-transparent pointer-events-none blur-3xl" />
-        
+
         <div className="flex flex-col lg:flex-row gap-6 relative z-10">
-          
+
           {/* Left Column: Core Identity */}
           <div className="flex-1 space-y-5">
             <div>
@@ -45,7 +45,7 @@ export default function RepositorySnapshot() {
                   <span className="animate-pulse">Generating AI insights...</span>
                 ) : aiSummaryError ? (
                   <span className="text-rose-600 dark:text-rose-400 flex items-start gap-2">
-                    <span className="font-bold shrink-0">* (Mock AI Fallback) *</span> 
+                    <span className="font-bold shrink-0">* (Mock AI Fallback) *</span>
                     The repository analysis was completed successfully, but the AI executive summary generation is unavailable due to API rate limits or exhausted credits. Please update the API configuration to restore AI insights.
                   </span>
                 ) : (
@@ -53,7 +53,7 @@ export default function RepositorySnapshot() {
                 )}
               </p>
             </div>
-            
+
             <div className="pt-2">
               <span className="text-sm font-bold uppercase tracking-widest text-[var(--text-secondary)] block mb-3">
                 Primary Tech Stack
@@ -106,7 +106,7 @@ export default function RepositorySnapshot() {
 
       {/* 2. Grid for Developer Guide, Project Maturity, Quick Insights */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        
+
         {/* Developer Starting Guide */}
         <div className="glass-panel p-6 rounded-xl border border-[var(--border-color)]">
           <div className="flex items-center space-x-2 mb-6">

@@ -201,7 +201,6 @@ export default function AiAssistantTab() {
           <MessageSquareCode className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
           <div>
             <h2 className="text-[var(--text-primary)] font-sans font-bold text-sm tracking-wide">RepoPilot Technical Mentor</h2>
-            <p className="text-[10px] text-[var(--text-secondary)] font-mono">MODEL: GEMINI-PRO | STATUS: AUTHENTICATED</p>
           </div>
         </div>
         <div className="flex items-center space-x-3">

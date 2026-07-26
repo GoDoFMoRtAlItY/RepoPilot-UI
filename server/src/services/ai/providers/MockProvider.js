@@ -93,8 +93,8 @@ class MockProvider extends BaseProvider {
     ];
 
     const SKIP = new Set(['if', 'for', 'while', 'switch', 'catch', 'return',
-                          'in', 'of', 'new', 'await', 'else', 'try', 'do',
-                          'print', 'super', 'assert']);
+      'in', 'of', 'new', 'await', 'else', 'try', 'do',
+      'print', 'super', 'assert']);
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];

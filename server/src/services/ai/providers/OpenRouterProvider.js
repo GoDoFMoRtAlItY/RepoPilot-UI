@@ -9,14 +9,14 @@ class OpenRouterProvider extends BaseProvider {
   _getKey(overrideKey) {
     const key = overrideKey || process.env.OPENROUTER_API_KEY;
     if (!key) throw new Error('OPENROUTER_API_KEY is not configured');
-    return key;
+    return key.trim();
   }
 
   _getModel() {
     // The former `:free` slug was retired by OpenRouter and now returns 404.
     // Keep this configurable, but use the provider's currently valid slug by
     // default so file descriptions work with the configured account.
-    return process.env.OPENROUTER_MODEL || 'qwen/qwen3-30b-a3b';
+    return process.env.OPENROUTER_MODEL || 'openrouter/free';
   }
 
   async _callOpenRouter(systemPrompt, userPrompt, overrideKey) {
