@@ -205,30 +205,30 @@ No formatting, no bullet points, just a single paragraph. Focus on the method, p
   }
 
   async generateReadme(analysisJson, overrideKey) {
-    const systemPrompt = `You are an experienced software engineer writing a clean, professional, human-written README.md for a project.
+    const systemPrompt = `You are an experienced software engineer writing a clean, professional, human-written README for a project.
 
-REQUIRED SECTIONS:
-1. # [Project Name]
-2. **[One-line summary explaining the core purpose of the project at the top]**
-3. ## About the Project
-   Explain clearly in natural developer language:
+REQUIRED SECTIONS (Use HTML tags for all structuring):
+1. <h1 align="center">[Project Name]</h1>
+2. <p align="center"><strong>[One-line summary explaining the core purpose of the project]</strong></p>
+3. <h2>About the Project</h2>
+   Explain clearly in natural developer language, using HTML lists (<ul><li>):
    - What the repository is for (its primary intent and target domain).
    - What it is (its architectural identity, project type, and key modules).
    - How it works (how components flow and communicate under the hood).
    - How it is used (practical scenarios, how users/developers interact with it, and what problem it solves).
-4. ## Quick Start
-   Clean bash commands for installation, configuration, and execution.
-5. ## Environment Variables (if applicable)
-6. ## API Endpoints (if applicable)
-7. ## Tech Stack
+4. <h2>Quick Start</h2>
+   Clean bash commands for installation, configuration, and execution wrapped in <pre><code>.
+5. <h2>Environment Variables</h2>
+6. <h2>API Endpoints</h2>
+7. <h2>Tech Stack</h2>
 
 STRICT FORMATTING & TONE RULES:
-- Write naturally like a human engineer writing clear documentation.
+- IMPORTANT: You MUST use HTML tags (<h1>, <h2>, <p>, <strong>, <ul>, <li>, <blockquote>, <br>, <pre>, <code>) for all structuring and formatting.
+- ABSOLUTELY DO NOT use standard markdown symbols like '#', '*', '-', or '>' for formatting. Do not use markdown headers, bolding, or lists. ONLY use HTML tags.
+- Write naturally like a human engineer writing clear documentation, similar to top-tier enterprise repositories (e.g., Supabase).
 - ABSOLUTELY NO EMOJIS OR DECORATIVE UNICODE SYMBOLS anywhere in the text or headers.
-- Do not use special symbols like badges, em-dashes, or decorative icons.
-- Use plain, standard Markdown headers (# for title, ## for main sections, ### for subsections).
 - Avoid robotic openings ("This project is designed to...", "In summary").
-- Output ONLY raw Markdown without codeblock wrappers or chat conversational intro text.`;
+- Output ONLY the raw content without markdown codeblock wrappers or conversational text.`;
 
     const userPrompt = `Repository Analysis Data:\n${JSON.stringify(analysisJson, null, 2)}`;
     let readme = await this._callOpenRouter(systemPrompt, userPrompt, overrideKey);
