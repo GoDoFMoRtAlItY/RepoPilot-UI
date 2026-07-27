@@ -10,6 +10,7 @@ const chatRoutes = require('./routes/chat');
 const webhookRoutes = require('./routes/webhook');
 const readmeRoutes = require('./routes/readme');
 const explorerRoutes = require('./routes/explorer');
+const aiRoutes = require('./routes/ai');
 
 const app = express();
 
@@ -25,7 +26,7 @@ if (process.env.CORS_ORIGIN) {
 app.use(cors({
   origin: allowedOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-AI-Key', 'Accept']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-AI-Key', 'X-AI-Provider', 'Accept']
 }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
@@ -36,6 +37,7 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/webhook', webhookRoutes);
 app.use('/api/readme', readmeRoutes);
 app.use('/api/explorer', explorerRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

@@ -105,13 +105,11 @@ function MarkdownRenderer({ content }: { content: string }) {
 }
 
 export default function AiAssistantTab() {
-  const { chatMessages, sendChatMessage, aiKey, setAiKey, isAnalyzing, analysis } = useRepoStore()
+  const { chatMessages, sendChatMessage, aiKey, aiProvider, isAnalyzing, analysis } = useRepoStore()
   const { user } = useAuth()
   const navigate = useNavigate()
   const [inputText, setInputText] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  
-  const [tempKey, setTempKey] = useState('')
   
   const chatEndRef = useRef<HTMLDivElement>(null)
 
@@ -158,12 +156,7 @@ export default function AiAssistantTab() {
     setIsTyping(false)
   }
 
-  const handleSaveKey = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (tempKey.trim()) {
-      setAiKey(tempKey.trim())
-    }
-  }
+
 
   // Export chat as markdown
   const exportChat = useCallback(() => {
@@ -227,34 +220,14 @@ export default function AiAssistantTab() {
             <Download className="w-3 h-3" />
             <span>Export</span>
           </button>
-          <button 
-            onClick={() => {
-              requireAuth(() => {
-                const key = window.prompt('Enter your Google Gemini API Key (Starts with AIzaSy...):');
-                if (key) setAiKey(key);
-              });
-            }} 
-            className="text-[9px] text-[var(--text-secondary)] hover:text-cyan-600 dark:text-cyan-400 transition-colors uppercase border border-[var(--border-color)] hover:border-cyan-400/50 rounded-lg px-2.5 py-1.5 bg-[var(--bg-primary)] cursor-pointer"
-          >
-            Update API Key
-          </button>
-          {aiKey && (
-            <button 
-              onClick={() => requireAuth(() => setAiKey(''))} 
-              className="text-[9px] text-[var(--text-secondary)] hover:text-red-400 transition-colors uppercase border-b border-[var(--border-color)] hover:border-red-400/50 pb-0.5 cursor-pointer"
-            >
-              Clear Key
-            </button>
-          )}
-          
           <div className="flex items-center space-x-1.5 text-[8px] font-mono px-2 py-0.5 rounded border border-[var(--border-color)]">
             {aiKey ? (
               <span className="text-cyan-400 font-bold uppercase" title="Using Custom User Key">
-                🔑 KEY: CUSTOM ({aiKey.slice(0, 8)}...{aiKey.slice(-4)})
+                🔑 {aiProvider || 'CUSTOM'} KEY
               </span>
             ) : (
               <span className="text-[var(--text-secondary)] font-bold uppercase" title="Using Default System Key">
-                🌐 KEY: SYSTEM DEFAULT
+                🌐 SYSTEM AI DEFAULT
               </span>
             )}
           </div>

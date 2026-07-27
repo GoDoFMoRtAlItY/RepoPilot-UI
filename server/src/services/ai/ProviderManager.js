@@ -3,6 +3,8 @@ const cache = require('../cache');
 
 const GeminiProvider = require('./providers/GeminiProvider');
 const OpenRouterProvider = require('./providers/OpenRouterProvider');
+const OpenAIProvider = require('./providers/OpenAIProvider');
+const AnthropicProvider = require('./providers/AnthropicProvider');
 const KalavaiProvider = require('./providers/KalavaiProvider');
 const LocalProvider = require('./providers/LocalProvider');
 const MockProvider = require('./providers/MockProvider');
@@ -12,6 +14,8 @@ class ProviderManager {
     this.providers = {
       gemini: new GeminiProvider(),
       openrouter: new OpenRouterProvider(),
+      openai: new OpenAIProvider(),
+      anthropic: new AnthropicProvider(),
       kalavai: new KalavaiProvider(),
       local: new LocalProvider(),
       mock: new MockProvider()
@@ -23,6 +27,8 @@ class ProviderManager {
     // Build a list of providers that have credentials configured
     const configured = Object.keys(this.providers).filter((provider) => {
       if (provider === 'openrouter') return Boolean(process.env.OPENROUTER_API_KEY);
+      if (provider === 'openai') return Boolean(process.env.OPENAI_API_KEY);
+      if (provider === 'anthropic') return Boolean(process.env.ANTHROPIC_API_KEY);
       if (provider === 'gemini') return Boolean(process.env.GEMINI_API_KEY);
       if (provider === 'kalavai') return Boolean(process.env.KALAVAI_API_KEY);
       if (provider === 'local') return Boolean(process.env.LOCAL_AI_URL);
@@ -43,20 +49,38 @@ class ProviderManager {
   }
 
   async execute(methodName, ...args) {
-    const cacheKey = this._generateCacheKey(methodName, args);
+    let overrideKey = null;
+    let explicitProvider = null;
+    let cacheArgs = [...args];
+    
+    // Check if the last argument is our override object
+    const lastArg = args[args.length - 1];
+    if (lastArg && typeof lastArg === 'object' && ('key' in lastArg || 'provider' in lastArg)) {
+      overrideKey = lastArg.key;
+      explicitProvider = lastArg.provider;
+      args[args.length - 1] = overrideKey; // Pass only the key string down to the provider methods
+    } else if (typeof lastArg === 'string' && (lastArg.startsWith('sk-') || lastArg.startsWith('AIza'))) {
+      overrideKey = lastArg; // Legacy string override fallback
+    }
+
+    const cacheKey = this._generateCacheKey(methodName, cacheArgs);
     
     if (cache.has(cacheKey)) {
       console.log(`[AI] Cache Hit | Executing: ${methodName}`);
       return cache.get(cacheKey);
     }
 
-    const order = this._getFallbackOrder();
+    // If an explicit provider is requested by the user, ONLY try that provider (NO fallback to mock)
+    const order = explicitProvider && this.providers[explicitProvider.toLowerCase()] 
+      ? [explicitProvider.toLowerCase()]
+      : this._getFallbackOrder();
+
     let lastError = null;
 
     for (const providerName of order) {
       const provider = this.providers[providerName];
       if (!provider) {
-        console.warn(`[AI] Unknown provider in configuration: ${providerName}`);
+        console.warn(`[AI] Unknown provider: ${providerName}`);
         continue;
       }
 
@@ -92,7 +116,7 @@ class ProviderManager {
 
     const status = lastError?.status || lastError?.response?.status;
     if (status === 401 || status === 403) {
-      return { success: false, status: 503, code: 'AI_AUTH_FAILED', message: 'The configured AI provider rejected its API key. Update the server AI configuration and try again.' };
+      return { success: false, status: 503, code: 'AI_AUTH_FAILED', message: `The AI provider rejected the API key: ${lastError?.message || 'Invalid key'}` };
     }
     if (status === 402) {
       return { success: false, status: 503, code: 'AI_CREDITS_REQUIRED', message: 'The configured AI model needs available provider credits. Choose a funded model or update the provider account.' };
@@ -101,7 +125,7 @@ class ProviderManager {
       return { success: false, status: 429, code: 'AI_RATE_LIMITED', message: 'The AI provider is rate-limiting requests. Please wait a moment and retry.' };
     }
 
-    return { success: false, status: 503, code: 'AI_PROVIDER_UNAVAILABLE', message: 'The AI provider could not complete this analysis. Check the server logs for the provider error and retry.' };
+    return { success: false, status: 503, code: 'AI_PROVIDER_UNAVAILABLE', message: `The AI provider failed: ${lastError?.message || 'Unknown error'}` };
   }
 }
 

@@ -152,6 +152,7 @@ interface RepoStore {
   searchQueryFiles: string
   searchQueryApis: string
   aiKey: string | null
+  aiProvider: string | null
   
   // AI Summary State
   aiSummary: string | null
@@ -168,7 +169,8 @@ interface RepoStore {
   
   // Actions
   setCurrentTab: (tab: string) => void
-  setAiKey: (key: string) => void
+  setAiKeyAndProvider: (key: string, provider: string) => void
+  testAiKey: (provider: string, key: string) => Promise<boolean>
   setSearchQueryFiles: (query: string) => void
   setSearchQueryApis: (query: string) => void
   analyzeRepo: (owner: string, repo: string, force?: boolean) => Promise<void>
@@ -202,12 +204,35 @@ export const useRepoStore = create<RepoStore>((set, get) => ({
   searchQueryFiles: '',
   searchQueryApis: '',
   aiKey: sessionStorage.getItem('repopilot_ai_key') || null,
+  aiProvider: sessionStorage.getItem('repopilot_ai_provider') || null,
 
   setCurrentTab: (tab: string) => set({ currentTab: tab }),
   
-  setAiKey: (key: string) => {
-    sessionStorage.setItem('repopilot_ai_key', key)
-    set({ aiKey: key })
+  setAiKeyAndProvider: (key: string, provider: string) => {
+    if (key && provider !== 'default') {
+      sessionStorage.setItem('repopilot_ai_key', key)
+      sessionStorage.setItem('repopilot_ai_provider', provider)
+      set({ aiKey: key, aiProvider: provider })
+    } else {
+      sessionStorage.removeItem('repopilot_ai_key')
+      sessionStorage.removeItem('repopilot_ai_provider')
+      set({ aiKey: null, aiProvider: null })
+    }
+  },
+
+  testAiKey: async (provider: string, key: string) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/ai/test-key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider, key })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Validation failed');
+      return data.valid === true;
+    } catch (error: any) {
+      throw error;
+    }
   },
   
   setSearchQueryFiles: (query: string) => set({ searchQueryFiles: query }),
@@ -291,7 +316,8 @@ export const useRepoStore = create<RepoStore>((set, get) => ({
   fetchAiSummary: async (owner: string, repo: string) => {
     set({ isAiSummaryLoading: true, aiSummaryError: null })
     try {
-      const data = await getAiSummary(owner, repo, get().aiKey || undefined)
+      const { aiKey, aiProvider } = get()
+      const data = await getAiSummary(owner, repo, aiKey || undefined, aiProvider || undefined)
       set({
         aiSummary: data.aiExecutiveSummary,
         isAiSummaryLoading: false
@@ -322,7 +348,8 @@ export const useRepoStore = create<RepoStore>((set, get) => ({
   fetchAiSecurityReview: async (owner: string, repo: string) => {
     set({ isAiSecurityReviewLoading: true, aiSecurityReviewError: null })
     try {
-      const data = await getAiSecurityReview(owner, repo, get().aiKey || undefined)
+      const { aiKey, aiProvider } = get()
+      const data = await getAiSecurityReview(owner, repo, aiKey || undefined, aiProvider || undefined)
       set({
         aiSecurityReview: data.aiSecurityReview,
         isAiSecurityReviewLoading: false
@@ -356,7 +383,8 @@ export const useRepoStore = create<RepoStore>((set, get) => ({
       }
     }))
     try {
-      const data = await getApiExplanation(owner, repo, path, method, get().aiKey || undefined)
+      const { aiKey, aiProvider } = get()
+      const data = await getApiExplanation(owner, repo, path, method, aiKey || undefined, aiProvider || undefined)
       
       set((state) => ({
         apiExplanations: {
@@ -375,7 +403,7 @@ export const useRepoStore = create<RepoStore>((set, get) => ({
   },
 
   sendChatMessage: async (text: string) => {
-    const { analyzedRepo, aiKey } = get()
+    const { analyzedRepo, aiKey, aiProvider } = get()
     
     if (!analyzedRepo) return
 
@@ -391,7 +419,7 @@ export const useRepoStore = create<RepoStore>((set, get) => ({
     set(state => ({ chatMessages: [...state.chatMessages, userMsg] }))
 
     try {
-      const response = await askAiQuestion(owner, repo, text, aiKey || undefined)
+      const response = await askAiQuestion(owner, repo, text, aiKey || undefined, aiProvider || undefined)
       
       const aiMsg: ChatMessage = {
         id: `m_ai_${Date.now()}`,

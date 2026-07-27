@@ -126,6 +126,7 @@ router.get('/tree', async (req, res) => {
 router.post('/analyze-line-by-line', async (req, res) => {
   const { owner, repo, path, sha } = req.body;
   const userAiKey = req.headers['x-ai-key'];
+  const userAiProvider = req.headers['x-ai-provider'];
 
   if (!owner || !repo || !path || !sha) {
     return res.status(400).json({ error: 'Missing required parameters: owner, repo, path, sha' });
@@ -175,7 +176,7 @@ router.post('/analyze-line-by-line', async (req, res) => {
 
     // Route through ProviderManager
     const ProviderManager = require('../services/ai/ProviderManager');
-    const result = await ProviderManager.execute('generateDetailedAnalysis', path.split('/').pop(), lineNumberedContent, userAiKey);
+    const result = await ProviderManager.execute('generateDetailedAnalysis', path.split('/').pop(), lineNumberedContent, { key: userAiKey, provider: userAiProvider });
 
     if (result.success) {
       cache.set(cacheKey, result.data);

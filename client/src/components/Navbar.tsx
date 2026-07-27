@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { useRepoStore } from '../store/useRepoStore'
 import { useUIStore } from '../store/useUIStore'
+import ApiKeySettings from './ApiKeySettings'
 
 interface NavbarProps {
   onToggleMobileMenu: () => void
@@ -28,6 +29,7 @@ export default function Navbar({ onToggleMobileMenu }: NavbarProps) {
   const { isFocusMode, toggleFocusMode, theme, toggleTheme } = useUIStore()
 
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   const repositories = [
     'repopilot/onboarding-engine',
@@ -94,9 +96,19 @@ export default function Navbar({ onToggleMobileMenu }: NavbarProps) {
             <Activity className="w-3.5 h-3.5 opacity-80" />
             <span>PING: <span className="text-[var(--text-primary)]">12ms</span></span>
           </div>
-          <div>
-            <span>INTELLIGENCE: <span className="text-[var(--text-primary)]">{aiKey ? (aiKey.startsWith('AIza') ? 'GEMINI (USER)' : 'OPENROUTER (USER)') : 'HYBRID AI'}</span></span>
-          </div>
+          <button 
+            onClick={() => setSettingsOpen(true)}
+            className="flex items-center space-x-2 px-3 py-1.5 rounded-lg cursor-pointer transition-all border border-[var(--border-color)] hover:border-cyan-500/50 bg-[var(--bg-secondary)] hover:bg-[var(--glass-hover-bg)] shadow-sm"
+          >
+            <span className="opacity-70">INTELLIGENCE:</span> 
+            {aiKey ? (
+              <span className="text-cyan-400 font-bold uppercase drop-shadow-[0_0_5px_rgba(34,211,238,0.3)]">
+                {useRepoStore.getState().aiProvider || 'CUSTOM'} (USER)
+              </span>
+            ) : (
+              <span className="text-[var(--text-primary)] font-bold">SYSTEM AI</span>
+            )}
+          </button>
         </div>
 
         {/* Sync / Analysis progression tracking */}
@@ -143,6 +155,7 @@ export default function Navbar({ onToggleMobileMenu }: NavbarProps) {
         </div>
 
       </div>
+      <ApiKeySettings isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </header>
   )
 }

@@ -35,6 +35,7 @@ router.post('/', async (req, res) => {
   try {
     const { question, owner, repo } = req.body;
     const apiKey = req.headers['x-ai-key'];
+    const aiProvider = req.headers['x-ai-provider'];
     
     if (!question || !owner || !repo) {
       return res.status(400).json({ error: 'Missing question, owner, or repo' });
@@ -51,7 +52,7 @@ router.post('/', async (req, res) => {
     // 2. Call AI or fallback
     // If we have an override key or a backend configured key (AI_PROVIDER is set), try the AI
     if (apiKey || process.env.GEMINI_API_KEY || process.env.OPENROUTER_API_KEY) {
-      const result = await ProviderManager.execute('answerQuestion', question, analysis, apiKey);
+      const result = await ProviderManager.execute('answerQuestion', question, analysis, { key: apiKey, provider: aiProvider });
       if (result.success) {
         return res.json({ ...result.data, mode: 'advanced' });
       } else {

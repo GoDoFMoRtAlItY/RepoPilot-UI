@@ -76,13 +76,16 @@ export const analyzeRepository = async (owner: string, repo: string, force: bool
   }
 };
 
-export const askAiQuestion = async (owner: string, repo: string, question: string, aiKey?: string) => {
+export const askAiQuestion = async (owner: string, repo: string, question: string, aiKey?: string, aiProvider?: string) => {
   try {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json'
     };
     if (aiKey) {
       headers['X-AI-Key'] = aiKey;
+    }
+    if (aiProvider) {
+      headers['X-AI-Provider'] = aiProvider;
     }
     
     const response = await axios.post(`${API_BASE_URL}/chat`, {
@@ -98,13 +101,16 @@ export const askAiQuestion = async (owner: string, repo: string, question: strin
   }
 };
 
-export const generateReadme = async (owner: string, repo: string, aiKey?: string) => {
+export const generateReadme = async (owner: string, repo: string, aiKey?: string, aiProvider?: string) => {
   try {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json'
     };
     if (aiKey) {
       headers['X-AI-Key'] = aiKey;
+    }
+    if (aiProvider) {
+      headers['X-AI-Provider'] = aiProvider;
     }
     
     const response = await axios.post(`${API_BASE_URL}/readme`, {
@@ -119,9 +125,11 @@ export const generateReadme = async (owner: string, repo: string, aiKey?: string
   }
 };
 
-export const getAiSummary = async (owner: string, repo: string, aiKey?: string) => {
+export const getAiSummary = async (owner: string, repo: string, aiKey?: string, aiProvider?: string) => {
   try {
-    const headers = aiKey ? { 'X-AI-Key': aiKey } : undefined;
+    const headers: Record<string, string> = {};
+    if (aiKey) headers['X-AI-Key'] = aiKey;
+    if (aiProvider) headers['X-AI-Provider'] = aiProvider;
     const response = await axios.get(`${API_BASE_URL}/analyze/${owner}/${repo}/summary`, { headers });
     return response.data;
   } catch (error) {
@@ -130,9 +138,11 @@ export const getAiSummary = async (owner: string, repo: string, aiKey?: string) 
   }
 };
 
-export const getAiSecurityReview = async (owner: string, repo: string, aiKey?: string) => {
+export const getAiSecurityReview = async (owner: string, repo: string, aiKey?: string, aiProvider?: string) => {
   try {
-    const headers = aiKey ? { 'X-AI-Key': aiKey } : undefined;
+    const headers: Record<string, string> = {};
+    if (aiKey) headers['X-AI-Key'] = aiKey;
+    if (aiProvider) headers['X-AI-Provider'] = aiProvider;
     const response = await axios.get(`${API_BASE_URL}/analyze/${owner}/${repo}/security-review`, { headers });
     return response.data;
   } catch (error) {
@@ -141,9 +151,11 @@ export const getAiSecurityReview = async (owner: string, repo: string, aiKey?: s
   }
 };
 
-export const getApiExplanation = async (owner: string, repo: string, routePath: string, method: string, aiKey?: string) => {
+export const getApiExplanation = async (owner: string, repo: string, routePath: string, method: string, aiKey?: string, aiProvider?: string) => {
   try {
-    const headers = aiKey ? { 'X-AI-Key': aiKey } : undefined;
+    const headers: Record<string, string> = {};
+    if (aiKey) headers['X-AI-Key'] = aiKey;
+    if (aiProvider) headers['X-AI-Provider'] = aiProvider;
     const response = await axios.post(`${API_BASE_URL}/analyze/${owner}/${repo}/api-explanation`, { routePath, method }, { headers });
     return response.data;
   } catch (error) {
@@ -157,9 +169,13 @@ export const getDetailedFileAnalysis = async (
   repo: string,
   path: string,
   sha: string,
-  aiKey?: string
+  aiKey?: string,
+  aiProvider?: string
 ) => {
-  const headers = aiKey ? { 'X-AI-Key': aiKey } : undefined;
+  const headers: Record<string, string> = {};
+  if (aiKey) headers['X-AI-Key'] = aiKey;
+  if (aiProvider) headers['X-AI-Provider'] = aiProvider;
+  
   const response = await axios.post(
     `${API_BASE_URL}/explorer/analyze-line-by-line`,
     { owner, repo, path, sha },

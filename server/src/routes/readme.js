@@ -7,6 +7,7 @@ router.post('/', async (req, res) => {
   try {
     const { owner, repo, analysis: bodyAnalysis } = req.body;
     const apiKey = req.headers['x-ai-key'];
+    const aiProvider = req.headers['x-ai-provider'];
     
     if (!owner || !repo) {
       return res.status(400).json({ error: 'Missing owner or repo' });
@@ -31,7 +32,7 @@ router.post('/', async (req, res) => {
     
     // Call AI or fallback
     try {
-      const readmeContent = await generateReadme(analysis, apiKey);
+      const readmeContent = await generateReadme(analysis, { key: apiKey, provider: aiProvider });
       return res.json({ readme: readmeContent, mode: 'completed' });
     } catch (aiErr) {
       console.warn('AI README generation failed, using structured fallback:', aiErr.message);
