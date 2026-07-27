@@ -246,6 +246,19 @@ export default function AiAssistantTab() {
               Clear Key
             </button>
           )}
+          
+          <div className="flex items-center space-x-1.5 text-[8px] font-mono px-2 py-0.5 rounded border border-[var(--border-color)]">
+            {aiKey ? (
+              <span className="text-cyan-400 font-bold uppercase" title="Using Custom User Key">
+                🔑 KEY: CUSTOM ({aiKey.slice(0, 8)}...{aiKey.slice(-4)})
+              </span>
+            ) : (
+              <span className="text-[var(--text-secondary)] font-bold uppercase" title="Using Default System Key">
+                🌐 KEY: SYSTEM DEFAULT
+              </span>
+            )}
+          </div>
+
           <span className="inline-flex items-center space-x-1.5 text-[8px] bg-green-500/10 border border-green-500/20 text-green-400 px-2 py-0.5 rounded font-bold font-mono">
             <span>AI_AGENT_ONLINE</span>
           </span>

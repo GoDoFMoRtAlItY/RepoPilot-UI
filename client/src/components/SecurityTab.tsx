@@ -7,6 +7,8 @@ import {
 } from 'lucide-react'
 import { useRepoStore } from '../store/useRepoStore'
 
+import { calculateSecurityScore } from '../lib/securityScoring'
+
 interface Vulnerability {
   severity: string;
   type: string;
@@ -30,7 +32,6 @@ export default function SecurityTab() {
   if (!analysis) return null
 
   const {
-    securityScore = 100,
     securityAlerts = [],
     dependencySecurity = [],
     gitHygiene = [],
@@ -47,6 +48,13 @@ export default function SecurityTab() {
   const high = allVulnerabilities.filter(v => v.severity === 'high')
   const medium = allVulnerabilities.filter(v => v.severity === 'medium')
   const low = allVulnerabilities.filter(v => v.severity === 'low')
+
+  const securityScore = calculateSecurityScore({
+    critical: critical.length,
+    high: high.length,
+    medium: medium.length,
+    low: low.length
+  })
 
   // Filter logic for Vulnerability Explorer
   const getFilteredVulnerabilities = () => {
