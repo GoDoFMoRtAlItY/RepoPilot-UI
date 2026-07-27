@@ -7,7 +7,8 @@ import {
   GitBranch,
   Focus,
   Sun,
-  Moon
+  Moon,
+  Plus
 } from 'lucide-react'
 import { useRepoStore } from '../store/useRepoStore'
 import { useUIStore } from '../store/useUIStore'
@@ -100,14 +101,7 @@ export default function Navbar({ onToggleMobileMenu }: NavbarProps) {
             onClick={() => setSettingsOpen(true)}
             className="flex items-center space-x-2 px-3 py-1.5 rounded-lg cursor-pointer transition-all border border-[var(--border-color)] hover:border-cyan-500/50 bg-[var(--bg-secondary)] hover:bg-[var(--glass-hover-bg)] shadow-sm"
           >
-            <span className="opacity-70">INTELLIGENCE:</span> 
-            {aiKey ? (
-              <span className="text-cyan-400 font-bold uppercase drop-shadow-[0_0_5px_rgba(34,211,238,0.3)]">
-                {useRepoStore.getState().aiProvider || 'CUSTOM'} (USER)
-              </span>
-            ) : (
-              <span className="text-[var(--text-primary)] font-bold">SYSTEM AI</span>
-            )}
+            <span className="font-bold tracking-wide flex items-center gap-1.5">Add Your Own API Key <Plus className="w-3.5 h-3.5" /></span>
           </button>
         </div>
 
