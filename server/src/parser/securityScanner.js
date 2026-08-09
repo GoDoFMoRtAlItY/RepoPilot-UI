@@ -7,35 +7,32 @@ const { auditEnvVars } = require('./security/envVarAudit');
 const { scanBestPractices } = require('./security/bestPracticesScanner');
 
 function calculateSecurityScore(alerts, hygiene, missingFiles, configStatus, bestPractices) {
-  let score = 100;
-
-  // Deduct for alerts
+  let critical = 0, high = 0, medium = 0, low = 0;
+  
   alerts.forEach(a => {
-    if (a.severity === 'critical') score -= 15;
-    else if (a.severity === 'high') score -= 10;
-    else if (a.severity === 'medium') score -= 5;
-    else if (a.severity === 'low') score -= 2;
+    if (a.severity === 'critical') critical++;
+    else if (a.severity === 'high') high++;
+    else if (a.severity === 'medium') medium++;
+    else if (a.severity === 'low') low++;
   });
 
-  // Deduct for missing base files
-  missingFiles.forEach(m => {
-    if (m.required) score -= 5;
-    else score -= 2;
-  });
+  const vulnPenalty =
+    15 * Math.sqrt(critical) +
+    7 * Math.sqrt(high) +
+    3 * Math.sqrt(medium) +
+    1 * Math.sqrt(low);
 
-  // Deduct for missing config
-  configStatus.forEach(c => {
-    if (c.status === 'Missing') score -= 2;
-  });
+  let missingConfigCount = configStatus.filter(c => c.status === 'Missing').length;
+  let missingPracticesCount = bestPractices.filter(b => b.status === 'Missing').length;
+  let missingFilesCount = missingFiles.length;
 
-  // Deduct for missing best practices
-  bestPractices.forEach(b => {
-    if (b.status === 'Missing') score -= 2;
-  });
+  const configPenalty = Math.min(missingConfigCount * 2, 16);
+  const hygienePenalty = Math.min(missingPracticesCount * 2, 10);
+  const filePenalty = Math.min(missingFilesCount * 3, 9);
 
-  // Add points for good things (max 100)
-  // Just bounded to 0-100
-  return Math.max(0, Math.min(100, score));
+  let score = 100 - vulnPenalty - configPenalty - hygienePenalty - filePenalty;
+  
+  return Math.max(0, Math.min(100, Math.round(score)));
 }
 
 function generateRecommendations(alerts, hygiene, missingFiles, configStatus, bestPractices, envAudit) {

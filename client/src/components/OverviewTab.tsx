@@ -83,18 +83,34 @@ export default function OverviewTab() {
     chartData.push({ name: role, files: count, complexity: count * 5, size: count * 12 });
   });
 
-  const stackData = analysis.apis.slice(0, 12).map((api, i) => {
-    const colors = [
-      'border-cyan-500 text-cyan-600 dark:text-cyan-400',
-      'border-blue-500 text-blue-600 dark:text-blue-400',
-      'border-indigo-500 text-indigo-600 dark:text-indigo-400',
-      'border-green-500 text-green-400',
-      'border-purple-500 text-purple-600 dark:text-purple-400',
-      'border-orange-500 text-orange-400',
-      'border-rose-500 text-rose-600 dark:text-rose-400'
-    ];
-    return { name: api.name || api.package, type: api.category || 'Dependency', color: colors[i % colors.length] };
-  });
+  const colors = [
+    'border-cyan-500 text-cyan-600 dark:text-cyan-400',
+    'border-blue-500 text-blue-600 dark:text-blue-400',
+    'border-indigo-500 text-indigo-600 dark:text-indigo-400',
+    'border-green-500 text-green-400',
+    'border-purple-500 text-purple-600 dark:text-purple-400',
+    'border-orange-500 text-orange-400',
+    'border-rose-500 text-rose-600 dark:text-rose-400'
+  ];
+
+  // We want to show primary tech stack first, then other APIs
+  const primaryStackNames = new Set((analysis.summary.primaryTechStack || []).map(t => t.toLowerCase()));
+  
+  // Filter out apis that match the primary stack to avoid duplication
+  const filteredApis = analysis.apis.filter(a => !primaryStackNames.has((a.name || a.package || '').toLowerCase()));
+
+  const stackData = [
+    ...(analysis.summary.primaryTechStack || []).map((tech, i) => ({
+      name: tech,
+      type: 'Core Technology',
+      color: colors[i % colors.length]
+    })),
+    ...filteredApis.map((api, i) => ({
+      name: api.name || api.package,
+      type: api.category || 'Dependency',
+      color: colors[(i + (analysis.summary.primaryTechStack?.length || 0)) % colors.length]
+    }))
+  ].slice(0, 12);
 
   // --- Tech Stack Suggestion Engine ---
   // Maps detected technologies to suggested complementary technologies
@@ -161,6 +177,26 @@ export default function OverviewTab() {
     'helmet': [
       { name: 'OWASP Top 10', reason: 'Understanding web security fundamentals makes you invaluable on any team', tags: ['Security', 'Knowledge'], priority: 3 },
       { name: 'Rate Limiting (express-rate-limit)', reason: 'Protect APIs from abuse — essential security practice for production apps', tags: ['Security', 'API'], priority: 2 },
+    ],
+    'html': [
+      { name: 'React', reason: 'Component-based UI library — the most in-demand frontend skill for HTML developers to learn next', tags: ['Frontend', 'Components'], priority: 3 },
+      { name: 'Next.js', reason: 'Full-stack framework built on React with SSR and file-based routing — takes HTML skills to production level', tags: ['Full-Stack', 'SSR'], priority: 3 },
+    ],
+    'css': [
+      { name: 'Tailwind CSS', reason: 'Utility-first CSS framework used by millions of projects — dramatically speeds up UI development', tags: ['Styling', 'DX'], priority: 3 },
+      { name: 'Sass / SCSS', reason: 'CSS superset with variables, nesting, and mixins — the standard for large CSS codebases', tags: ['Styling', 'CSS'], priority: 2 },
+    ],
+    'javascript': [
+      { name: 'TypeScript', reason: 'Typed superset of JavaScript that catches bugs at compile time — industry standard for serious JS projects', tags: ['Language', 'Type Safety'], priority: 3 },
+      { name: 'React', reason: 'Most popular component UI library — huge job market demand for JavaScript developers', tags: ['Frontend', 'Components'], priority: 3 },
+      { name: 'Node.js / Express', reason: 'Use your JS skills on the server side — become a full-stack developer with one language', tags: ['Backend', 'Full-Stack'], priority: 2 },
+    ],
+    'bootstrap': [
+      { name: 'Tailwind CSS', reason: 'Utility-first alternative to Bootstrap with more design flexibility and smaller bundle sizes', tags: ['Styling', 'DX'], priority: 3 },
+    ],
+    'jquery': [
+      { name: 'Vanilla JS / Fetch API', reason: 'Modern JS eliminates need for jQuery — cleaner code with no extra dependency', tags: ['Language', 'Performance'], priority: 2 },
+      { name: 'React', reason: 'Component model replaces jQuery DOM manipulation with declarative, maintainable UI code', tags: ['Frontend', 'Components'], priority: 3 },
     ],
   };
 

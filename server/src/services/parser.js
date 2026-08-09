@@ -115,6 +115,29 @@ async function analyzeRepo(owner, repo, filesWithContent, meta, onUpdate) {
       console.warn('API Intelligence failed:', e.message);
     }
 
+    // 5.8 Detect CDN-loaded libraries from HTML files
+    const htmlFiles = filesWithContent.filter(f => f.path.endsWith('.html') || f.path.endsWith('.htm'));
+    for (const hf of htmlFiles) {
+      const content = hf.content.toLowerCase();
+      const checkCdn = (keyword, pkg, cat, name) => {
+        if (content.includes(keyword)) {
+          apis.push({
+            name, package: pkg, category: cat, importFile: hf.path, importLine: 1, githubUrl: ''
+          });
+        }
+      };
+      
+      checkCdn('bootstrap', 'bootstrap', 'styling', 'Bootstrap');
+      checkCdn('jquery', 'jquery', 'utility', 'jQuery');
+      checkCdn('font-awesome', 'font-awesome', 'styling', 'Font Awesome');
+      checkCdn('tailwindcss', 'tailwindcss', 'styling', 'Tailwind CSS');
+      checkCdn('tailwind.min.css', 'tailwindcss', 'styling', 'Tailwind CSS');
+      checkCdn('animate.css', 'animate.css', 'styling', 'Animate.css');
+      checkCdn('gsap', 'gsap', 'animation', 'GSAP');
+      checkCdn('chart.js', 'chart.js', 'visualization', 'Chart.js');
+      checkCdn('three.', 'three', 'visualization', 'Three.js');
+    }
+
     // 6. Generate Setup Steps
     try {
       setupSteps = generateSetup(packageJson, envVars, `https://github.com/${owner}/${repo}`) || [];
@@ -192,6 +215,19 @@ async function analyzeRepo(owner, repo, filesWithContent, meta, onUpdate) {
   });
   if (filesWithContent.some(f => f.path.endsWith('.ts') || f.path.endsWith('.tsx'))) techSet.add('typescript');
   const primaryTechStack = Array.from(techSet).map(t => t.charAt(0).toUpperCase() + t.slice(1));
+  
+  // If no framework detected, detect from file extensions
+  const hasHtml = filesWithContent.some(f => f.path.endsWith('.html') || f.path.endsWith('.htm'));
+  const hasCss  = filesWithContent.some(f => f.path.endsWith('.css') || f.path.endsWith('.scss') || f.path.endsWith('.sass') || f.path.endsWith('.less'));
+  const hasVanillaJs = filesWithContent.some(f => f.path.endsWith('.js') || f.path.endsWith('.mjs'));
+  const hasReactStack = primaryTechStack.some(t => t.toLowerCase() === 'react' || t.toLowerCase() === 'next');
+
+  if (primaryTechStack.length === 0) {
+    if (hasHtml) techSet.add('html');
+    if (hasCss)  techSet.add('css');
+    if (hasVanillaJs && !hasReactStack) techSet.add('javascript');
+    primaryTechStack.push(...Array.from(techSet).map(t => t.charAt(0).toUpperCase() + t.slice(1)));
+  }
   if (primaryTechStack.length === 0) primaryTechStack.push('Node.js');
 
   // 2. Project Type & Architecture
@@ -201,6 +237,7 @@ async function analyzeRepo(owner, repo, filesWithContent, meta, onUpdate) {
   const hasReact = primaryTechStack.some(t => t.toLowerCase() === 'react');
   const hasNext = primaryTechStack.some(t => t.toLowerCase() === 'next');
   const hasExpress = primaryTechStack.some(t => t.toLowerCase() === 'express');
+  const hasHtmlFiles = filesWithContent.some(f => f.path.endsWith('.html') || f.path.endsWith('.htm'));
   
   if (hasNext) {
     projectTypeStr = "Next.js Application";
@@ -214,6 +251,9 @@ async function analyzeRepo(owner, repo, filesWithContent, meta, onUpdate) {
   } else if (hasExpress) {
     projectTypeStr = "Express.js REST API";
     architectureType = "REST API";
+  } else if (!hasNext && !hasReact && !hasExpress && hasHtmlFiles) {
+    projectTypeStr = "Static Web Project";
+    architectureType = "Frontend Only";
   }
   
   // Combine if needed or just use the new projectTypeStr

@@ -111,5 +111,16 @@
   "angular": { "name": "Angular", "category": "frontend", "description": "Platform for building web apps" },
   "@angular/core": { "name": "Angular Core", "category": "frontend", "description": "Angular framework core" },
   "svelte": { "name": "Svelte", "category": "frontend", "description": "Cybernetically enhanced web apps" },
-  "tailwindcss": { "name": "Tailwind CSS", "category": "styling", "description": "Utility-first CSS framework" }
+  "tailwindcss": { "name": "Tailwind CSS", "category": "styling", "description": "Utility-first CSS framework" },
+  "html": { "name": "HTML5", "category": "markup", "description": "Hypertext Markup Language" },
+  "css": { "name": "CSS3", "category": "styling", "description": "Cascading Style Sheets" },
+  "javascript": { "name": "Vanilla JavaScript", "category": "language", "description": "Native browser JavaScript" },
+  "scss": { "name": "SCSS / Sass", "category": "styling", "description": "CSS preprocessor" },
+  "bootstrap": { "name": "Bootstrap", "category": "styling", "description": "UI component framework" },
+  "jquery": { "name": "jQuery", "category": "utility", "description": "JavaScript library" },
+  "font-awesome": { "name": "Font Awesome", "category": "styling", "description": "Icon toolkit" },
+  "animate.css": { "name": "Animate.css", "category": "styling", "description": "CSS animation library" },
+  "gsap": { "name": "GSAP", "category": "animation", "description": "Professional-grade animation library" },
+  "chart.js": { "name": "Chart.js", "category": "visualization", "description": "JavaScript charting library" },
+  "three": { "name": "Three.js", "category": "visualization", "description": "3D library" }
 }
