@@ -201,7 +201,7 @@ const meta = {
 (async () => {
   try {
     console.log('=== Running Integration Test ===\n');
-    const result = await analyzeRepo('test-user', 'test-api', mockFiles, meta);
+    const { analysis: result } = await analyzeRepo('test-user', 'test-api', mockFiles, meta);
     
     console.log('--- SUMMARY ---');
     console.log(`  Project Type: ${result.summary.projectType}`);

@@ -143,6 +143,7 @@ async function fetchAllFiles(owner, repo) {
 }
 
 module.exports = {
+  octokit, // shared authenticated client (reused by the Time Machine history service)
   fetchRepoMeta,
   fetchFileTree,
   fetchFileContent,

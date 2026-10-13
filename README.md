@@ -49,6 +49,22 @@ Configure the following variables in `server/.env`:
 | `OPENROUTER_API_KEY` | No | - | OpenRouter API Key for AI features |
 | `GEMINI_API_KEY` | No | - | Gemini API Key for AI features |
 
+## Time Machine (Gemma 4)
+
+Every file has a story. In **Important Files**, expand a file and click **Tell this file's story** to see how it evolved: when it was created, the milestone commits that changed its responsibilities, renames and moves, and how today's version differs from the first one. The **Time Machine** tab shows the repository's major milestones.
+
+- Git establishes what changed and when (commits, diffs, renames, imports, functions, routes). Gemma 4 explains what the changes mean, using milestone refs only, and its JSON is schema-validated before it is shown. Explanations are labelled as Gemma inferences; reasons are only given when the commit message or diff supports them.
+- History is fetched lazily, only when a story is opened. A typical file story costs 1-2 commit-list calls per path (one more per rename followed), up to 20 commit-detail calls (cached per SHA forever), 2 content calls and **one** Gemma call. Reopening an unchanged file is served from cache with no GitHub detail calls and no Gemma call. The repository timeline costs about 1 + 1 + 12 GitHub calls and one Gemma call, and analyses only the latest 100 commits (flagged when older history exists).
+- If Gemma is not configured or fails, both views still work and show the Git facts.
+
+| Endpoint | Purpose |
+| --- | --- |
+| `POST /api/time-machine/file-story` `{ owner, repo, path, ref?, refresh? }` | Story for one file |
+| `GET /api/time-machine/:owner/:repo/commit/:sha?path=` | Lazy diff for one commit and file |
+| `POST /api/time-machine/repo-evolution` `{ owner, repo, ref?, refresh? }` | Repository milestones |
+
+Gemma is reached through the first configured backend: `GEMINI_API_KEY` (model `gemma-4-31b-it`), `OPENROUTER_API_KEY` (model `google/gemma-4-31b-it`) or a local `OLLAMA_URL` (model `gemma4:e4b`). Override with `GEMMA_BACKEND`, `GEMMA_MODEL` and `GEMMA_OLLAMA_MODEL`. Run the server tests with `cd server && npm test`.
+
 ## Tech Stack
 
 - **Frontend**: React 19, Vite, Tailwind CSS, Lucide React, Framer Motion, Zustand

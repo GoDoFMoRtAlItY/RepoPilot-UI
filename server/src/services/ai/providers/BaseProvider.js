@@ -56,6 +56,20 @@ class BaseProvider {
   async generateFileDescription(fileName, compressedContext, overrideKey) {
     throw new Error('generateFileDescription not implemented in ' + this.name);
   }
+
+  /**
+   * Time Machine: turn a bounded, pre-built evidence prompt into a file story.
+   * @param {{systemPrompt: string, userPrompt: string, backendHint?: string}} payload
+   * @returns {Promise<{text: string, backend: string, model: string}>} raw model text
+   */
+  async generateFileStory(payload, overrideKey) {
+    throw new Error('generateFileStory not implemented in ' + this.name);
+  }
+
+  /** Time Machine: repository-level milestone narrative. Same contract as generateFileStory. */
+  async generateRepoEvolution(payload, overrideKey) {
+    throw new Error('generateRepoEvolution not implemented in ' + this.name);
+  }
 }
 
 module.exports = BaseProvider;

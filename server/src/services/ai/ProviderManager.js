@@ -8,6 +8,7 @@ const AnthropicProvider = require('./providers/AnthropicProvider');
 const KalavaiProvider = require('./providers/KalavaiProvider');
 const LocalProvider = require('./providers/LocalProvider');
 const MockProvider = require('./providers/MockProvider');
+const GemmaProvider = require('./providers/GemmaProvider');
 
 class ProviderManager {
   constructor() {
@@ -18,6 +19,7 @@ class ProviderManager {
       anthropic: new AnthropicProvider(),
       kalavai: new KalavaiProvider(),
       local: new LocalProvider(),
+      gemma: new GemmaProvider(), // used explicitly by the Time Machine
       mock: new MockProvider()
     };
   }

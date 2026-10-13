@@ -21,6 +21,7 @@ import TechDebtTab from './components/TechDebtTab'
 import OnboardingScoreCard from './components/OnboardingScoreCard'
 import ReadmeGeneratorTab from './components/ReadmeGeneratorTab'
 import LineByLineAnalysis from './components/LineByLineAnalysis'
+import TimeMachineTab from './components/TimeMachineTab'
 import { Compass, Terminal, ShieldAlert, Sun, Moon } from 'lucide-react'
 import Lenis from 'lenis'
 import InteractiveBackground from './components/ui/InteractiveBackground'
@@ -150,6 +151,7 @@ function DashboardPage() {
       case 'Overview': return <OverviewTab />
       case 'Setup Guide': return <SetupGuideTab />
       case 'Important Files': return <ImportantFilesTab />
+      case 'Time Machine': return <TimeMachineTab />
       case 'Architecture': return <ArchitectureTab />
       case 'APIs & Routes': return <ApiRoutesTab />
       case 'Env Variables': return <EnvVariablesTab />

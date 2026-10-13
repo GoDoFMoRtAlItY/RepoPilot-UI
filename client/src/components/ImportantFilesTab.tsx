@@ -12,9 +12,11 @@ import {
   Loader2, 
   AlertCircle,
   ArrowRight,
-  FolderOpen
+  FolderOpen,
+  History
 } from 'lucide-react'
 import { useRepoStore } from '../store/useRepoStore'
+import FileTimeMachine from './FileTimeMachine'
 
 
 interface ExplorerFile {
@@ -71,10 +73,11 @@ interface FolderNodeProps {
   owner: string;
   repoName: string;
   defaultBranch: string;
+  onOpenStory: (path: string) => void;
 }
 
 // Recursive Folder Component
-const FolderNode = ({ node, level = 0, expandedFile, setExpandedFile, owner, repoName, defaultBranch }: FolderNodeProps) => {
+const FolderNode = ({ node, level = 0, expandedFile, setExpandedFile, owner, repoName, defaultBranch, onOpenStory }: FolderNodeProps) => {
   const [isOpen, setIsOpen] = useState(true)
 
   // Sort children: folders first, then files
@@ -101,6 +104,7 @@ const FolderNode = ({ node, level = 0, expandedFile, setExpandedFile, owner, rep
                 owner={owner}
                 repoName={repoName}
                 defaultBranch={defaultBranch}
+                onOpenStory={onOpenStory}
               /> 
             : null // files at absolute root are already in 📄 Root Files
         ))}
@@ -139,6 +143,7 @@ const FolderNode = ({ node, level = 0, expandedFile, setExpandedFile, owner, rep
                   owner={owner}
                   repoName={repoName}
                   defaultBranch={defaultBranch}
+                  onOpenStory={onOpenStory}
                 />
               ))}
               
@@ -219,6 +224,15 @@ const FolderNode = ({ node, level = 0, expandedFile, setExpandedFile, owner, rep
                                   >
                                     DETAILED ANALYSIS
                                   </a>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => { e.stopPropagation(); onOpenStory(file.path) }}
+                                    className="w-full py-2 bg-violet-950/20 hover:bg-violet-900/30 text-center border border-violet-700/40 hover:border-violet-400/70 text-[10px] font-bold text-violet-600 dark:text-violet-300 rounded transition-all tracking-wider flex items-center justify-center gap-1.5 cursor-pointer"
+                                    title="See how this file evolved, commit by commit, explained by Gemma"
+                                  >
+                                    <History className="w-3.5 h-3.5" />
+                                    TELL THIS FILE'S STORY
+                                  </button>
                                 </div>
                               </div>
                             </motion.div>
@@ -258,6 +272,8 @@ export default function ImportantFilesTab() {
   
   // Card toggle states
   const [expandedFile, setExpandedFile] = useState<string | null>(null)
+  // File Time Machine (opened lazily per file)
+  const [storyPath, setStoryPath] = useState<string | null>(null)
 
   // Auto-run if there is an active analysis
   useEffect(() => {
@@ -477,6 +493,7 @@ export default function ImportantFilesTab() {
               owner={owner}
               repoName={repoName}
               defaultBranch={defaultBranch}
+              onOpenStory={setStoryPath}
             />
           </div>
 
@@ -487,6 +504,19 @@ export default function ImportantFilesTab() {
           )}
         </div>
       )}
+
+      <AnimatePresence>
+        {storyPath && owner && repoName && (
+          <FileTimeMachine
+            key={storyPath}
+            owner={owner}
+            repo={repoName}
+            path={storyPath}
+            refSha={commitSha || undefined}
+            onClose={() => setStoryPath(null)}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

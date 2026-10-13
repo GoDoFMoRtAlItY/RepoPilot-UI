@@ -13,7 +13,8 @@ import {
   Target,
   ShieldAlert,
   Activity,
-  FileText
+  FileText,
+  History
 } from 'lucide-react'
 import { useUIStore } from '../store/useUIStore'
 
@@ -29,6 +30,7 @@ const menuItems = [
   { name: 'Overview', icon: BarChart3 },
   { name: 'Setup Guide', icon: ListTodo },
   { name: 'Important Files', icon: FileCode },
+  { name: 'Time Machine', icon: History },
   { name: 'Architecture', icon: Network },
   { name: 'APIs & Routes', icon: Terminal },
   { name: 'Env Variables', icon: KeyRound },
